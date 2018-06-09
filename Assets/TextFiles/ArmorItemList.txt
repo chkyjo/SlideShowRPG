@@ -1,0 +1,5 @@
+0 shirt 10 1 10
+1 pants 10 1 10
+2 shoes 10 1 10
+3 socks 10 1 10
+4 hat 10 1 10

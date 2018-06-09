@@ -1,0 +1,6 @@
+0 sword 10 1 5
+0 gun 10 1 5
+0 crossbow 10 1 5
+0 bow 10 1 5
+0 dagger 10 1 5
+0 axe 10 1 5
