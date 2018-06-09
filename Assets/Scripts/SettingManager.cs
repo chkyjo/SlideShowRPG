@@ -9,6 +9,7 @@ public class SettingManager : MonoBehaviour{
 
     public List<Character> charactersInSetting = new List<Character>();
     public Text weatherStatus;
+    public Text toneStatus;
     public int numCharactersInSetting;
     public int weather;
     public float startTime;
@@ -32,6 +33,8 @@ public class SettingManager : MonoBehaviour{
         StartCoroutine(WeatherTime());
 
         AddCharactersToSetting();
+
+        SetTone();
 
 	}
 	
@@ -89,5 +92,9 @@ public class SettingManager : MonoBehaviour{
             charactersInSetting.Add(characterManager.GetComponent<CharactersManager>().GetRandomCharacter());
 
         }
+    }
+
+    public void SetTone(){
+        toneStatus.text = "Tone: In Combat";
     }
 }
