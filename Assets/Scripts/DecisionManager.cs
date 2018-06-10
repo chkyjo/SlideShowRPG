@@ -13,20 +13,41 @@ public class DecisionManager : MonoBehaviour {
     public RectTransform decisionScroll;
     public Scrollbar scrollBar;
 
-    
     public GameObject throwDecisionObject;
     public GameObject throwItemDecisionObject;
     public GameObject throwItemAtDecisionObject;
     public GameObject talkDecisionObject;
     public GameObject talkToDecisionObject;
+    public GameObject observeDecisionObject;
+    public GameObject nextRoomDecisionObject;
+    public GameObject waitInBedDecisionObject;
 
+    public Slider slider;
+    public GameObject fadOutPanel;
+    public GameObject sleepMenuBackgroundPanel;
 
+    Room[] rooms = new Room[10];
+
+    struct Room{
+        public int numDecisions;
+        public int numExits;
+        public int[] otherOptions;
+        public string[] exitTexts;
+    }
+
+    public Text mainText;
     int itemsInDecisionPanel;
 
 	// Use this for initialization
 	void Start () {
         itemsInDecisionPanel = 0;
+        rooms[0].numDecisions = 2;
+        rooms[0].numExits = 1;
+        rooms[0].exitTexts = new string[1];
+        rooms[0].exitTexts[0] = "Continue up the stairs";
+        rooms[0].otherOptions = new int[1] {5};
         FillDecisionPanel();
+        
     }
 	
 	// Update is called once per frame
@@ -36,18 +57,21 @@ public class DecisionManager : MonoBehaviour {
 
     //fill decision panel based on inventory and scene
     private void FillDecisionPanel(){
-        //if there is something in the players inventory add the throw action
-        if(inventoryManager.GetComponent<Inventory>().GetInventoryCounts()[3] > 0){
-            AddDecision("throw");
+        //if there is something in the players inventory and there are people to throw things at add the throw action
+        if(inventoryManager.GetComponent<Inventory>().GetInventoryCounts()[3] > 0 && settingManager.GetComponent<SettingManager>().numCharactersInSetting > 0){
+            AddDecision(0);
         }
         //if there are people in the area add the talk action
         if (settingManager.GetComponent<SettingManager>().numCharactersInSetting > 0){
-            AddDecision("talk");
+            AddDecision(1);
         }
+
+        //add the observe action
+        AddDecision(2);
 
         //if there are living things in the area add the attack action
         if (settingManager.GetComponent<SettingManager>().numCharactersInSetting > 0){
-            AddDecision("attack");
+            AddDecision(3);
         }
 
         //if there are item up for grabs add the take action
@@ -55,31 +79,40 @@ public class DecisionManager : MonoBehaviour {
 
         //if there are items available to steal add the steal action
 
+        
 
-        Debug.Log("Decisions filled");
+        //add actions based on the room
+        AddExitOptions();
+        AddRoomOptions();
+
+    }
+
+    public void CombatDecisions(){
+
+
+
     }
 
     //add action to panel
-    void AddDecision(string name){
+    void AddDecision(int index){
 
-        if(name == "throw"){
-            //throwDecisionObject.GetComponentInChildren<Text>().text = "Throw something";
+        if(index == 0){
             var obj = GameObject.Instantiate(throwDecisionObject);
-            //obj.transform.parent = decisionScroller.transform;
             obj.transform.SetParent(decisionScroller.transform, false);
             itemsInDecisionPanel++;
-            Debug.Log("Added throw action");
         }
-        if (name == "talk"){
-            //talkDecisionObject.GetComponentsInChildren<Text>().text = "Talk to someone";
+        if (index == 1){
             var obj = GameObject.Instantiate(talkDecisionObject);
-            //obj.transform.parent = decisionScroller.transform;
             obj.transform.SetParent(decisionScroller.transform, false);
             itemsInDecisionPanel++;
-            Debug.Log("Added talk action");
+        }
+        if(index == 2){
+            var obj = GameObject.Instantiate(observeDecisionObject);
+            obj.transform.SetParent(decisionScroller.transform, false);
+            itemsInDecisionPanel++;
         }
         /*
-        if (name == "attack"){
+        if (index == 3){
             talkDecisionObject.GetComponentInChildren<Text>().text = "Attack someone";
             var obj = GameObject.Instantiate(talkDecisionObject);
             //obj.transform.parent = decisionScroller.transform;
@@ -88,9 +121,38 @@ public class DecisionManager : MonoBehaviour {
             Debug.Log("Added attack action");
         }
         */
+        if (index == 5){
+            var obj = GameObject.Instantiate(waitInBedDecisionObject);
+            obj.transform.SetParent(decisionScroller.transform, false);
+            itemsInDecisionPanel++;
+        }
+
         scrollBar.value = 1;
         decisionScroll.offsetMin = new Vector2(decisionScroll.offsetMin.x, 0);
 
+    }
+
+    void AddDecision(int index, string newText){
+        if (index == 4){
+            nextRoomDecisionObject.GetComponentsInChildren<Text>()[1].text = newText;
+            var obj = GameObject.Instantiate(nextRoomDecisionObject);
+            obj.transform.SetParent(decisionScroller.transform, false);
+            itemsInDecisionPanel++;
+        }
+    }
+
+    void AddRoomOptions(){
+        int roomIndex = settingManager.GetComponent<SettingManager>().GetRoom();
+        for (int i = 0; i < rooms[roomIndex].otherOptions.Length; i++){
+            AddDecision(rooms[roomIndex].otherOptions[i]);
+        }
+    }
+
+    void AddExitOptions(){
+        int roomIndex = settingManager.GetComponent<SettingManager>().GetRoom();
+        for (int i = 0; i < rooms[roomIndex].numExits; i++){
+            AddDecision(4, rooms[roomIndex].exitTexts[i]);
+        }
     }
 
     //called when user selects the throw action
@@ -206,5 +268,22 @@ public class DecisionManager : MonoBehaviour {
             Destroy(decisionScroller.transform.GetChild(i).gameObject);
         }
         itemsInDecisionPanel = 0;
+    }
+
+    //called when user selects to wait in a bed
+    public void WaitInBed(){
+        mainText.text = "Feeling you didn't get enough sleep, you get back in bed.";
+        sleepMenuBackgroundPanel.SetActive(true);
+    }
+
+    public void SleepForMinutes(){
+        fadOutPanel.SetActive(true);
+    }
+
+    //called when user selects the next room option
+    public void NextRoom(){
+
+
+
     }
 }

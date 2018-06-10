@@ -10,6 +10,8 @@ public class SettingManager : MonoBehaviour{
     public List<Character> charactersInSetting = new List<Character>();
     public Text weatherStatus;
     public Text toneStatus;
+    public Text tempStatus;
+    public Text timeStatus;
     public int numCharactersInSetting;
     public int weather;
     public float startTime;
@@ -18,13 +20,26 @@ public class SettingManager : MonoBehaviour{
     public int combat;
     Coroutine weatherCheck;
 
+    public Slider slider;
+    public Text sliderValueStatus;
+
+    int second;
+    int minute;
+    int hour;
+
+    private int currentRoom;
+
     private void Awake(){
         weather = 0;//5 different weathers: rain, snow, sunny, misty, windy
-        combat = 1;
+        combat = 0;
         temperature = 40;
         numCharactersInSetting = 20;
         startTime = -10;
         timeUntilWeatherChange = 0;
+        currentRoom = 0;
+        minute = 44;
+        hour = 6;
+        StartCoroutine(TimeUpdate());
     }
 
     // Use this for initialization
@@ -34,14 +49,21 @@ public class SettingManager : MonoBehaviour{
 
         AddCharactersToSetting();
 
-        SetTone();
+        SetTone(1);
 
+        SetTemp();
 	}
-	
-	// Update is called once per frame
-	void Update (){
-		
+
+    // Update is called once per frame
+    void Update() {
+
+        
 	}
+
+    public int GetRoom()
+    {
+        return currentRoom;
+    }
 
     public void NewWeather(){
         //StopCoroutine(weatherCheck);
@@ -73,10 +95,51 @@ public class SettingManager : MonoBehaviour{
         startTime = Time.time;
     }
 
+    IEnumerator TimeUpdate(){
+        while(true){
+            second = (int)Time.time;
+            second %= 60;
+            if (second == 0){
+                minute++;
+            }
+
+            if(minute >= 60){
+                minute = 0;
+                hour++;
+            }
+
+            if(hour >= 24){
+                hour = 0;
+            }
+
+            if(hour < 10){
+                timeStatus.text = "0" + hour.ToString();
+            }
+            else{
+                timeStatus.text = hour.ToString();
+            }
+
+            if(minute < 10){
+                timeStatus.text += ":0" + minute.ToString();
+            }
+            else{
+                timeStatus.text += ":" + minute.ToString();
+            }
+
+            if(second < 10){
+                timeStatus.text += ":0" + second.ToString();
+            }
+            else{
+                timeStatus.text += ":" + second.ToString();
+            }
+
+            yield return new WaitForSeconds(1f);
+        }
+    }
+
     IEnumerator WeatherTime(){
 
         while (true){
-            Debug.Log("Time.time = " + Time.time + ", startTime = " + startTime + ", timeUntilWeatherChange = " + timeUntilWeatherChange);
 
             if (Time.time - startTime > timeUntilWeatherChange){
                 NewWeather();
@@ -94,7 +157,44 @@ public class SettingManager : MonoBehaviour{
         }
     }
 
-    public void SetTone(){
-        toneStatus.text = "Tone: In Combat";
+    public void SetTone(int tone){
+
+        switch (tone)
+        {
+            case 0:
+                toneStatus.text = "Tone: In Combat";
+                break;
+            case 1:
+                toneStatus.text = "Tone: Exploring";
+                break;
+            case 2:
+                toneStatus.text = "Tone: Conversing";
+                break;
+
+        }
+    }
+
+    public void SetTemp(){
+        tempStatus.text = temperature.ToString() + " degrees";
+    }
+
+    public void AddTime(int mins){
+        minute += mins;
+
+        if(minute >= 60){
+            minute -= 60;
+            hour++;
+            if(hour >= 24){
+                hour = 0;
+            }
+        }
+
+        slider.value = 0;
+    }
+
+    public void UpdateSliderUI(){
+
+        sliderValueStatus.text = ((int)slider.value).ToString() + " minutes";
+
     }
 }

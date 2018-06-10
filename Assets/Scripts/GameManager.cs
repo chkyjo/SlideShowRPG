@@ -40,7 +40,7 @@ public class GameManager : MonoBehaviour {
         armorButton.interactable = false;
         foodButton.interactable = false;
 
-        deletePromptPanel.active = true;
+        deletePromptPanel.SetActive(true);
         selected = name;
     }
 
@@ -49,19 +49,25 @@ public class GameManager : MonoBehaviour {
     }
 
     public void DisableItemButtons(){
-        for (int i = 0; i < itemsOnDisplay; i++)
-        {
+        for (int i = 0; i < itemsOnDisplay; i++){
             itemsPanel.transform.GetChild(0).GetChild(0).GetChild(i).GetComponentInChildren<Button>().interactable = false;
         }
 
-        
-        
     }
     public void EnableItemButtons(){
         for (int i = 0; i < itemsOnDisplay; i++)
         {
             itemsPanel.transform.GetChild(0).GetChild(0).GetChild(i).GetComponentInChildren<Button>().interactable = true;
         }
+
+        weaponButton.interactable = true;
+        armorButton.interactable = true;
+        foodButton.interactable = true;
+    }
+
+    public void DisableDeletePrompt()
+    {
+        deletePromptPanel.SetActive(false);
     }
 
 }
