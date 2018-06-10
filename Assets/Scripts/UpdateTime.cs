@@ -21,8 +21,7 @@ public class UpdateTime : MonoBehaviour {
         settingManager.GetComponent<SettingManager>().AddTime((int)slider.value);
     }
 
-    private void AddSitTime()
-    {
+    private void AddSitTime(){
         settingManager.GetComponent<SettingManager>().AddTime((int)sitSlider.value);
     }
 

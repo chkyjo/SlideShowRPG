@@ -59,6 +59,18 @@ public class RoomManager : MonoBehaviour {
         connectedRooms[1] = 1;
         rooms[2] = new Room(2, observationText, 2, options, exitTexts, leaveTexts, connectedRooms);
 
+        options = new int[2] { 6, 7 };
+        observationText = "A sloped, curvy walkway led down from the castle to a lower open field. Men, woman, and children were running and parrying " +
+            "with each other. Distant yells and shouts echoed through the sky. In the distance you could see Gregory barking commands at the other " +
+            "recruits you had become familiar with.";
+        exitTexts = new string[1];
+        exitTexts[0] = "Into the castle";
+        leaveTexts = new string[1];
+        leaveTexts[0] = "You walk over to the main entrance and pass two guards on your way in. You are hit with the soft candle light and the smell of food.";
+        connectedRooms = new int[1];
+        connectedRooms[0] = 2;
+        rooms[3] = new Room(2, observationText, 1, options, exitTexts, leaveTexts, connectedRooms);
+
         publicLocations[0] = 1;
         publicLocations[1] = 2;
     }

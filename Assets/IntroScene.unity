@@ -7317,8 +7317,13 @@ MonoBehaviour:
     type: 2}
   dialogueDecisionObject: {fileID: 1571915773131480, guid: 42f2eaeb034e933438fd584dae1a112c,
     type: 2}
+  attackDecisionObject: {fileID: 1393756007418190, guid: 90af466c537e6894fa7ff3a160c75a57,
+    type: 2}
+  attackPersonDecisionObject: {fileID: 1238966459736780, guid: 0a2ac541a5499ac4bb98ce411b38095f,
+    type: 2}
   eatMealDecisionObject: {fileID: 1357647221727184, guid: 1b43077690735b741ba0a4a524565999,
     type: 2}
+  swordTrainingDecisionObject: {fileID: 0}
   sleepSlider: {fileID: 209203070}
   sleepSliderValueStatus: {fileID: 2141165264}
   fadOutPanel: {fileID: 1750027658}

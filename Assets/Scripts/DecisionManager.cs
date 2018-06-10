@@ -25,7 +25,10 @@ public class DecisionManager : MonoBehaviour {
     public GameObject waitInBedDecisionObject;
     public GameObject waitInSeatingDecisionObject;
     public GameObject dialogueDecisionObject;
+    public GameObject attackDecisionObject;
+    public GameObject attackPersonDecisionObject;
     public GameObject eatMealDecisionObject;
+    public GameObject swordTrainingDecisionObject;
 
     public Slider sleepSlider;
     public Text sleepSliderValueStatus;
@@ -116,31 +119,36 @@ public class DecisionManager : MonoBehaviour {
             obj.transform.SetParent(decisionScroller.transform, false);
             itemsInDecisionPanel++;
         }
-        /*
         if (index == 3){
-            talkDecisionObject.GetComponentInChildren<Text>().text = "Attack someone";
-            var obj = GameObject.Instantiate(talkDecisionObject);
-            //obj.transform.parent = decisionScroller.transform;
+            var obj = GameObject.Instantiate(attackDecisionObject);
             obj.transform.SetParent(decisionScroller.transform, false);
             itemsInDecisionPanel++;
-            Debug.Log("Added attack action");
         }
-        */
+        //5 = wait in bed
         if (index == 5) {
             var obj = GameObject.Instantiate(waitInBedDecisionObject);
             obj.transform.SetParent(decisionScroller.transform, false);
             itemsInDecisionPanel++;
         }
+        //6 = wait in seat
         if (index == 6) {
             var obj = GameObject.Instantiate(waitInSeatingDecisionObject);
             obj.transform.SetParent(decisionScroller.transform, false);
             itemsInDecisionPanel++;
         }
+        //7 = eat a meal
         if (index == 7){
             var obj = GameObject.Instantiate(eatMealDecisionObject);
             obj.transform.SetParent(decisionScroller.transform, false);
             itemsInDecisionPanel++;
         }
+        //8 = train sword fighting
+        if (index == 8){
+            var obj = GameObject.Instantiate(swordTrainingDecisionObject);
+            obj.transform.SetParent(decisionScroller.transform, false);
+            itemsInDecisionPanel++;
+        }
+        //9 = 
 
         scrollBar.value = 1;
         decisionScroll.offsetMin = new Vector2(decisionScroll.offsetMin.x, 0);
@@ -188,6 +196,39 @@ public class DecisionManager : MonoBehaviour {
             mainText.text = roomManager.GetComponent<RoomManager>().GetRoom(currentRoom)._observationText;
             settingManager.GetComponent<SettingManager>().roomObserved = 1;
         }
+    }
+
+    //called when the user selects the attack option
+    public void Attack(){
+        ClearDecisionPanel();
+
+        //allow user to select who to talk to
+        int numCharacters = settingManager.GetComponent<SettingManager>().numCharactersInSetting;
+        for (int i = 0; i < numCharacters; i++){
+            attackPersonDecisionObject.GetComponentsInChildren<Text>()[1].text = settingManager.GetComponent<SettingManager>().charactersInSetting[i].GetFirstName()
+                + " " + settingManager.GetComponent<SettingManager>().charactersInSetting[i].GetLastName();
+            attackPersonDecisionObject.GetComponent<AttackPersonAction>().characterID = settingManager.GetComponent<SettingManager>().charactersInSetting[i].GetID();
+            var obj = GameObject.Instantiate(attackPersonDecisionObject);
+            obj.transform.SetParent(decisionScroller.transform, false);
+            itemsInDecisionPanel++;
+        }
+
+        scrollBar.value = 1;
+        if (itemsInDecisionPanel > 7){
+            int difference = itemsInDecisionPanel - 7;
+            decisionScroll.offsetMin = new Vector2(decisionScroll.offsetMin.x, -(difference * 30));
+        }
+        else{//else reset
+            decisionScroll.offsetMin = new Vector2(decisionScroll.offsetMin.x, 0);
+        }
+    }
+
+    //called when the user selects the person to attack
+    public void AttackPerson(int ID){
+        Character character = characterManager.GetComponent<CharactersManager>().GetCharacter(ID);
+        Debug.Log("You attacked " + character.GetFirstName() + " " + character.GetLastName());
+
+        RefreshDecisionList();
     }
 
     //called when user selects the throw action
