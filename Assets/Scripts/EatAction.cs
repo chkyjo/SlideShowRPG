@@ -1,26 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine;
 
 public class EatAction : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
-
     public void Eat(){
-        
-    }
-
-    public void EatItem()
-    {
-
+        GameObject.Find("DecisionManager").GetComponent<DecisionManager>().Eat();
     }
 }

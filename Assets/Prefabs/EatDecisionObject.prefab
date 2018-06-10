@@ -111,7 +111,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Eat something
+  m_Text: Eat a meal
 --- !u!114 &114177022371783594
 MonoBehaviour:
   m_ObjectHideFlags: 1

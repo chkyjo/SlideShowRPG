@@ -21,9 +21,6 @@ public class SettingManager : MonoBehaviour{
     public int roomObserved;
     Coroutine weatherCheck;
 
-    public Slider slider;
-    public Text sliderValueStatus;
-
     int second;
     int minute;
     int hour;
@@ -140,6 +137,12 @@ public class SettingManager : MonoBehaviour{
         }
     }
 
+    public int[] GetTime(){
+        int[] time = new int[3] { hour, minute, second };
+
+        return time;
+    }
+
     IEnumerator WeatherTime(){
 
         while (true){
@@ -192,13 +195,14 @@ public class SettingManager : MonoBehaviour{
                 hour = 0;
             }
         }
-
-        slider.value = 0;
     }
 
-    public void UpdateSliderUI(){
-
-        sliderValueStatus.text = ((int)slider.value).ToString() + " minutes";
-
+    public void StopTime(){
+        Time.timeScale = 0;
     }
+
+    public void StartTime(){
+        Time.timeScale = 1;
+    }
+
 }

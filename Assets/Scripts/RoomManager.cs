@@ -37,12 +37,27 @@ public class RoomManager : MonoBehaviour {
         exitTexts[0] = "Enter through the double doors";
         exitTexts[1] = "Down stairs to bed chamber";
         leaveTexts = new string[2];
-        leaveTexts[0] = "You lean into the double doors with your small frame and gradually it opens.";
+        leaveTexts[0] = "You lean into the double doors with your small frame and gradually it opens. The great hall appears before you.";
         leaveTexts[1] = "You head down the stairs back to your bed chamber.";
         connectedRooms = new int[2];
         connectedRooms[0] = 2;
         connectedRooms[1] = 0;
         rooms[1] = new Room(1, observationText, 2, options, exitTexts, leaveTexts, connectedRooms);
+
+        options = new int[2] { 6, 7 };
+        observationText = "Candles flickered and lit up every inch of the giant room. Large beams of sunlight shot diagonally down " +
+            "from the high windows. Food was laid out on all five of the long tables that extended from you down to the lords " +
+            "table at the far end. Many were still in the middle of breakfast. The main entrance to the castle was an opened gate to the right of the lords table.";
+        exitTexts = new string[2];
+        exitTexts[0] = "Main entrance";
+        exitTexts[1] = "Double doors to courtyard";
+        leaveTexts = new string[2];
+        leaveTexts[0] = "You walk over to the main entrance and pass two guards on your way out. The sun is blinding as you step out into the open air.";
+        leaveTexts[1] = "You push your way through the double doors to the courtyard.";
+        connectedRooms = new int[2];
+        connectedRooms[0] = 3;
+        connectedRooms[1] = 1;
+        rooms[2] = new Room(2, observationText, 2, options, exitTexts, leaveTexts, connectedRooms);
 
         publicLocations[0] = 1;
         publicLocations[1] = 2;
