@@ -1,12 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class DecisionManager : MonoBehaviour {
 
     public GameObject inventoryManager;
     public GameObject settingManager;
+    public GameObject roomManager;
+    public GameObject characterManager;
 
     public GameObject decisionPanel;
     public GameObject decisionScroller;
@@ -21,31 +21,26 @@ public class DecisionManager : MonoBehaviour {
     public GameObject observeDecisionObject;
     public GameObject nextRoomDecisionObject;
     public GameObject waitInBedDecisionObject;
+    public GameObject waitInSeatingDecisionObject;
+    public GameObject dialogueDecisionObject;
 
     public Slider slider;
     public GameObject fadOutPanel;
-    public GameObject sleepMenuBackgroundPanel;
+    public GameObject sleepWaitBackgroundPanel;
+    public GameObject sitWaitBackgroundPanel;
 
-    Room[] rooms = new Room[10];
-
-    struct Room{
-        public int numDecisions;
-        public int numExits;
-        public int[] otherOptions;
-        public string[] exitTexts;
-    }
+    public GameObject conversationBackgroundPanel;
+    public GameObject characterInfoPanel;
+    public Slider relationshipSlider;
+    public GameObject dialogueOptionsPanel;
 
     public Text mainText;
     int itemsInDecisionPanel;
 
 	// Use this for initialization
 	void Start () {
+
         itemsInDecisionPanel = 0;
-        rooms[0].numDecisions = 2;
-        rooms[0].numExits = 1;
-        rooms[0].exitTexts = new string[1];
-        rooms[0].exitTexts[0] = "Continue up the stairs";
-        rooms[0].otherOptions = new int[1] {5};
         FillDecisionPanel();
         
     }
@@ -57,17 +52,21 @@ public class DecisionManager : MonoBehaviour {
 
     //fill decision panel based on inventory and scene
     private void FillDecisionPanel(){
-        //if there is something in the players inventory and there are people to throw things at add the throw action
-        if(inventoryManager.GetComponent<Inventory>().GetInventoryCounts()[3] > 0 && settingManager.GetComponent<SettingManager>().numCharactersInSetting > 0){
-            AddDecision(0);
-        }
+        //add exits based on the room
+        AddRoomExits();
+
+        //add the observe action
+        AddDecision(2);
+
         //if there are people in the area add the talk action
         if (settingManager.GetComponent<SettingManager>().numCharactersInSetting > 0){
             AddDecision(1);
         }
 
-        //add the observe action
-        AddDecision(2);
+        //if there is something in the players inventory and there are people to throw things at add the throw action
+        if (inventoryManager.GetComponent<Inventory>().GetInventoryCounts()[3] > 0 && settingManager.GetComponent<SettingManager>().numCharactersInSetting > 0){
+            AddDecision(0);
+        }
 
         //if there are living things in the area add the attack action
         if (settingManager.GetComponent<SettingManager>().numCharactersInSetting > 0){
@@ -78,12 +77,6 @@ public class DecisionManager : MonoBehaviour {
 
 
         //if there are items available to steal add the steal action
-
-        
-
-        //add actions based on the room
-        AddExitOptions();
-        AddRoomOptions();
 
     }
 
@@ -126,32 +119,57 @@ public class DecisionManager : MonoBehaviour {
             obj.transform.SetParent(decisionScroller.transform, false);
             itemsInDecisionPanel++;
         }
+        if (index == 6){
+            var obj = GameObject.Instantiate(waitInSeatingDecisionObject);
+            obj.transform.SetParent(decisionScroller.transform, false);
+            itemsInDecisionPanel++;
+        }
 
         scrollBar.value = 1;
         decisionScroll.offsetMin = new Vector2(decisionScroll.offsetMin.x, 0);
 
     }
 
-    void AddDecision(int index, string newText){
-        if (index == 4){
-            nextRoomDecisionObject.GetComponentsInChildren<Text>()[1].text = newText;
-            var obj = GameObject.Instantiate(nextRoomDecisionObject);
-            obj.transform.SetParent(decisionScroller.transform, false);
-            itemsInDecisionPanel++;
+    void AddRoomExits(){
+        Room room = roomManager.GetComponent<RoomManager>().GetRoom(settingManager.GetComponent<SettingManager>().currentRoom);
+        for (int i = 0; i < room._numExits; i++){
+            AddExit(room._exitTexts[i], room._connectedRooms[i], room._leaveTexts[i]);
         }
+    }
+
+    void AddExit(string exitText, int nextRoomID, string leaveActionText){
+        nextRoomDecisionObject.GetComponentsInChildren<Text>()[1].text = exitText;
+        nextRoomDecisionObject.GetComponent<NextRoomAction>().nextRoomID = nextRoomID;
+        nextRoomDecisionObject.GetComponent<NextRoomAction>().leaveText = leaveActionText;
+        var obj = GameObject.Instantiate(nextRoomDecisionObject);
+        obj.transform.SetParent(decisionScroller.transform, false);
+        itemsInDecisionPanel++;
     }
 
     void AddRoomOptions(){
-        int roomIndex = settingManager.GetComponent<SettingManager>().GetRoom();
-        for (int i = 0; i < rooms[roomIndex].otherOptions.Length; i++){
-            AddDecision(rooms[roomIndex].otherOptions[i]);
+        int currentRoom = settingManager.GetComponent<SettingManager>().GetRoom();
+        Room room = roomManager.GetComponent<RoomManager>().GetRoom(currentRoom);
+        for (int i = 0; i < room._numOptions; i++){
+            AddDecision(room._options[i]);
+        }
+
+        scrollBar.value = 1;
+        if (itemsInDecisionPanel > 7)
+        {
+            int difference = itemsInDecisionPanel - 7;
+            decisionScroll.offsetMin = new Vector2(decisionScroll.offsetMin.x, -(difference * 30));
+        }
+        else{//else reset
+            decisionScroll.offsetMin = new Vector2(decisionScroll.offsetMin.x, 0);
         }
     }
 
-    void AddExitOptions(){
-        int roomIndex = settingManager.GetComponent<SettingManager>().GetRoom();
-        for (int i = 0; i < rooms[roomIndex].numExits; i++){
-            AddDecision(4, rooms[roomIndex].exitTexts[i]);
+    public void ObserveSurroundings(){
+        if (settingManager.GetComponent<SettingManager>().roomObserved == 0){
+            AddRoomOptions();
+            int currentRoom = settingManager.GetComponent<SettingManager>().GetRoom();
+            mainText.text = roomManager.GetComponent<RoomManager>().GetRoom(currentRoom)._observationText;
+            settingManager.GetComponent<SettingManager>().roomObserved = 1;
         }
     }
 
@@ -225,7 +243,7 @@ public class DecisionManager : MonoBehaviour {
     }
 
     
-    //called when user selects the eat action
+    //called when user selects the talk action
     public void Talk(){
 
         ClearDecisionPanel();
@@ -235,6 +253,7 @@ public class DecisionManager : MonoBehaviour {
         for (int i = 0; i < numCharacters; i++){
             talkToDecisionObject.GetComponentsInChildren<Text>()[1].text = settingManager.GetComponent<SettingManager>().charactersInSetting[i].GetFirstName()
                 + " " + settingManager.GetComponent<SettingManager>().charactersInSetting[i].GetLastName();
+            talkToDecisionObject.GetComponent<TalkToOption>().characterID = settingManager.GetComponent<SettingManager>().charactersInSetting[i].GetID();
             var obj = GameObject.Instantiate(talkToDecisionObject);
             obj.transform.SetParent(decisionScroller.transform, false);
             itemsInDecisionPanel++;
@@ -251,10 +270,29 @@ public class DecisionManager : MonoBehaviour {
 
     }
 
-    //called when user selects the item to eat action
-    public void TalkTo(string firstName, string lastName){
+    //called when user selects the character to talk to
+    public void TalkTo(int ID){
+
+        conversationBackgroundPanel.SetActive(true);
+        Character talkingTo = characterManager.GetComponent<CharactersManager>().GetCharacter(ID);
+
+        characterInfoPanel.GetComponentInChildren<Text>().text = talkingTo.GetFirstName() + " " + talkingTo.GetLastName();
+        for (int i = 1; i < 6; i++) {
+            characterInfoPanel.GetComponentsInChildren<Text>()[i].text = characterManager.GetComponent<CharactersManager>().GetTrait(talkingTo.GetTraits()[i-1]);
+        }
+        for (int i = 6; i < 11; i++){
+            characterInfoPanel.GetComponentsInChildren<Text>()[i].text = characterManager.GetComponent<CharactersManager>().GetSkill(talkingTo.GetSkills()[i - 6]);
+        }
+        for (int i = 11; i < 16; i++){
+            characterInfoPanel.GetComponentsInChildren<Text>()[i].text = characterManager.GetComponent<CharactersManager>().GetGoal(talkingTo.GetGoals()[i - 11]);
+        }
+        relationshipSlider.value = talkingTo.GetRelationship();
+
+        dialogueDecisionObject.GetComponentsInChildren<Text>()[1].text = "Ask about current events";
+        var dialogueObj = GameObject.Instantiate(dialogueDecisionObject);
+        dialogueObj.transform.SetParent(dialogueOptionsPanel.transform);
+
         RefreshDecisionList();
-        Debug.Log("You talked to : " + firstName + " " + lastName);
     }
 
     //called when user completes the selections for an action
@@ -273,17 +311,32 @@ public class DecisionManager : MonoBehaviour {
     //called when user selects to wait in a bed
     public void WaitInBed(){
         mainText.text = "Feeling you didn't get enough sleep, you get back in bed.";
-        sleepMenuBackgroundPanel.SetActive(true);
+        sleepWaitBackgroundPanel.SetActive(true);
+    }
+
+    //called when user selects to wait by sitting
+    public void WaitInSeating(){
+        mainText.text = "Feeling lazy you relax on one of the benches.";
+        sitWaitBackgroundPanel.SetActive(true);
     }
 
     public void SleepForMinutes(){
         fadOutPanel.SetActive(true);
     }
 
-    //called when user selects the next room option
-    public void NextRoom(){
+    //called when user selects an exit option
+    public void NextRoom(int nextRoomID, string leaveText){
 
-
+        settingManager.GetComponent<SettingManager>().roomObserved = 0;
+        //update main text with the leaving dialogue from the current room to the selected room
+        mainText.text = leaveText;
+        //update the current room to the setting manager
+        settingManager.GetComponent<SettingManager>().currentRoom = nextRoomID;
+        //find the characters in the room and update the setting manager
+        Character[] characters = characterManager.GetComponent<CharactersManager>().GetCharactersInRoom(nextRoomID);
+        settingManager.GetComponent<SettingManager>().AddCharactersToSetting(characters);
+        //update the decision list
+        RefreshDecisionList();
 
     }
 }

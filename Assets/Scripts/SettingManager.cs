@@ -12,12 +12,13 @@ public class SettingManager : MonoBehaviour{
     public Text toneStatus;
     public Text tempStatus;
     public Text timeStatus;
-    public int numCharactersInSetting;
+    public int numCharactersInSetting = 0;
     public int weather;
     public float startTime;
     public float timeUntilWeatherChange;
     public int temperature;
     public int combat;
+    public int roomObserved;
     Coroutine weatherCheck;
 
     public Slider slider;
@@ -27,27 +28,25 @@ public class SettingManager : MonoBehaviour{
     int minute;
     int hour;
 
-    private int currentRoom;
+    public int currentRoom;
 
     private void Awake(){
         weather = 0;//5 different weathers: rain, snow, sunny, misty, windy
         combat = 0;
-        temperature = 40;
-        numCharactersInSetting = 20;
+        temperature = 0;
+        numCharactersInSetting = 0;
         startTime = -10;
         timeUntilWeatherChange = 0;
         currentRoom = 0;
         minute = 44;
         hour = 6;
+        roomObserved = 0;
         StartCoroutine(TimeUpdate());
     }
 
     // Use this for initialization
     void Start () {
-
         StartCoroutine(WeatherTime());
-
-        AddCharactersToSetting();
 
         SetTone(1);
 
@@ -60,8 +59,7 @@ public class SettingManager : MonoBehaviour{
         
 	}
 
-    public int GetRoom()
-    {
+    public int GetRoom(){
         return currentRoom;
     }
 
@@ -72,22 +70,27 @@ public class SettingManager : MonoBehaviour{
         switch (weather){
             case 0:
                 weatherStatus.text = "Weather: Rainy";
+                temperature = 50 + UnityEngine.Random.Range(-5, 6);
                 break;
 
             case 1:
                 weatherStatus.text = "Weather: Snowy";
+                temperature = 20 + UnityEngine.Random.Range(-5, 6);
                 break;
 
             case 2:
                 weatherStatus.text = "Weather: Sunny";
+                temperature = 60 + UnityEngine.Random.Range(-5, 6);
                 break;
 
             case 3:
                 weatherStatus.text = "Weather: Misty";
+                temperature = 40 + UnityEngine.Random.Range(-5, 6);
                 break;
 
             case 4:
                 weatherStatus.text = "Weather: Windy";
+                temperature = 30 + UnityEngine.Random.Range(-5, 6);
                 break;
         }
 
@@ -149,10 +152,11 @@ public class SettingManager : MonoBehaviour{
         }
     }
 
-    public void AddCharactersToSetting(){
+    public void AddCharactersToSetting(Character[] characters){
+        numCharactersInSetting = characters.Length;
         for(int i = 0; i < numCharactersInSetting; i++){
 
-            charactersInSetting.Add(characterManager.GetComponent<CharactersManager>().GetRandomCharacter());
+            charactersInSetting.Add(characters[i]);
 
         }
     }

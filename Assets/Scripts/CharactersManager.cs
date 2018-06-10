@@ -37,6 +37,9 @@ public class CharactersManager : MonoBehaviour {
     private void Awake(){
         InitCompleteLists();
         CreateCharacters();
+        for(int i = 0; i < 6; i++){
+            completeListOfCharacters[UnityEngine.Random.Range(0, 500)].SetLocation(1);
+        }
     }
 
     // Use this for initialization
@@ -49,6 +52,21 @@ public class CharactersManager : MonoBehaviour {
 	void Update () {
 		
 	}
+
+    public Character[] GetCharactersInRoom(int roomIndex){
+        Debug.Log(completeListOfCharacters.Count);
+        List<Character> characters = new List<Character>();
+        for(int i = 0; i < completeListOfCharacters.Count; i++){
+            if(completeListOfCharacters[i].GetLocation() == roomIndex){
+                characters.Add(completeListOfCharacters[i]);
+            }
+        }
+        Character[] arrayOfCharacters = new Character[characters.Count];
+        for(int i = 0; i < characters.Count; i++){
+            arrayOfCharacters[i] = characters[i];
+        }
+        return arrayOfCharacters;
+    }
 
     private void InitCompleteLists(){
         string stringOfNames = maleFirstNameListTextFile.text;
@@ -80,8 +98,9 @@ public class CharactersManager : MonoBehaviour {
     private void CreateCharacters(){
         for(int i = 0; i < 1000; i++){
             Character tempChar = new Character();
+            tempChar.SetID(i);
             //assign gender; 0 male, 1 female
-            tempChar.SetGender(UnityEngine.Random.Range(0, 1));
+            tempChar.SetGender(UnityEngine.Random.Range(0, 2));
             //use gender to get a random name
             if(tempChar.GetGender() == 0){
                 tempChar.SetFirstName(GetRandomMaleFirstName());
@@ -117,6 +136,20 @@ public class CharactersManager : MonoBehaviour {
 
             completeListOfCharacters.Add(tempChar);
         }
+    }
+
+    public Character GetCharacter(int index){
+        return completeListOfCharacters[index];
+    }
+
+    public string GetTrait(int index){
+        return completeListOfTraits[index];
+    }
+    public string GetSkill(int index){
+        return completeListOfSkills[index];
+    }
+    public string GetGoal(int index){
+        return completeListOfGoals[index];
     }
 
     public Character GetRandomCharacter(){

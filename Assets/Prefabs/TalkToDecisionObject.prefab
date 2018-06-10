@@ -36,7 +36,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 224292955754600498}
-  - component: {fileID: 114739589882983886}
+  - component: {fileID: 114535230379106920}
   m_Layer: 5
   m_Name: TalkToDecisionObject
   m_TagString: Untagged
@@ -118,7 +118,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114739589882983886}
+      - m_Target: {fileID: 114535230379106920}
         m_MethodName: TalkTo
         m_Mode: 1
         m_Arguments:
@@ -191,7 +191,7 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Eat something
---- !u!114 &114739589882983886
+--- !u!114 &114535230379106920
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -199,7 +199,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1585476363553424}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d7488346fcee5fe4b8e8f14f4a861a2b, type: 3}
+  m_Script: {fileID: 11500000, guid: b8eb9f54028ede64b8160470bda0ac4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &114942660336791488
@@ -234,7 +234,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Talk to someone
+  m_Text: "Claire\r Zandifar\r"
 --- !u!222 &222196589144098996
 CanvasRenderer:
   m_ObjectHideFlags: 1
