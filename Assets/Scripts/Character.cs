@@ -20,7 +20,7 @@ public class Character{
 
     int _roomLocation;
 
-    public Character(int ID, string firstName, string lastName, int gender, int age, int height, int weight, int[] traits, int[] goals, int[] skills, int[][] relationships){
+    public Character(int ID, string firstName, string lastName, int gender, int age, int height, int weight, int[] traits, int[] goals, int[] skills){
         _ID = ID;
         _firstName = firstName;
         _lastName = lastName;
@@ -32,13 +32,14 @@ public class Character{
         _goals = goals;
         _skills = skills;
         _relationship = 50;
-        _relationships = relationships;
+        _relationships = new int[1][];
         _roomLocation = -1;
     }
 
     public Character(){
         _roomLocation = -1;
         _ID = 0;
+        _relationships = new int[1][];
         _relationship = 50;
     }
 

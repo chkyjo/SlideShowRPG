@@ -24,6 +24,8 @@ public class SettingManager : MonoBehaviour{
     int second;
     int minute;
     int hour;
+    float timeScale;
+    bool timePause;
 
     public int currentRoom;
 
@@ -35,8 +37,9 @@ public class SettingManager : MonoBehaviour{
         startTime = -10;
         timeUntilWeatherChange = 0;
         currentRoom = 0;
-        minute = 44;
+        minute = 45;
         hour = 6;
+        timeScale = 1;
         roomObserved = 0;
         StartCoroutine(TimeUpdate());
     }
@@ -97,43 +100,55 @@ public class SettingManager : MonoBehaviour{
 
     IEnumerator TimeUpdate(){
         while(true){
-            second = (int)Time.time;
-            second %= 60;
-            if (second == 0){
-                minute++;
+            if (timePause == false){
+                ++second;
+
+                if (second >= 60)
+                {
+                    second = 0;
+                    minute++;
+                }
+
+                if (minute >= 60)
+                {
+                    minute = 0;
+                    hour++;
+                }
+
+                if (hour >= 24)
+                {
+                    hour = 0;
+                }
+
+                if (hour < 10)
+                {
+                    timeStatus.text = "0" + hour.ToString();
+                }
+                else
+                {
+                    timeStatus.text = hour.ToString();
+                }
+
+                if (minute < 10)
+                {
+                    timeStatus.text += ":0" + minute.ToString();
+                }
+                else
+                {
+                    timeStatus.text += ":" + minute.ToString();
+                }
+
+                if (second < 10)
+                {
+                    timeStatus.text += ":0" + second.ToString();
+                }
+                else
+                {
+                    timeStatus.text += ":" + second.ToString();
+                }
             }
 
-            if(minute >= 60){
-                minute = 0;
-                hour++;
-            }
-
-            if(hour >= 24){
-                hour = 0;
-            }
-
-            if(hour < 10){
-                timeStatus.text = "0" + hour.ToString();
-            }
-            else{
-                timeStatus.text = hour.ToString();
-            }
-
-            if(minute < 10){
-                timeStatus.text += ":0" + minute.ToString();
-            }
-            else{
-                timeStatus.text += ":" + minute.ToString();
-            }
-
-            if(second < 10){
-                timeStatus.text += ":0" + second.ToString();
-            }
-            else{
-                timeStatus.text += ":" + second.ToString();
-            }
-
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(timeScale);
         }
     }
 
@@ -155,12 +170,18 @@ public class SettingManager : MonoBehaviour{
         }
     }
 
+    public void SetCharactersInSetting(Character[] characters){
+        charactersInSetting.RemoveRange(0, charactersInSetting.Count);
+        numCharactersInSetting = characters.Length;
+        for (int i = 0; i < numCharactersInSetting; i++){
+            charactersInSetting.Add(characters[i]);
+        }
+    }
+
     public void AddCharactersToSetting(Character[] characters){
         numCharactersInSetting = characters.Length;
         for(int i = 0; i < numCharactersInSetting; i++){
-
             charactersInSetting.Add(characters[i]);
-
         }
     }
 
@@ -195,6 +216,11 @@ public class SettingManager : MonoBehaviour{
                 hour = 0;
             }
         }
+    }
+
+    public void SetTimeScale(float scale)
+    {
+        timeScale = scale;
     }
 
     public void StopTime(){

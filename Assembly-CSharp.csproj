@@ -59,6 +59,7 @@
      <Compile Include="Assets\Scripts\Character.cs" />
      <Compile Include="Assets\Scripts\CharactersManager.cs" />
      <Compile Include="Assets\Scripts\DecisionManager.cs" />
+     <Compile Include="Assets\Scripts\DialogueAction.cs" />
      <Compile Include="Assets\Scripts\EatAction.cs" />
      <Compile Include="Assets\Scripts\Food.cs" />
      <Compile Include="Assets\Scripts\GameManager.cs" />
@@ -121,6 +122,7 @@
      <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Surface.shader" />
      <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF.shader" />
      <None Include="Assets\TextFiles\WeaponItemList.txt" />
+     <None Include="Assets\TextFiles\ScriptedCharacterNames.txt" />
      <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Mobile Overlay.shader" />
      <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro_Properties.cginc" />
      <None Include="Assets\TextFiles\FoodItemList.txt" />
@@ -138,6 +140,7 @@
      <None Include="Assets\TextMesh Pro\Examples &amp; Extras\Fonts\LiberationSans - OFL.txt" />
      <None Include="Assets\TextMesh Pro\Examples &amp; Extras\Fonts\Bangers - OFL.txt" />
      <None Include="Assets\TextFiles\ListOfTraits.txt" />
+     <None Include="Assets\TextFiles\ScriptedTraits.txt" />
      <None Include="Assets\TextFiles\FemaleFirstNames.txt" />
      <None Include="Assets\TextFiles\ListOfSkills.txt" />
      <None Include="Assets\TextFiles\LastNameList.txt" />

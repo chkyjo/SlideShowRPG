@@ -44,6 +44,9 @@ public class DecisionManager : MonoBehaviour {
     public GameObject characterInfoPanel;
     public Slider relationshipSlider;
     public GameObject dialogueOptionsPanel;
+    public GameObject characterResponse;
+    public GameObject playerResponse;
+    public GameObject dialoguePanel;
 
     public GameObject eatingBackgroundPanel;
     public Text caloriesConsumedStatus;
@@ -314,17 +317,18 @@ public class DecisionManager : MonoBehaviour {
     IEnumerator EatMeal(){
 
         int startingCalories = playerManager.GetComponent<PlayerManager>().calories;
-        //settingManager.GetComponent<SettingManager>().StopTime();
 
         while (eatingMeal == 1){
+
+            settingManager.GetComponent<SettingManager>().SetTimeScale(0.083f);
 
             playerManager.GetComponent<PlayerManager>().calories++;
 
             caloriesConsumedStatus.text = (playerManager.GetComponent<PlayerManager>().calories - startingCalories).ToString() + " calories";
 
-            if ((playerManager.GetComponent<PlayerManager>().calories - startingCalories) % 50 == 0){
-                settingManager.GetComponent<SettingManager>().AddTime(1);
-            }
+            //if ((playerManager.GetComponent<PlayerManager>().calories - startingCalories) % 50 == 0){
+            //    settingManager.GetComponent<SettingManager>().AddTime(1);
+            //}
 
             playerManager.GetComponent<PlayerManager>().UpdateCalories();
 
@@ -335,7 +339,7 @@ public class DecisionManager : MonoBehaviour {
 
     public void StopEatingMeal(){
         eatingMeal = 0;
-        settingManager.GetComponent<SettingManager>().StartTime();
+        settingManager.GetComponent<SettingManager>().SetTimeScale(1f);
     }
 
     
@@ -369,9 +373,10 @@ public class DecisionManager : MonoBehaviour {
     //called when user selects the character to talk to
     public void TalkTo(int ID){
 
+        //set the conversation panel to active and get the character being talked to
         conversationBackgroundPanel.SetActive(true);
         Character talkingTo = characterManager.GetComponent<CharactersManager>().GetCharacter(ID);
-
+        //update character info panel with all characters info
         characterInfoPanel.GetComponentInChildren<Text>().text = talkingTo.GetFirstName() + " " + talkingTo.GetLastName();
         for (int i = 1; i < 6; i++) {
             characterInfoPanel.GetComponentsInChildren<Text>()[i].text = characterManager.GetComponent<CharactersManager>().GetTrait(talkingTo.GetTraits()[i-1]);
@@ -384,11 +389,35 @@ public class DecisionManager : MonoBehaviour {
         }
         relationshipSlider.value = talkingTo.GetRelationship();
 
+        //Add greeting from the character
+        characterResponse.GetComponentsInChildren<Text>()[0].text = "Hello child";
+        var charResponse = GameObject.Instantiate(characterResponse);
+        charResponse.transform.SetParent(dialoguePanel.transform);
+
+        //clear previous dialogue options
+        for(int i = 0; i < dialogueOptionsPanel.transform.childCount; i++){
+            Destroy(dialogueOptionsPanel.transform.GetChild(i).gameObject);
+        }
+
+        //add dialogue options
         dialogueDecisionObject.GetComponentsInChildren<Text>()[1].text = "Ask about current events";
+        dialogueDecisionObject.GetComponent<DialogueAction>().dialogueMessage = "Anything interesting going on?";
         var dialogueObj = GameObject.Instantiate(dialogueDecisionObject);
         dialogueObj.transform.SetParent(dialogueOptionsPanel.transform);
 
+        dialogueDecisionObject.GetComponentsInChildren<Text>()[1].text = "Ask about the weather";
+        dialogueDecisionObject.GetComponent<DialogueAction>().dialogueMessage = "How's the weather?";
+        dialogueObj = GameObject.Instantiate(dialogueDecisionObject);
+        dialogueObj.transform.SetParent(dialogueOptionsPanel.transform);
+
         RefreshDecisionList();
+    }
+
+    //called when the user selects from the dialogue options
+    public void MakeDialogueChoice(string message){
+        playerResponse.GetComponentInChildren<Text>().text = message;
+        var response = GameObject.Instantiate(playerResponse);
+        response.transform.SetParent(dialoguePanel.transform);
     }
 
     //called when user completes the selections for an action
@@ -438,7 +467,7 @@ public class DecisionManager : MonoBehaviour {
         settingManager.GetComponent<SettingManager>().currentRoom = nextRoomID;
         //find the characters in the room and update the setting manager
         Character[] characters = characterManager.GetComponent<CharactersManager>().GetCharactersInRoom(nextRoomID);
-        settingManager.GetComponent<SettingManager>().AddCharactersToSetting(characters);
+        settingManager.GetComponent<SettingManager>().SetCharactersInSetting(characters);
         //update the decision list
         RefreshDecisionList();
 
