@@ -51,7 +51,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\SceneLoader.cs" />
      <Compile Include="Assets\Scripts\AnimationComplete.cs" />
      <Compile Include="Assets\Scripts\Armor.cs" />
      <Compile Include="Assets\Scripts\AttackAction.cs" />
@@ -72,6 +71,7 @@
      <Compile Include="Assets\Scripts\PlayerManager.cs" />
      <Compile Include="Assets\Scripts\Room.cs" />
      <Compile Include="Assets\Scripts\RoomManager.cs" />
+     <Compile Include="Assets\Scripts\SceneLoader.cs" />
      <Compile Include="Assets\Scripts\SettingManager.cs" />
      <Compile Include="Assets\Scripts\TalkOption.cs" />
      <Compile Include="Assets\Scripts\TalkToOption.cs" />

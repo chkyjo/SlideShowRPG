@@ -98,6 +98,29 @@ public class SettingManager : MonoBehaviour{
         startTime = Time.time;
     }
 
+    public string GetWeather(){
+        if(weather == 0)
+        {
+            return "rainy";
+        }else if(weather == 1)
+        {
+            return "snowy";
+        }else if(weather == 2)
+        {
+            return "sunny";
+        }else if(weather == 3)
+        {
+            return "misty";
+        }else if(weather == 4)
+        {
+            return "Windy";
+        }
+        else
+        {
+            return "bleak";
+        }
+    }
+
     IEnumerator TimeUpdate(){
         while(true){
             if (timePause == false){
@@ -221,14 +244,6 @@ public class SettingManager : MonoBehaviour{
     public void SetTimeScale(float scale)
     {
         timeScale = scale;
-    }
-
-    public void StopTime(){
-        Time.timeScale = 0;
-    }
-
-    public void StartTime(){
-        Time.timeScale = 1;
     }
 
 }

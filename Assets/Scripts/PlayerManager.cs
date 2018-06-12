@@ -10,9 +10,12 @@ public class PlayerManager : MonoBehaviour {
 
     public int health;
     public int calories;
+    public int age;
+    public string name;
 
 	// Use this for initialization
 	void Start () {
+        age = 9;
         health = 76;
         healthBar.value = health;
         calories = 284;

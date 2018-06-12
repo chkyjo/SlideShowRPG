@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Character{
+public class Character {
 
     int _ID;
     string _firstName;
@@ -18,9 +18,11 @@ public class Character{
     int[][] _relationships; //how they feel about others
     int _relationship; //how they feel about you
 
+    int[] _playerKnowledge;
+
     int _roomLocation;
 
-    public Character(int ID, string firstName, string lastName, int gender, int age, int height, int weight, int[] traits, int[] goals, int[] skills){
+    public Character(int ID, string firstName, string lastName, int gender, int age, int height, int weight, int[] traits, int[] goals, int[] skills) {
         _ID = ID;
         _firstName = firstName;
         _lastName = lastName;
@@ -34,89 +36,98 @@ public class Character{
         _relationship = 50;
         _relationships = new int[1][];
         _roomLocation = -1;
+        _playerKnowledge = new int[15];
     }
 
-    public Character(){
+    public Character() {
         _roomLocation = -1;
         _ID = 0;
         _relationships = new int[1][];
         _relationship = 50;
+        _playerKnowledge = new int[15];
     }
 
-    public int GetID(){
+    public int GetID() {
         return _ID;
     }
-    public string GetFirstName(){
+    public string GetFirstName() {
         return _firstName;
     }
-    public string GetLastName(){
+    public string GetLastName() {
         return _lastName;
     }
-    public int GetGender(){
+    public int GetGender() {
         return _gender;
     }
-    public int GetAge(){
+    public int GetAge() {
         return _age;
     }
-    public int GetHeight(){
+    public int GetHeight() {
         return _height;
     }
-    public int GetWeight(){
+    public int GetWeight() {
         return _weight;
     }
-    public int GetLocation(){
+    public int GetLocation() {
         return _roomLocation;
     }
 
-    public int[] GetTraits(){
+    public int[] GetTraits() {
         return _traits;
     }
-    public int[] GetGoals(){
+    public int[] GetGoals() {
         return _goals;
     }
-    public int[] GetSkills(){
+    public int[] GetSkills() {
         return _skills;
     }
-    public int[][] GetRelationships(){
+    public int[][] GetRelationships() {
         return _relationships;
     }
-    public int GetRelationship(){
+    public int GetRelationship() {
         return _relationship;
     }
+    public int[] GetPlayerKnowledge()
+    {
+        return _playerKnowledge;
+    }
 
-    public void SetID(int ID){
+    public void SetID(int ID) {
         _ID = ID;
     }
-    public void SetFirstName(string firstName){
+    public void SetFirstName(string firstName) {
         _firstName = firstName;
     }
-    public void SetLastName(string lastName){
+    public void SetLastName(string lastName) {
         _lastName = lastName;
     }
-    public void SetGender(int gender){
+    public void SetGender(int gender) {
         _gender = gender;
     }
-    public void SetAge(int age){
+    public void SetAge(int age) {
         _age = age;
     }
-    public void SetHeight(int height){
+    public void SetHeight(int height) {
         _height = height;
     }
-    public void SetWeight(int weight){
+    public void SetWeight(int weight) {
         _weight = weight;
     }
 
-    public void SetTraits(int[] traits){
+    public void SetTraits(int[] traits) {
         _traits = traits;
     }
-    public void SetGoals(int[] goals){
+    public void SetGoals(int[] goals) {
         _goals = goals;
     }
-    public void SetSkills(int[] skills){
+    public void SetSkills(int[] skills) {
         _skills = skills;
     }
-    public void SetRelationships(int[][] relationships){
+    public void SetRelationships(int[][] relationships) {
         _relationships = relationships;
+    }
+    public void SetPlayerKnowledge(int index){
+        _playerKnowledge[index] = 1;
     }
 
     public void SetLocation(int location){

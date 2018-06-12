@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class DialogueAction : MonoBehaviour {
 
     public string dialogueMessage;
+    public int messageID;
 
 	// Use this for initialization
 	void Start () {
@@ -18,6 +19,6 @@ public class DialogueAction : MonoBehaviour {
 	}
 
     public void MakeDialogue(){
-        GameObject.Find("DecisionManager").GetComponent<DecisionManager>().MakeDialogueChoice(dialogueMessage);
+        GameObject.Find("DecisionManager").GetComponent<DecisionManager>().MakeDialogueChoice(dialogueMessage, messageID);
     }
 }
