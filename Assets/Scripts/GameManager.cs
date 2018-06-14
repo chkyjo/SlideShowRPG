@@ -6,6 +6,7 @@ public class GameManager : MonoBehaviour {
     public GameObject deletePromptPanel;
     public GameObject itemsPanel;
     public GameObject inventoryManager;
+    public GameObject playerManager;
     public Button weaponButton;
     public Button armorButton;
     public Button foodButton;
@@ -16,6 +17,10 @@ public class GameManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+        playerManager = GameObject.FindWithTag("PlayerManager");
+        playerManager.GetComponent<PlayerManager>().GrabHealthBars();
+        playerManager.GetComponent<PlayerManager>().UpdateHealth();
+        playerManager.GetComponent<PlayerManager>().UpdateCalories();
         itemsOnDisplay = 0;
     }
 	

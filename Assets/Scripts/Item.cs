@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class Item : MonoBehaviour {
 
-    //public GameObject inventoryManager;
+    public int ID;
 
 	// Use this for initialization
 	void Start () {
@@ -17,17 +17,15 @@ public class Item : MonoBehaviour {
 		
 	}
 
-    public void PromptDelete()
-    {
+    public void PromptDelete(){
         GameObject.Find("GameManager").GetComponent<GameManager>().DeleteItemPrompt(this.GetComponentInChildren<Text>().text);
     }
 
-    public void DisableItemButtons()
-    {
+    public void DisableItemButtons(){
         GameObject.Find("GameManager").GetComponent<GameManager>().DisableItemButtons();
     }
 
     public void EatFoodItem(){
-        GameObject.Find("InventoryManager").GetComponent<Inventory>().EatFoodItem(this.gameObject.GetComponentInChildren<Text>().text);
+        GameObject.Find("InventoryManager").GetComponent<Inventory>().EatFoodItem(ID);
     }
 }

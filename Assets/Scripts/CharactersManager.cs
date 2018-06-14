@@ -2,11 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.UI;
 
 public class CharactersManager : MonoBehaviour {
 
     List<Character> completeListOfCharacters = new List<Character>();
     List<Character> scriptedCharacters = new List<Character>();
+
+    public GameObject characterInfoPanel;
+    public Slider relationshipSlider;
 
     public TextAsset maleFirstNameListTextFile;
     public TextAsset femaleFirstNameListTextFile;
@@ -186,6 +190,40 @@ public class CharactersManager : MonoBehaviour {
     }
     public string GetGoal(int index){
         return completeListOfGoals[index];
+    }
+
+    public void UpdateInfoPanel(int characterID) {
+
+        Character talkingTo = GetCharacter(characterID);
+
+        //update character info panel with all characters info
+        characterInfoPanel.GetComponentInChildren<Text>().text = talkingTo.GetFirstName() + " " + talkingTo.GetLastName();
+        int[] playerKnowledge = talkingTo.GetPlayerKnowledge();
+        for (int i = 1; i < 6; i++) {
+            if (playerKnowledge[i - 1] == 1) {
+                characterInfoPanel.GetComponentsInChildren<Text>()[i].text = GetTrait(talkingTo.GetTraits()[i - 1]);
+            }
+            else {
+                characterInfoPanel.GetComponentsInChildren<Text>()[i].text = "???";
+            }
+        }
+        for (int i = 6; i < 11; i++) {
+            if (playerKnowledge[i - 1] == 1) {
+                characterInfoPanel.GetComponentsInChildren<Text>()[i].text = GetSkill(talkingTo.GetSkills()[i - 6]);
+            }
+            else {
+                characterInfoPanel.GetComponentsInChildren<Text>()[i].text = "???";
+            }
+        }
+        for (int i = 11; i < 16; i++) {
+            if (playerKnowledge[i - 1] == 1) {
+                characterInfoPanel.GetComponentsInChildren<Text>()[i].text = GetGoal(talkingTo.GetSkills()[i - 11]);
+            }
+            else {
+                characterInfoPanel.GetComponentsInChildren<Text>()[i].text = "???";
+            }
+        }
+        relationshipSlider.value = talkingTo.GetRelationship();
     }
 
     public Character GetRandomCharacter(){

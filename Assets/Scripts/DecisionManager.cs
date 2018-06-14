@@ -36,7 +36,6 @@ public class DecisionManager : MonoBehaviour {
     public GameObject sleepWaitBackgroundPanel;
     public GameObject sitWaitBackgroundPanel;
     
-
     public Slider sitSlider;
     public Text sitSliderValueStatus;
 
@@ -44,12 +43,8 @@ public class DecisionManager : MonoBehaviour {
     public GameObject characterInfoPanel;
     public Slider relationshipSlider;
     public GameObject dialogueOptionsPanel;
-    public GameObject characterResponse;
-    public GameObject playerResponse;
-    public GameObject dialoguePanel;
     public Scrollbar converstationScrollBar;
     public GameObject conversationScroll;
-    public RectTransform conScrollRectTransform;
 
     public GameObject eatingBackgroundPanel;
     public Text caloriesConsumedStatus;
@@ -57,10 +52,12 @@ public class DecisionManager : MonoBehaviour {
 
     public Text mainText;
     int itemsInDecisionPanel;
+    public float newHeight = 0;
 
     // Use this for initialization
     void Start() {
 
+        playerManager = GameObject.Find("PlayerManager");
         itemsInDecisionPanel = 0;
         FillDecisionPanel();
 
@@ -399,7 +396,7 @@ public class DecisionManager : MonoBehaviour {
 
     }
 
-    //called when user selects the character to talk to
+    //called when user selects the character to talk to, only called once the conversation is initiated
     public void TalkTo(int characterID){
 
         //set the conversation panel to active and get the character being talked to
@@ -411,10 +408,12 @@ public class DecisionManager : MonoBehaviour {
             Destroy(conversationScroll.transform.GetChild(i).gameObject);
         }
 
-        //Add greeting from the character, done before adding to info panel to update player knowledge
-        characterResponse.GetComponentsInChildren<Text>()[0].text = GetGreeting(characterID);
-        var charResponse = GameObject.Instantiate(characterResponse);
-        charResponse.transform.SetParent(conversationScroll.transform, false);
+        //reset scrollbar and scroll area
+        converstationScrollBar.value = 0;
+        conversationScroll.GetComponent<RectTransform>().offsetMax = new Vector2(-15, 0);
+
+        //Add greeting from the character, done before adding to info panel to update player knowledge, since greeting tells player about characters personality
+        StartCoroutine(GameObject.FindWithTag("ConversationManager").GetComponent<ConversationManager>().DisplayGreeting(characterID));
 
         //update character info panel with all characters info
         characterInfoPanel.GetComponentInChildren<Text>().text = talkingTo.GetFirstName() + " " + talkingTo.GetLastName();
@@ -445,226 +444,14 @@ public class DecisionManager : MonoBehaviour {
         }
         relationshipSlider.value = talkingTo.GetRelationship();
 
-        //reset scrollbar and scroll area
-        converstationScrollBar.value = 0;
-        conScrollRectTransform.offsetMax = new Vector2(-15, 0);
-
         //clear previous dialogue options
         for(int i = 0; i < dialogueOptionsPanel.transform.childCount; i++){
             Destroy(dialogueOptionsPanel.transform.GetChild(i).gameObject);
         }
 
-        //add dialogue options
-        AddDialogueOption(0);
-        AddDialogueOption(1);
-
         RefreshDecisionList();
     }
-
-    //called when the user selects from the dialogue options
-    public void MakeDialogueChoice(string message, int dialogueID){
-        playerResponse.GetComponentInChildren<Text>().text = message;
-        var response = GameObject.Instantiate(playerResponse);
-        response.transform.SetParent(conversationScroll.transform, false);
-
-        //add room if necessary
-        ExpandConversationScroll();
-
-        //Generate characters response
-        if (dialogueID < 10000){
-            AskQuestion(dialogueID);
-        }
-        else{
-            MakeAComment(dialogueID);
-        }
-    }
-
-    public string GetGreeting(int characterID){
-        Character tempChar = characterManager.GetComponent<CharactersManager>().GetCharacter(characterID);
-        int[] traits = tempChar.GetTraits();
-        for(int i = 0; i < 5; i++) {
-            if (traits[i] == 0) {
-                tempChar.SetPlayerKnowledge(i);
-                return "Well helloooooo there!";
-            }
-            if (traits[i] == 1) {
-                tempChar.SetPlayerKnowledge(i);
-                return "Hello there Mr. inquisitive.";
-            }
-            if (traits[i] == 2) {
-                tempChar.SetPlayerKnowledge(i);
-                return "Haha! Fine day isn't it!";
-            }
-            if (traits[i] == 14) {
-                tempChar.SetPlayerKnowledge(i);
-                return "What do you want kid?";
-            }
-            if (traits[i] == 17) {
-                tempChar.SetPlayerKnowledge(i);
-                return "HEY!";
-            }
-            if (traits[i] == 19) {
-                tempChar.SetPlayerKnowledge(i);
-                return "Hello good sir!";
-            }
-            if (traits[i] == 25) {
-                tempChar.SetPlayerKnowledge(i);
-                return "...";
-            }
-        }
-        return "Hello child";
-    }
-
-    public void ExpandConversationScroll(){
-        int numItems = conversationScroll.transform.childCount;
-        if (numItems > 5)
-        {
-            int difference = numItems - 5;
-            conScrollRectTransform.offsetMax = new Vector2(-15, (difference * 30));
-        }
-        else
-        {//else reset
-            conScrollRectTransform.offsetMax = new Vector2(-15, 0);
-        }
-    }
-
-    public void MakeAComment(int commentID){
-
-        if (commentID == 0){//player commented on the characters skills
-
-        }
-
-    }
-
-    public void AskQuestion(int playerQuestion){
-        //clear dialogue options
-        for (int i = 0; i < dialogueOptionsPanel.transform.childCount; i++){
-            Destroy(dialogueOptionsPanel.transform.GetChild(i).gameObject);
-        }
-
-        if (playerQuestion == 0){//Player is asking about current events{
-            characterResponse.GetComponentsInChildren<Text>()[0].text = "What would you like to know?";
-            var charResponse = GameObject.Instantiate(characterResponse);
-            charResponse.transform.SetParent(conversationScroll.transform, false);
-
-            //add dialogue options
-            AddDialogueOption(2);//days events
-            AddDialogueOption(3);//protectors leaders
-
-        }
-        if (playerQuestion == 1){//Player is asking about the weather
-            string weather = settingManager.GetComponent<SettingManager>().GetWeather();
-            characterResponse.GetComponentsInChildren<Text>()[0].text = "It seams to be a bit " + weather + ". Might want to wear a coat.";
-            var charResponse = GameObject.Instantiate(characterResponse);
-            charResponse.transform.SetParent(conversationScroll.transform, false);
-
-            //add dialogue options
-            AddDialogueOption(0);//ask about current events
-            AddDialogueOption(1);//ask about weather
-        }
-        if (playerQuestion == 2){//if player asks about days events
-            characterResponse.GetComponentsInChildren<Text>()[0].text = "There will be a feast to celebrate the election of the new king.";
-            var charResponse = GameObject.Instantiate(characterResponse);
-            charResponse.transform.SetParent(conversationScroll.transform, false);
-
-            //add dialogue options
-            AddDialogueOption(0);
-            AddDialogueOption(1);
-        }
-        if (playerQuestion == 3) {//if player asks about leaders
-            characterResponse.GetComponentsInChildren<Text>()[0].text = "They are the true heroes of this land.";
-            var charResponse = GameObject.Instantiate(characterResponse);
-            charResponse.transform.SetParent(conversationScroll.transform, false);
-
-            //add dialogue options
-            AddDialogueOption(0);
-            AddDialogueOption(1);
-        }
-        if (playerQuestion == 4) {//if player asks about their rank
-            characterResponse.GetComponentsInChildren<Text>()[0].text = "When the lords deem you ready.";
-            var charResponse = GameObject.Instantiate(characterResponse);
-            charResponse.transform.SetParent(conversationScroll.transform, false);
-
-            //add dialogue options
-            AddDialogueOption(0);
-            AddDialogueOption(1);
-        }
-        if (playerQuestion == 5) {//if player asks about the new king
-            characterResponse.GetComponentsInChildren<Text>()[0].text = "She is no king.";
-            var charResponse = GameObject.Instantiate(characterResponse);
-            charResponse.transform.SetParent(conversationScroll.transform, false);
-
-            //add dialogue options
-            AddDialogueOption(0);
-            AddDialogueOption(1);
-        }
-        if (playerQuestion == 6) {//if player asks about the character
-            characterResponse.GetComponentsInChildren<Text>()[0].text = "Well, I am ...";
-            var charResponse = GameObject.Instantiate(characterResponse);
-            charResponse.transform.SetParent(conversationScroll.transform, false);
-
-            //add dialogue options
-            AddDialogueOption(0);
-            AddDialogueOption(1);
-        }
-
-    }
-
-    public void AddDialogueOption(int optionID){
-
-        GameObject dialogueObj;
-
-        if (optionID == 0){
-            dialogueDecisionObject.GetComponentsInChildren<Text>()[1].text = "Ask about current events";
-            dialogueDecisionObject.GetComponent<DialogueAction>().dialogueMessage = "Anything interesting going on?";
-            dialogueDecisionObject.GetComponent<DialogueAction>().messageID = 0;
-            dialogueObj = GameObject.Instantiate(dialogueDecisionObject);
-            dialogueObj.transform.SetParent(dialogueOptionsPanel.transform, false);
-        }
-        if (optionID == 1){
-            dialogueDecisionObject.GetComponentsInChildren<Text>()[1].text = "Ask about the weather";
-            dialogueDecisionObject.GetComponent<DialogueAction>().dialogueMessage = "How's the weather?";
-            dialogueDecisionObject.GetComponent<DialogueAction>().messageID = 1;
-            dialogueObj = GameObject.Instantiate(dialogueDecisionObject);
-            dialogueObj.transform.SetParent(dialogueOptionsPanel.transform, false);
-        }
-        if (optionID == 2){
-            dialogueDecisionObject.GetComponentsInChildren<Text>()[1].text = "Ask about the day";
-            dialogueDecisionObject.GetComponent<DialogueAction>().dialogueMessage = "What's the day going to be like?";
-            dialogueDecisionObject.GetComponent<DialogueAction>().messageID = 2;
-            dialogueObj = GameObject.Instantiate(dialogueDecisionObject);
-            dialogueObj.transform.SetParent(dialogueOptionsPanel.transform, false);
-        }
-        if (optionID == 3){
-            dialogueDecisionObject.GetComponentsInChildren<Text>()[1].text = "Ask about the leaders of the protectors";
-            dialogueDecisionObject.GetComponent<DialogueAction>().dialogueMessage = "Who's in command of The Protectors?";
-            dialogueDecisionObject.GetComponent<DialogueAction>().messageID = 3;
-            dialogueObj = GameObject.Instantiate(dialogueDecisionObject);
-            dialogueObj.transform.SetParent(dialogueOptionsPanel.transform, false);
-        }
-        if (optionID == 4){
-            dialogueDecisionObject.GetComponentsInChildren<Text>()[1].text = "Ask about your rank";
-            dialogueDecisionObject.GetComponent<DialogueAction>().dialogueMessage = "When will I become a protector?";
-            dialogueDecisionObject.GetComponent<DialogueAction>().messageID = 4;
-            dialogueObj = GameObject.Instantiate(dialogueDecisionObject);
-            dialogueObj.transform.SetParent(dialogueOptionsPanel.transform, false);
-        }
-        if (optionID == 5){
-            dialogueDecisionObject.GetComponentsInChildren<Text>()[1].text = "Ask about the new king";
-            dialogueDecisionObject.GetComponent<DialogueAction>().dialogueMessage = "What is the new king like?";
-            dialogueDecisionObject.GetComponent<DialogueAction>().messageID = 5;
-            dialogueObj = GameObject.Instantiate(dialogueDecisionObject);
-            dialogueObj.transform.SetParent(dialogueOptionsPanel.transform, false);
-        }
-        if (optionID == 6) {
-            dialogueDecisionObject.GetComponentsInChildren<Text>()[1].text = "Ask about them";
-            dialogueDecisionObject.GetComponent<DialogueAction>().dialogueMessage = "Tell me about yourself";
-            dialogueDecisionObject.GetComponent<DialogueAction>().messageID = 6;
-            dialogueObj = GameObject.Instantiate(dialogueDecisionObject);
-            dialogueObj.transform.SetParent(dialogueOptionsPanel.transform, false);
-        }
-
-    }
+    
 
     //called when user completes the selections for an action
     public void RefreshDecisionList(){
@@ -706,9 +493,9 @@ public class DecisionManager : MonoBehaviour {
     //called when user selects an exit option
     public void NextRoom(int nextRoomID, string leaveText){
 
-        settingManager.GetComponent<SettingManager>().roomObserved = 0;
         //update main text with the leaving dialogue from the current room to the selected room
         mainText.text = leaveText;
+        settingManager.GetComponent<SettingManager>().AddTime(1);
         //update the current room to the setting manager
         settingManager.GetComponent<SettingManager>().currentRoom = nextRoomID;
         //find the characters in the room and update the setting manager

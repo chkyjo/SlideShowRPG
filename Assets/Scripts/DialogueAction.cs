@@ -1,24 +1,18 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine;
 
 public class DialogueAction : MonoBehaviour {
 
     public string dialogueMessage;
     public int messageID;
-
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    public int characterID;
 
     public void MakeDialogue(){
-        GameObject.Find("DecisionManager").GetComponent<DecisionManager>().MakeDialogueChoice(dialogueMessage, messageID);
+        GameObject.Find("ConversationManager").GetComponent<ConversationManager>().DisplayDialogueChoice(dialogueMessage, messageID);
+        if (messageID < 10000) {
+            GameObject.Find("ConversationManager").GetComponent<ConversationManager>().CallDisplayResponse(messageID, characterID);
+        }
+        else {
+            GameObject.Find("ConversationManager").GetComponent<ConversationManager>().MakeAComment(messageID);
+        }
     }
 }

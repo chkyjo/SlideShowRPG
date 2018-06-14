@@ -21,10 +21,8 @@ public class Inventory : MonoBehaviour {
     private List<Armor> armorInventory = new List<Armor>();
     private List<Food> foodInventory = new List<Food>();
 
-    public GameObject testImage;
-
     public GameObject itemsPanel;
-    public GameObject itemScroller;
+    public GameObject itemScroll;
 
     public RectTransform scroll;
     public GameObject item;
@@ -76,7 +74,6 @@ public class Inventory : MonoBehaviour {
             quantity = Convert.ToInt16(splitLine[3]);
             weight = Convert.ToInt16(splitLine[4]);
             icon = Resources.Load(splitLine[1]) as Texture2D;
-            testImage.GetComponent<RawImage>().texture = icon;
             Weapon tempWeapon = new Weapon(ID, icon, splitLine[1], damage, quantity, weight);
             completeWeaponList.Add(tempWeapon);
         }
@@ -146,33 +143,28 @@ public class Inventory : MonoBehaviour {
     public void DisplayWeapons(){
 
         //clear the panel of previously displayed items
-        for (int i = 0; i < itemsInItemPanel; i++){
-            Destroy(itemScroller.transform.GetChild(i).gameObject);
+        for (int i = 0; i < itemScroll.transform.childCount; i++){
+            Destroy(itemScroll.transform.GetChild(i).gameObject);
         }
         //get the number of items to display and instantiate that many item objects
         int numWeapons = weaponInventory.Count;
         itemsInItemPanel = numWeapons;
         gameManager.GetComponent<GameManager>().itemsOnDisplay = numWeapons;
-        if (numWeapons != 0)
-        {
-            for (int i = 0; i < numWeapons; i++)
-            {
+        if (numWeapons != 0){
+            for (int i = 0; i < numWeapons; i++){
                 item.GetComponentInChildren<Text>().text = weaponInventory[i]._name;
 
                 Texture2D tex = weaponInventory[i].GetIcon();
-                if (tex != null)
-                {
-                    Debug.Log("Item not null");
+                if (tex != null){
                     item.GetComponentInChildren<RawImage>().texture = tex;
                 }
 
                 var newObj = GameObject.Instantiate(item);
-                newObj.transform.SetParent(itemScroller.transform, false);
+                newObj.transform.SetParent(itemScroll.transform, false);
             }
             //reset the scrollbar and resize the scroll to fit list
             scrollBar.value = 1;
-            if (itemsInItemPanel > 7)
-            {
+            if (itemsInItemPanel > 7){
                 int difference = itemsInItemPanel - 7;
                 scroll.offsetMin = new Vector2(scroll.offsetMin.x, -(difference * 50));
             }
@@ -181,35 +173,32 @@ public class Inventory : MonoBehaviour {
                 scroll.offsetMin = new Vector2(scroll.offsetMin.x, 0);
             }
         }
-        else
-        {
+        else{
             userFeedback.text = "No items to display";
             var alertText = GameObject.Instantiate(userFeedback);
-            alertText.transform.parent = itemScroller.transform;
+            alertText.transform.parent = itemScroll.transform;
         }
         
     }
 
     public void DisplayArmor(){
 
-        for (int i = 0; i < itemsInItemPanel; i++){
-            Destroy(itemScroller.transform.GetChild(i).gameObject);
+        for (int i = 0; i < itemScroll.transform.childCount; i++) {
+            Destroy(itemScroll.transform.GetChild(i).gameObject);
         }
 
         int numArmor = armorInventory.Count;
         itemsInItemPanel = numArmor;
         gameManager.GetComponent<GameManager>().itemsOnDisplay = numArmor;
-        if (numArmor != 0)
-        {
+        if (numArmor != 0){
             for (int i = 0; i < numArmor; i++){
                 item.GetComponentInChildren<Text>().text = armorInventory[i]._name;
                 Texture2D tex = armorInventory[i].GetIcon();
-                if (tex != null)
-                {
+                if (tex != null){
                     item.GetComponentInChildren<RawImage>().texture = tex;
                 }
                 var newObj = GameObject.Instantiate(item);
-                newObj.transform.SetParent(itemScroller.transform, false);
+                newObj.transform.SetParent(itemScroll.transform, false);
             }
 
             scrollBar.value = 1;
@@ -224,13 +213,13 @@ public class Inventory : MonoBehaviour {
         else{
             userFeedback.text = "No items to display";
             var alertText = GameObject.Instantiate(userFeedback);
-            alertText.transform.parent = itemScroller.transform;
+            alertText.transform.parent = itemScroll.transform;
         }
     }
 
     public void DisplayFood(){
-        for (int i = 0; i < itemsInItemPanel; i++){
-            Destroy(itemScroller.transform.GetChild(i).gameObject);
+        for (int i = 0; i < itemScroll.transform.childCount; i++) {
+            Destroy(itemScroll.transform.GetChild(i).gameObject);
         }
 
         int numFood = foodInventory.Count;
@@ -239,12 +228,13 @@ public class Inventory : MonoBehaviour {
         if (numFood != 0){
             for (int i = 0; i < numFood; i++){
                 foodInventoryItem.GetComponentInChildren<Text>().text = foodInventory[i]._name;
+                foodInventoryItem.GetComponent<Item>().ID = foodInventory[i]._ID;
                 Texture2D tex = foodInventory[i].GetIcon();
                 if (tex != null){
                     foodInventoryItem.GetComponentInChildren<RawImage>().texture = tex;
                 }
                 var newObj = GameObject.Instantiate(foodInventoryItem);
-                newObj.transform.SetParent(itemScroller.transform, false);
+                newObj.transform.SetParent(itemScroll.transform, false);
             }
             //reset scrollbar position
             scrollBar.value = 1;
@@ -260,41 +250,32 @@ public class Inventory : MonoBehaviour {
         else{
             userFeedback.text = "No items to display";
             var alertText = GameObject.Instantiate(userFeedback);
-            alertText.transform.parent = itemScroller.transform;
+            alertText.transform.parent = itemScroll.transform;
         }
     }
 
     //compares weapons to weapons; armor to armor; and food to food by comparing string names
-    bool IsEqual(Weapon weapon1, Weapon weapon2)
-    {
-        if (weapon1._name == weapon2._name)
-        {
+    bool IsEqual(Weapon weapon1, Weapon weapon2){
+        if (weapon1._name == weapon2._name){
             return true;
         }
-        else
-        {
+        else{
             return false;
         }
     }
-    bool IsEqual(Armor armor1, Armor armor2)
-    {
-        if(armor1._name == armor2._name)
-        {
+    bool IsEqual(Armor armor1, Armor armor2){
+        if(armor1._name == armor2._name){
             return true;
         }
-        else
-        {
+        else{
             return false;
         }
     }
-    bool IsEqual(Food food1, Food food2)
-    {
-        if (food1._name == food2._name)
-        {
+    bool IsEqual(Food food1, Food food2){
+        if (food1._name == food2._name){
             return true;
         }
-        else
-        {
+        else{
             return false;
         }
     }
@@ -306,8 +287,7 @@ public class Inventory : MonoBehaviour {
         Weapon weapon = completeWeaponList[ID];
         //if item is already in the list increment the quantity
         for (int i = 0; i < weaponInventory.Count; i++){
-            if (IsEqual(weapon, weaponInventory[i]))
-            {
+            if (IsEqual(weapon, weaponInventory[i])){
                 weaponInventory[i]._quantity++;
                 quantityIncreased = true;
                 break;
@@ -478,8 +458,7 @@ public class Inventory : MonoBehaviour {
         Debug.Log("Item was not found");
     }
 
-    public void ClickRemoveArmorItem(string name, int quantity)
-    {
+    public void ClickRemoveArmorItem(string name, int quantity){
 
         //if item is in the list
         for (int i = 0; i < armorInventory.Count; i++)
@@ -499,8 +478,7 @@ public class Inventory : MonoBehaviour {
         Debug.Log("Item was not found");
     }
 
-    public void ClickRemoveFoodItem(string name, int quantity)
-    {
+    public void ClickRemoveFoodItem(string name, int quantity){
 
         //if item is in the list
         for (int i = 0; i < foodInventory.Count; i++)
@@ -520,9 +498,12 @@ public class Inventory : MonoBehaviour {
         Debug.Log("Item was not found");
     }
 
-    public void EatFoodItem(string name){
-        DeleteFoodItem(name);
+    public void EatFoodItem(int ID){
+        GameObject playerManager = GameObject.Find("PlayerManager");
+        playerManager.GetComponent<PlayerManager>().calories += foodInventory[ID]._calories;
 
-        Debug.Log(name + " eaten!");
+        DeleteFoodItem(foodInventory[ID]._name);
+
+        playerManager.GetComponent<PlayerManager>().UpdateCalories();
     }
 }

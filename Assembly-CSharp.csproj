@@ -57,6 +57,7 @@
      <Compile Include="Assets\Scripts\AttackPersonAction.cs" />
      <Compile Include="Assets\Scripts\Character.cs" />
      <Compile Include="Assets\Scripts\CharactersManager.cs" />
+     <Compile Include="Assets\Scripts\ConversationManager.cs" />
      <Compile Include="Assets\Scripts\DecisionManager.cs" />
      <Compile Include="Assets\Scripts\DialogueAction.cs" />
      <Compile Include="Assets\Scripts\EatAction.cs" />

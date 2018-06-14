@@ -132,14 +132,16 @@ public class SettingManager : MonoBehaviour{
                     minute++;
                 }
 
-                if (minute >= 60)
-                {
+                if (minute >= 60){
+                    GameObject.FindWithTag("PlayerManager").GetComponent<PlayerManager>().calories--;
+                    GameObject.FindWithTag("PlayerManager").GetComponent<PlayerManager>().UpdateCalories();
                     minute = 0;
                     hour++;
                 }
 
-                if (hour >= 24)
-                {
+                if (hour >= 24){
+                    GameObject.FindWithTag("PlayerManager").GetComponent<PlayerManager>().health++;
+                    GameObject.FindWithTag("PlayerManager").GetComponent<PlayerManager>().UpdateHealth();
                     hour = 0;
                 }
 
@@ -232,10 +234,15 @@ public class SettingManager : MonoBehaviour{
     public void AddTime(int mins){
         minute += mins;
 
-        if(minute >= 60){
+        GameObject.FindWithTag("PlayerManager").GetComponent<PlayerManager>().calories -= mins;
+        GameObject.FindWithTag("PlayerManager").GetComponent<PlayerManager>().UpdateCalories();
+
+        if (minute >= 60){
             minute -= 60;
             hour++;
-            if(hour >= 24){
+            GameObject.FindWithTag("PlayerManager").GetComponent<PlayerManager>().health++;
+            GameObject.FindWithTag("PlayerManager").GetComponent<PlayerManager>().UpdateHealth();
+            if (hour >= 24){
                 hour = 0;
             }
         }
