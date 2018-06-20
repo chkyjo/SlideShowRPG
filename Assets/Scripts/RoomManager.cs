@@ -11,12 +11,6 @@ public class RoomManager : MonoBehaviour {
     int[] publicLocations = new int[10];
 
     void Awake() {
-        
-
-    }
-
-    // Use this for initialization
-    void Start () {
         int[] options = new int[1] { 5 };
         string observationText = "You look around your room. Your only possessions were already on your person. " +
             "In the corner lay a bed of fur. Stone bricks covered every other surface. There was no door " +
@@ -27,7 +21,7 @@ public class RoomManager : MonoBehaviour {
         leaveTexts[0] = "You walk up the stairs and find yourself in a large courtyard.";
         int[] connectedRooms = new int[1];
         connectedRooms[0] = 1;
-        rooms[0] = new Room(1, observationText, 1, options, exitTexts, leaveTexts, connectedRooms);
+        rooms[0] = new Room("Bedchamber", 1, observationText, 1, options, exitTexts, leaveTexts, connectedRooms);
 
         options = new int[1] { 6 };
         observationText = "The courtyard was a perfect square surrounded by pillars holding up a stone ceiling. Inside the " +
@@ -42,7 +36,7 @@ public class RoomManager : MonoBehaviour {
         connectedRooms = new int[2];
         connectedRooms[0] = 2;
         connectedRooms[1] = 0;
-        rooms[1] = new Room(1, observationText, 2, options, exitTexts, leaveTexts, connectedRooms);
+        rooms[1] = new Room("Courtyard", 1, observationText, 2, options, exitTexts, leaveTexts, connectedRooms);
 
         options = new int[2] { 6, 7 };
         observationText = "Candles flickered and lit up every inch of the giant room. Large beams of sunlight shot diagonally down " +
@@ -57,7 +51,7 @@ public class RoomManager : MonoBehaviour {
         connectedRooms = new int[2];
         connectedRooms[0] = 3;
         connectedRooms[1] = 1;
-        rooms[2] = new Room(2, observationText, 2, options, exitTexts, leaveTexts, connectedRooms);
+        rooms[2] = new Room("Main Hall", 2, observationText, 2, options, exitTexts, leaveTexts, connectedRooms);
 
         options = new int[0] { };
         observationText = "A sloped, curvy walkway led down from the castle to a lower open field. Men, woman, and children were running and parrying " +
@@ -69,10 +63,16 @@ public class RoomManager : MonoBehaviour {
         leaveTexts[0] = "You walk over to the main entrance and pass two guards on your way in. You are hit with the soft candle light and the smell of food.";
         connectedRooms = new int[1];
         connectedRooms[0] = 2;
-        rooms[3] = new Room(0, observationText, 1, options, exitTexts, leaveTexts, connectedRooms);
+        rooms[3] = new Room("Training Grounds", 0, observationText, 1, options, exitTexts, leaveTexts, connectedRooms);
 
         publicLocations[0] = 1;
         publicLocations[1] = 2;
+
+    }
+
+    // Use this for initialization
+    void Start () {
+        
     }
 	
 	// Update is called once per frame

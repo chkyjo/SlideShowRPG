@@ -17,10 +17,6 @@ public class GameManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        playerManager = GameObject.FindWithTag("PlayerManager");
-        playerManager.GetComponent<PlayerManager>().GrabHealthBars();
-        playerManager.GetComponent<PlayerManager>().UpdateHealth();
-        playerManager.GetComponent<PlayerManager>().UpdateCalories();
         itemsOnDisplay = 0;
     }
 	
@@ -36,8 +32,7 @@ public class GameManager : MonoBehaviour {
     }
 
     public void DeleteItemPrompt(string name){
-        for(int i = 0; i < itemsOnDisplay; i++)
-        {
+        for(int i = 0; i < itemsOnDisplay; i++){
             itemsPanel.transform.GetChild(0).GetChild(0).GetChild(i).GetComponentInChildren<Button>().interactable = false;
         }
 
@@ -60,8 +55,7 @@ public class GameManager : MonoBehaviour {
 
     }
     public void EnableItemButtons(){
-        for (int i = 0; i < itemsOnDisplay; i++)
-        {
+        for (int i = 0; i < itemsOnDisplay; i++){
             itemsPanel.transform.GetChild(0).GetChild(0).GetChild(i).GetComponentInChildren<Button>().interactable = true;
         }
 
@@ -70,9 +64,12 @@ public class GameManager : MonoBehaviour {
         foodButton.interactable = true;
     }
 
-    public void DisableDeletePrompt()
-    {
+    public void DisableDeletePrompt(){
         deletePromptPanel.SetActive(false);
+    }
+
+    public void Quit() {
+        Application.Quit();
     }
 
 }

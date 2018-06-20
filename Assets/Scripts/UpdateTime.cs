@@ -18,11 +18,11 @@ public class UpdateTime : MonoBehaviour {
 	}
 
     private void AddTime(){
-        settingManager.GetComponent<SettingManager>().AddTime((int)slider.value);
+        settingManager.GetComponent<SettingManager>().AddTime((int)slider.value, 0);
     }
 
     private void AddSitTime(){
-        settingManager.GetComponent<SettingManager>().AddTime((int)sitSlider.value);
+        settingManager.GetComponent<SettingManager>().AddTime((int)sitSlider.value, 0);
     }
 
     private void SetInactive(){

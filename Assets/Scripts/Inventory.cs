@@ -48,8 +48,6 @@ public class Inventory : MonoBehaviour {
         AddFoodToInventory(5);
         AddFoodToInventory(6);
 
-        Debug.Log(foodInventory.Count);
-
         //zero items on display
         itemsInItemPanel = 0;
 
@@ -120,23 +118,19 @@ public class Inventory : MonoBehaviour {
         return counts;
     }
 
-    public int GetFoodCount()
-    {
+    public int GetFoodCount(){
         return foodInventory.Count;
     }
 
-    public Weapon GetWeapon(int i)
-    {
+    public Weapon GetWeapon(int i){
         return weaponInventory[i];
     }
 
-    public Armor GetArmor(int i)
-    {
+    public Armor GetArmor(int i){
         return armorInventory[i];
     }
 
-    public Food GetFood(int i)
-    {
+    public Food GetFood(int i){
         return foodInventory[i];
     }
 
@@ -176,7 +170,7 @@ public class Inventory : MonoBehaviour {
         else{
             userFeedback.text = "No items to display";
             var alertText = GameObject.Instantiate(userFeedback);
-            alertText.transform.parent = itemScroll.transform;
+            alertText.transform.SetParent(itemScroll.transform, false);
         }
         
     }
@@ -213,7 +207,7 @@ public class Inventory : MonoBehaviour {
         else{
             userFeedback.text = "No items to display";
             var alertText = GameObject.Instantiate(userFeedback);
-            alertText.transform.parent = itemScroll.transform;
+            alertText.transform.SetParent(itemScroll.transform, false);
         }
     }
 
@@ -250,7 +244,7 @@ public class Inventory : MonoBehaviour {
         else{
             userFeedback.text = "No items to display";
             var alertText = GameObject.Instantiate(userFeedback);
-            alertText.transform.parent = itemScroll.transform;
+            alertText.transform.SetParent(itemScroll.transform, false);
         }
     }
 
@@ -438,6 +432,24 @@ public class Inventory : MonoBehaviour {
         }
     }
 
+    public void DeleteFoodItem(int ID) {
+        for (int i = 0; i < foodInventory.Count; i++) {
+            if (foodInventory[i]._ID == ID) {
+                foodInventory.RemoveAt(i);
+                DisplayFood();
+            }
+        }
+    }
+
+    public Food GetFoodByID(int ID) {
+        for (int i = 0; i < foodInventory.Count; i++) {
+            if (foodInventory[i]._ID == ID) {
+                return foodInventory[i];
+            }
+        }
+        return foodInventory[0];
+    }
+
     public void ClickRemoveWeaponItem(string name, int quantity){
 
         //if item is in the list
@@ -500,10 +512,9 @@ public class Inventory : MonoBehaviour {
 
     public void EatFoodItem(int ID){
         GameObject playerManager = GameObject.Find("PlayerManager");
-        playerManager.GetComponent<PlayerManager>().calories += foodInventory[ID]._calories;
-
-        DeleteFoodItem(foodInventory[ID]._name);
-
+        Food tempFood = GetFoodByID(ID);
+        playerManager.GetComponent<PlayerManager>().calories += tempFood._calories;
+        DeleteFoodItem(ID);
         playerManager.GetComponent<PlayerManager>().UpdateCalories();
     }
 }

@@ -11,6 +11,8 @@ public class ConversationManager : MonoBehaviour {
     public GameObject playerResponseObject;
     public GameObject conversationScroll;
 
+    public int leftTraining = 0;
+
     struct PlayerResponse {
         public int ID;
         public string labelText;
@@ -106,11 +108,33 @@ public class ConversationManager : MonoBehaviour {
         conversationScroll.transform.GetChild(conversationScroll.transform.childCount - 1).transform.SetParent(placeholder.transform, false);
         placeholder.transform.GetChild(0).transform.SetParent(conversationScroll.transform, false);
 
+        if (characterID == 1000) {//if character is gregory highlark, add training option
+            AddDialogueOption(20, characterID);
+        }
         AddDialogueOption(0, characterID);
         AddDialogueOption(5, characterID);
 
     }
 
+    public IEnumerator DisplayGreeting(int characterID, string greeting) {
+
+        characterResponseObject.GetComponentsInChildren<Text>()[0].text = greeting;
+        var charResponse = Instantiate(characterResponseObject);
+        charResponse.transform.SetParent(conversationScroll.transform, false);
+
+        yield return new WaitForSeconds(0.00001f);
+        GameObject placeholder = GameObject.Find("Placeholder");
+        conversationScroll.transform.GetChild(conversationScroll.transform.childCount - 1).transform.SetParent(placeholder.transform, false);
+        placeholder.transform.GetChild(0).transform.SetParent(conversationScroll.transform, false);
+
+        if (characterID == 1000) {//if character is gregory highlark, add training option
+            AddDialogueOption(20, characterID);
+        }
+        
+
+    }
+
+    //display the dialogue message that the player selected
     public void DisplayDialogueChoice(string message, int dialogueID) {
         playerResponseObject.GetComponentInChildren<Text>().text = message;
         var response = GameObject.Instantiate(playerResponseObject);
@@ -123,12 +147,15 @@ public class ConversationManager : MonoBehaviour {
 
     public void MakeAComment(int commentID) {
 
-        if (commentID == 0) {//player commented on the characters skills
-
+        if (commentID == 10000) {//player commented on the characters skills
+            
+          
+            
         }
 
     }
 
+    //type of dialogue option that reveals a trait about the character
     public GameObject AskAboutCharacter(int questionID, int characterID) {
         GameObject characterManager = GameObject.FindWithTag("CharacterManager");
         Character tempChar = GameObject.FindWithTag("CharacterManager").GetComponent<CharactersManager>().GetCharacter(characterID);
@@ -145,11 +172,12 @@ public class ConversationManager : MonoBehaviour {
 
     }
 
+    //sole perpose is to call DisplayResponse
     public void CallDisplayResponse(int questionID, int characterID) {
         StartCoroutine(DisplayResponse(questionID, characterID));
     }
 
-    //called by AskQuestion
+    //called by calldisplayresponse because IEnumerator
     public IEnumerator DisplayResponse(int questionID, int characterID) {
 
         GameObject placeholder = GameObject.Find("Placeholder");
@@ -174,6 +202,14 @@ public class ConversationManager : MonoBehaviour {
             AddDialogueOption(5, characterID);
             AddDialogueOption(6, characterID);
         }
+        else if (questionID == 20) {
+            characterResponseObject.GetComponentsInChildren<Text>()[0].text = "Let's get to it.";
+            var charResponse = Instantiate(characterResponseObject);
+            charResponse.transform.SetParent(placeholder.transform, false);
+
+            StartCoroutine(GameObject.FindWithTag("DecisionManager").GetComponent<DecisionManager>().DisplayTrainingWindow());
+
+        }
         else {
             //display response
             characterResponseObject.GetComponentsInChildren<Text>()[0].text = characterResponses[questionID].text;
@@ -193,6 +229,7 @@ public class ConversationManager : MonoBehaviour {
         ExpandConversationScroll();
     }
 
+    //called by decision manager when player selects the person to talk to
     public string GetGreeting(int characterID) {
         Character tempChar = GameObject.FindWithTag("CharacterManager").GetComponent<CharactersManager>().GetCharacter(characterID);
 
@@ -245,16 +282,35 @@ public class ConversationManager : MonoBehaviour {
         return "Hello child";
     }
 
+    //add dialogue option based on options ID, pass in character to pass on to the response when the dialogue is used
     public void AddDialogueOption(int optionID, int characterID) {
 
         GameObject dialogueObj;
 
-        dialogueDecisionObject.GetComponentsInChildren<Text>()[1].text = playerResponses[optionID].labelText;
-        dialogueDecisionObject.GetComponent<DialogueAction>().dialogueMessage = playerResponses[optionID].dialogueText;
-        dialogueDecisionObject.GetComponent<DialogueAction>().characterID = characterID;
-        dialogueDecisionObject.GetComponent<DialogueAction>().messageID = playerResponses[optionID].ID;
-        dialogueObj = GameObject.Instantiate(dialogueDecisionObject);
-        dialogueObj.transform.SetParent(dialogueOptionsPanel.transform, false);
+        if(optionID == 21) {
+            dialogueDecisionObject.GetComponentsInChildren<Text>()[1].text = "Leave";
+            dialogueDecisionObject.GetComponent<DialogueAction>().dialogueMessage = "I'm leaving";
+            dialogueDecisionObject.GetComponent<DialogueAction>().characterID = characterID;
+            dialogueDecisionObject.GetComponent<DialogueAction>().messageID = 21;
+            dialogueObj = GameObject.Instantiate(dialogueDecisionObject);
+            dialogueObj.transform.SetParent(dialogueOptionsPanel.transform, false);
+        }
+        else if (optionID != 20) {
+            dialogueDecisionObject.GetComponentsInChildren<Text>()[1].text = playerResponses[optionID].labelText;
+            dialogueDecisionObject.GetComponent<DialogueAction>().dialogueMessage = playerResponses[optionID].dialogueText;
+            dialogueDecisionObject.GetComponent<DialogueAction>().characterID = characterID;
+            dialogueDecisionObject.GetComponent<DialogueAction>().messageID = playerResponses[optionID].ID;
+            dialogueObj = GameObject.Instantiate(dialogueDecisionObject);
+            dialogueObj.transform.SetParent(dialogueOptionsPanel.transform, false);
+        }
+        else {//if dialogue is to begin training
+            dialogueDecisionObject.GetComponentsInChildren<Text>()[1].text = "Begin training";
+            dialogueDecisionObject.GetComponent<DialogueAction>().dialogueMessage = "I'm ready to start training";
+            dialogueDecisionObject.GetComponent<DialogueAction>().characterID = characterID;
+            dialogueDecisionObject.GetComponent<DialogueAction>().messageID = 20;
+            dialogueObj = GameObject.Instantiate(dialogueDecisionObject);
+            dialogueObj.transform.SetParent(dialogueOptionsPanel.transform, false);
+        }
 
     }
 

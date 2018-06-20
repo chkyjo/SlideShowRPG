@@ -21,6 +21,8 @@ public class SettingManager : MonoBehaviour{
     public int roomObserved;
     Coroutine weatherCheck;
 
+    public Text roomStatusText;
+
     int second;
     int minute;
     int hour;
@@ -47,6 +49,8 @@ public class SettingManager : MonoBehaviour{
     // Use this for initialization
     void Start () {
         StartCoroutine(WeatherTime());
+
+        DisplayRoom();
 
         SetTone(1);
 
@@ -122,53 +126,56 @@ public class SettingManager : MonoBehaviour{
     }
 
     IEnumerator TimeUpdate(){
+        GameObject playerManager = GameObject.FindWithTag("PlayerManager");
+
         while(true){
             if (timePause == false){
                 ++second;
 
-                if (second >= 60)
-                {
+                GameObject.FindWithTag("PlayerManager").GetComponent<PlayerManager>().UpdateCalories();
+                GameObject.FindWithTag("PlayerManager").GetComponent<PlayerManager>().UpdateHealth();
+
+                if (second >= 60){
                     second = 0;
                     minute++;
+                    if(playerManager.GetComponent<PlayerManager>().calories > 0) {
+                        GameObject.FindWithTag("PlayerManager").GetComponent<PlayerManager>().calories--;
+                    }
                 }
 
                 if (minute >= 60){
-                    GameObject.FindWithTag("PlayerManager").GetComponent<PlayerManager>().calories--;
-                    GameObject.FindWithTag("PlayerManager").GetComponent<PlayerManager>().UpdateCalories();
                     minute = 0;
                     hour++;
+                    if(playerManager.GetComponent<PlayerManager>().calories == 0) {
+                        GameObject.FindWithTag("PlayerManager").GetComponent<PlayerManager>().health -= 2;
+                    }
+                    else {
+                        GameObject.FindWithTag("PlayerManager").GetComponent<PlayerManager>().health++;
+                    }
                 }
 
                 if (hour >= 24){
-                    GameObject.FindWithTag("PlayerManager").GetComponent<PlayerManager>().health++;
-                    GameObject.FindWithTag("PlayerManager").GetComponent<PlayerManager>().UpdateHealth();
                     hour = 0;
                 }
 
-                if (hour < 10)
-                {
+                if (hour < 10){
                     timeStatus.text = "0" + hour.ToString();
                 }
-                else
-                {
+                else{
                     timeStatus.text = hour.ToString();
                 }
 
-                if (minute < 10)
-                {
+                if (minute < 10){
                     timeStatus.text += ":0" + minute.ToString();
                 }
-                else
-                {
+                else{
                     timeStatus.text += ":" + minute.ToString();
                 }
 
-                if (second < 10)
-                {
+                if (second < 10){
                     timeStatus.text += ":0" + second.ToString();
                 }
-                else
-                {
+                else{
                     timeStatus.text += ":" + second.ToString();
                 }
             }
@@ -210,10 +217,12 @@ public class SettingManager : MonoBehaviour{
         }
     }
 
-    public void SetTone(int tone){
+    public void DisplayRoom() {
+        roomStatusText.text = "Room: " + GameObject.FindWithTag("RoomManager").GetComponent<RoomManager>().GetRoom(currentRoom).GetName();
+    }
 
-        switch (tone)
-        {
+    public void SetTone(int tone){
+        switch (tone){
             case 0:
                 toneStatus.text = "Tone: In Combat";
                 break;
@@ -223,7 +232,6 @@ public class SettingManager : MonoBehaviour{
             case 2:
                 toneStatus.text = "Tone: Conversing";
                 break;
-
         }
     }
 
@@ -231,11 +239,17 @@ public class SettingManager : MonoBehaviour{
         tempStatus.text = temperature.ToString() + " degrees";
     }
 
-    public void AddTime(int mins){
+    public void AddTime(int mins, int seconds){
+        second += seconds;
         minute += mins;
 
         GameObject.FindWithTag("PlayerManager").GetComponent<PlayerManager>().calories -= mins;
         GameObject.FindWithTag("PlayerManager").GetComponent<PlayerManager>().UpdateCalories();
+
+        if(second >= 60) {
+            second = 0;
+            minute++;
+        }
 
         if (minute >= 60){
             minute -= 60;

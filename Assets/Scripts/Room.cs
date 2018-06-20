@@ -2,6 +2,7 @@
 
 public class Room{
 
+    string _name;
     public int _numOptions;
     public string _observationText;
     public int _numExits;
@@ -10,7 +11,8 @@ public class Room{
     public string[] _leaveTexts;
     public int[] _connectedRooms;
 
-    public Room(int numOptions, string observationText, int numExits, int[] options, string[] exitTexts, string[] leaveTexts, int[] connectedRooms){
+    public Room(string name, int numOptions, string observationText, int numExits, int[] options, string[] exitTexts, string[] leaveTexts, int[] connectedRooms){
+        _name = name;
         _numOptions = numOptions;
         _observationText = observationText;
         _numExits = numExits;
@@ -22,6 +24,10 @@ public class Room{
 
     public Room(){
 
+    }
+
+    public string GetName() {
+        return _name;
     }
 
 }

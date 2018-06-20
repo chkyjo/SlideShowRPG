@@ -11,9 +11,8 @@ public class Food{
     public int _quantity;
     public int _weight;
     
-    public Food(int ID, Texture2D icon, string name, int calories, int quantity, int weight)
-    {
-        _ID = 0;
+    public Food(int ID, Texture2D icon, string name, int calories, int quantity, int weight){
+        _ID = ID;
         _icon = icon;
         _name = name;
         _calories = calories;

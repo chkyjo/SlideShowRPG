@@ -10,6 +10,9 @@ TagManager:
   - SettingManager
   - CharacterManager
   - ConversationManager
+  - DecisionManager
+  - RoomManager
+  - SwordSkillBar
   layers:
   - Default
   - TransparentFX

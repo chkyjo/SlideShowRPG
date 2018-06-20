@@ -13,6 +13,7 @@ public class PlayerManager : MonoBehaviour {
     public Text sliderValueStatus;
     public int age;
     public Text playerName;
+    public int swordSkill = 0;
 
     Slider healthBar;
     Slider caloriesBar;
@@ -61,21 +62,18 @@ public class PlayerManager : MonoBehaviour {
         name = playerName.text;
     }
 
-    public void GrabHealthBars() {
-        healthBar = GameObject.FindWithTag("HealthBar").GetComponent<Slider>();
-        caloriesBar = GameObject.FindWithTag("CaloriesBar").GetComponent<Slider>();
-    }
-
     public void DisplayAgeSelection() {
         sliderValueStatus.text = ((int)ageSlider.value).ToString();
     }
 
     public void UpdateCalories(){
-        
-        caloriesBar.value = calories;
+        GameObject.FindWithTag("CaloriesBar").GetComponent<Slider>().value = calories;
+    }
+    public void UpdateSwordSkill() {
+        GameObject.FindWithTag("SwordSkillBar").GetComponent<Slider>().value = swordSkill;
     }
     public void UpdateHealth(){
-        healthBar.value = health;
+        GameObject.FindWithTag("HealthBar").GetComponent<Slider>().value = health;
     }
 
     public string GetName() {
