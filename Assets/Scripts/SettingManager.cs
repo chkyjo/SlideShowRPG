@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class SettingManager : MonoBehaviour{
 
     public GameObject characterManager;
+    public GameObject deathPanel;
 
     public List<Character> charactersInSetting = new List<Character>();
     public Text weatherStatus;
@@ -22,12 +23,15 @@ public class SettingManager : MonoBehaviour{
     Coroutine weatherCheck;
 
     public Text roomStatusText;
+    public int training = 0;
 
     int second;
     int minute;
     int hour;
     float timeScale;
     bool timePause;
+
+    public int opponentID;
 
     public int currentRoom;
 
@@ -130,32 +134,42 @@ public class SettingManager : MonoBehaviour{
 
         while(true){
             if (timePause == false){
-                ++second;
+                if(training == 0) {
+                    ++second;
+                }
 
-                GameObject.FindWithTag("PlayerManager").GetComponent<PlayerManager>().UpdateCalories();
-                GameObject.FindWithTag("PlayerManager").GetComponent<PlayerManager>().UpdateHealth();
+                playerManager.GetComponent<PlayerManager>().UpdateCalories();
+                playerManager.GetComponent<PlayerManager>().UpdateHealth();
 
                 if (second >= 60){
                     second = 0;
                     minute++;
-                    if(playerManager.GetComponent<PlayerManager>().calories > 0) {
-                        GameObject.FindWithTag("PlayerManager").GetComponent<PlayerManager>().calories--;
+                    if (minute >= 60) {
+                        minute = 0;
+                        hour++;
+                        if (hour >= 24) {
+                            hour = 0;
+                        }
+                    }
+                    if (minute % 5 == 0) {
+                        if (playerManager.GetComponent<PlayerManager>().calories == 0) {
+                            if (playerManager.GetComponent<PlayerManager>().health > 0) {
+                                playerManager.GetComponent<PlayerManager>().health--;
+                            }
+                        }
+                        else {
+                            if (playerManager.GetComponent<PlayerManager>().health < 100) {
+                                playerManager.GetComponent<PlayerManager>().health++;
+                            }
+                        }
+                    }
+                    if (playerManager.GetComponent<PlayerManager>().calories > 0) {
+                        playerManager.GetComponent<PlayerManager>().calories--;
                     }
                 }
 
-                if (minute >= 60){
-                    minute = 0;
-                    hour++;
-                    if(playerManager.GetComponent<PlayerManager>().calories == 0) {
-                        GameObject.FindWithTag("PlayerManager").GetComponent<PlayerManager>().health -= 2;
-                    }
-                    else {
-                        GameObject.FindWithTag("PlayerManager").GetComponent<PlayerManager>().health++;
-                    }
-                }
-
-                if (hour >= 24){
-                    hour = 0;
+                if(playerManager.GetComponent<PlayerManager>().health <= 0) {
+                    deathPanel.SetActive(true);
                 }
 
                 if (hour < 10){
@@ -241,29 +255,70 @@ public class SettingManager : MonoBehaviour{
 
     public void AddTime(int mins, int seconds){
         second += seconds;
-        minute += mins;
+        //minute += mins;
+        GameObject playerManager = GameObject.FindWithTag("PlayerManager");
 
-        GameObject.FindWithTag("PlayerManager").GetComponent<PlayerManager>().calories -= mins;
-        GameObject.FindWithTag("PlayerManager").GetComponent<PlayerManager>().UpdateCalories();
+        for(int i = 0; i < mins; i++) {
+            minute++;
+            if (minute % 5 == 0) {
+                if (playerManager.GetComponent<PlayerManager>().calories > 0) {
+                    if (playerManager.GetComponent<PlayerManager>().health < 100) {
+                        playerManager.GetComponent<PlayerManager>().health++;
+                    }
+                }
+                else {
+                    if (playerManager.GetComponent<PlayerManager>().health > 0) {
+                        playerManager.GetComponent<PlayerManager>().health--;
+                    }
+                }
 
+                GameObject.FindWithTag("PlayerManager").GetComponent<PlayerManager>().UpdateHealth();
+            }
+        }
+
+        if (playerManager.GetComponent<PlayerManager>().calories >= mins) {
+            playerManager.GetComponent<PlayerManager>().calories -= mins;
+            playerManager.GetComponent<PlayerManager>().UpdateCalories();
+        }
+        else {
+            playerManager.GetComponent<PlayerManager>().calories = 0;
+        }
+        
         if(second >= 60) {
             second = 0;
             minute++;
         }
 
-        if (minute >= 60){
+        if (minute >= 60) {
             minute -= 60;
             hour++;
-            GameObject.FindWithTag("PlayerManager").GetComponent<PlayerManager>().health++;
-            GameObject.FindWithTag("PlayerManager").GetComponent<PlayerManager>().UpdateHealth();
+            
             if (hour >= 24){
                 hour = 0;
             }
         }
+
+        if(minute % 5 == 0) {
+            if (playerManager.GetComponent<PlayerManager>().calories > 0) {
+                if(playerManager.GetComponent<PlayerManager>().health < 100) {
+                    playerManager.GetComponent<PlayerManager>().health++;
+                }
+            }
+            else {
+                if(playerManager.GetComponent<PlayerManager>().health > 0) {
+                    playerManager.GetComponent<PlayerManager>().health--;
+                }
+            }
+
+            GameObject.FindWithTag("PlayerManager").GetComponent<PlayerManager>().UpdateHealth();
+        }
     }
 
-    public void SetTimeScale(float scale)
-    {
+    public void TrainingTime() {
+        training = 1;
+    }
+
+    public void SetTimeScale(float scale){
         timeScale = scale;
     }
 

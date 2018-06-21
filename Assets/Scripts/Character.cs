@@ -7,8 +7,10 @@ public class Character {
     int _ID;
     string _firstName;
     string _lastName;
+    string _status;
     int _gender; //0 male, 1 female
     int _age;
+    int _health;
     int _height;
     int _weight;
 
@@ -40,11 +42,14 @@ public class Character {
     }
 
     public Character() {
+        _status = "Alive";
         _roomLocation = -1;
         _ID = 0;
+        _health = 100;
         _relationships = new int[1][];
         _relationship = 50;
         _playerKnowledge = new int[15];
+
     }
 
     public int GetID() {
@@ -56,11 +61,17 @@ public class Character {
     public string GetLastName() {
         return _lastName;
     }
+    public string GetStatus() {
+        return _status;
+    }
     public int GetGender() {
         return _gender;
     }
     public int GetAge() {
         return _age;
+    }
+    public int GetHealth() {
+        return _health;
     }
     public int GetHeight() {
         return _height;
@@ -87,8 +98,7 @@ public class Character {
     public int GetRelationship() {
         return _relationship;
     }
-    public int[] GetPlayerKnowledge()
-    {
+    public int[] GetPlayerKnowledge(){
         return _playerKnowledge;
     }
 
@@ -101,11 +111,17 @@ public class Character {
     public void SetLastName(string lastName) {
         _lastName = lastName;
     }
+    public void SetStatus(string status) {
+        _status = status;
+    }
     public void SetGender(int gender) {
         _gender = gender;
     }
     public void SetAge(int age) {
         _age = age;
+    }
+    public void SetHealth(int health) {
+        _health = health;
     }
     public void SetHeight(int height) {
         _height = height;

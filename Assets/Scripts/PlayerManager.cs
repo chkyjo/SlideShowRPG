@@ -7,12 +7,9 @@ public class PlayerManager : MonoBehaviour {
 
     public Text gameNameTextObject;
     public string gameName;
-    public Dropdown genderDropDown;
     public int gender;
-    public Slider ageSlider;
     public Text sliderValueStatus;
     public int age;
-    public Text playerName;
     public int swordSkill = 0;
 
     Slider healthBar;
@@ -57,27 +54,38 @@ public class PlayerManager : MonoBehaviour {
     }
 
     public void GrabPlayerInfo() {
-        gender = genderDropDown.value;
-        age = (int)ageSlider.value;
-        name = playerName.text;
+        gender = GameObject.Find("GenderDropdown").GetComponent<Dropdown>().value;
+        age = (int)GameObject.Find("AgeSlider").GetComponent<Slider>().value;
+        name = GameObject.Find("PlayerNameInputField").transform.GetChild(2).GetComponent<Text>().text;
     }
 
     public void DisplayAgeSelection() {
-        sliderValueStatus.text = ((int)ageSlider.value).ToString();
+        sliderValueStatus.text = ((int)GameObject.Find("AgeSlider").GetComponent<Slider>().value).ToString();
     }
 
     public void UpdateCalories(){
+        if(calories < 0) {
+            calories = 0;
+        }
         GameObject.FindWithTag("CaloriesBar").GetComponent<Slider>().value = calories;
     }
     public void UpdateSwordSkill() {
         GameObject.FindWithTag("SwordSkillBar").GetComponent<Slider>().value = swordSkill;
     }
     public void UpdateHealth(){
+        if(health < 0) {
+            health = 0;
+        }
         GameObject.FindWithTag("HealthBar").GetComponent<Slider>().value = health;
     }
 
     public string GetName() {
         return name;
+    }
+
+    public void Restart() {
+        health = 76;
+        calories = 284;
     }
 
 }

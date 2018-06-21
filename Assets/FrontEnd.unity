@@ -756,7 +756,7 @@ RectTransform:
   m_Children:
   - {fileID: 1090680097}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -1041,7 +1041,7 @@ GameObject:
   - component: {fileID: 396120749}
   - component: {fileID: 396120748}
   m_Layer: 5
-  m_Name: Button
+  m_Name: SubmitPlayerInfoButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1105,7 +1105,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1981782200}
+      - m_Target: {fileID: 1237042569}
         m_MethodName: GrabPlayerInfo
         m_Mode: 1
         m_Arguments:
@@ -2198,7 +2198,7 @@ RectTransform:
   m_Children:
   - {fileID: 390349436}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -3386,10 +3386,10 @@ MonoBehaviour:
   deletePromptPanel: {fileID: 0}
   itemsPanel: {fileID: 0}
   inventoryManager: {fileID: 0}
-  playerManager: {fileID: 0}
   weaponButton: {fileID: 0}
   armorButton: {fileID: 0}
   foodButton: {fileID: 0}
+  cheatPanel: {fileID: 0}
   itemsOnDisplay: 0
 --- !u!4 &1237042570
 Transform:
@@ -3901,7 +3901,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1622947215
 GameObject:
@@ -4113,7 +4113,7 @@ RectTransform:
   - {fileID: 1961479378}
   - {fileID: 1362617878}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -4413,12 +4413,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameNameTextObject: {fileID: 1149027861}
   gameName: 
-  genderDropDown: {fileID: 255454559}
   gender: 0
-  ageSlider: {fileID: 635350551}
   sliderValueStatus: {fileID: 825681149}
   age: 0
-  playerName: {fileID: 1622947217}
   swordSkill: 0
   health: 0
   calories: 0

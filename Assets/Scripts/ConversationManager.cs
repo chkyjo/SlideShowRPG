@@ -33,14 +33,14 @@ public class ConversationManager : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         characterResponses[0].text = "What would you like to know?";
-        characterResponses[0].numDialogueOptions = 3;
-        characterResponses[0].dialogueOptions = new int[3] { 1, 2, 5 };
+        characterResponses[0].numDialogueOptions = 2;
+        characterResponses[0].dialogueOptions = new int[2] { 2, 5 };
 
         characterResponses[1].text = "There will be a feast to celebrate the election of the new king.";
         characterResponses[1].numDialogueOptions = 3;
         characterResponses[1].dialogueOptions = new int[3] { 0, 4, 5 };
 
-        characterResponses[2].text = "They are the worlds dealiest fighters, and the true saviors of this land.";
+        characterResponses[2].text = "They are the worlds deadliest fighters, and the true saviors of this land.";
         characterResponses[2].numDialogueOptions = 3;
         characterResponses[2].dialogueOptions = new int[3] { 0, 3, 5 };
 
@@ -108,7 +108,10 @@ public class ConversationManager : MonoBehaviour {
         conversationScroll.transform.GetChild(conversationScroll.transform.childCount - 1).transform.SetParent(placeholder.transform, false);
         placeholder.transform.GetChild(0).transform.SetParent(conversationScroll.transform, false);
 
-        if (characterID == 1000) {//if character is gregory highlark, add training option
+        if (characterID == 1000 &&
+            GameObject.FindWithTag("SettingManager").GetComponent<SettingManager>().GetTime()[0] < 11 &&
+            GameObject.FindWithTag("SettingManager").GetComponent<SettingManager>().GetTime()[0] > 5) {//if character is gregory highlark and time is right, add training option
+
             AddDialogueOption(20, characterID);
         }
         AddDialogueOption(0, characterID);
@@ -127,10 +130,13 @@ public class ConversationManager : MonoBehaviour {
         conversationScroll.transform.GetChild(conversationScroll.transform.childCount - 1).transform.SetParent(placeholder.transform, false);
         placeholder.transform.GetChild(0).transform.SetParent(conversationScroll.transform, false);
 
-        if (characterID == 1000) {//if character is gregory highlark, add training option
+        //if character is gregory highlark and time is right, add training option
+        if (characterID == 1000 && 
+            GameObject.FindWithTag("SettingManager").GetComponent<SettingManager>().GetTime()[0] < 11 &&
+            GameObject.FindWithTag("SettingManager").GetComponent<SettingManager>().GetTime()[0] > 5) {
+
             AddDialogueOption(20, characterID);
         }
-        
 
     }
 
@@ -222,10 +228,10 @@ public class ConversationManager : MonoBehaviour {
             }
         }
 
-        //pause added so that the gameobject has time to be placed in the scroll to later be transformed out and then back in again because otherwise it wont account for the dynamic size
+        //pause added so that the gameobject has time to be placed in the placeholder to later be transformed into the conversation panel because otherwise it wont account for the dynamic size
         yield return new WaitForSeconds(0.001f);
         placeholder.transform.GetChild(0).transform.SetParent(conversationScroll.transform, false);
-        //Debug.Log("EXPANDING SCROL!");
+        
         ExpandConversationScroll();
     }
 
@@ -239,8 +245,13 @@ public class ConversationManager : MonoBehaviour {
             if (time[0] < 7) {
                 return "Well, actually on time I see, " + GameObject.FindWithTag("PlayerManager").GetComponent<PlayerManager>().GetName() + ". Let's begin.";
             }
-            else {
+            else if(time[0] >= 7 && time[0] < 11) {
                 return "Well it's about time " + GameObject.FindWithTag("PlayerManager").GetComponent<PlayerManager>().GetName() + "! C'mon you lazy idiot, take out your sword.";
+            }
+            else if(time[0] < 12){
+                return "Go eat.";
+            }else if(time[0] >= 12) {
+                return "Let's go! Time for hunting!";
             }
         }
 

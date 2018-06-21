@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class ThrowAction : MonoBehaviour {
 
+    public int characterID;
+
 	// Use this for initialization
 	void Start () {
 		
@@ -23,6 +25,6 @@ public class ThrowAction : MonoBehaviour {
     }
 
     public void ThrowItemAt(){
-        GameObject.Find("DecisionManager").GetComponent<DecisionManager>().ThrowItemAt();
+        GameObject.Find("DecisionManager").GetComponent<DecisionManager>().ThrowItemAt(characterID);
     }
 }
