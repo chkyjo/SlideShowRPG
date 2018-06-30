@@ -37,16 +37,16 @@ public class Inventory : MonoBehaviour {
 
         InitItemLists();
 
-        AddWeaponToInventory(0);
+        AddWeaponByID(0);
 
-        AddArmorToInventory(0);
-        AddArmorToInventory(1);
-        AddArmorToInventory(2);
+        AddArmorByID(100);
+        AddArmorByID(101);
+        AddArmorByID(102);
 
-        AddFoodToInventory(0);
-        AddFoodToInventory(1);
-        AddFoodToInventory(5);
-        AddFoodToInventory(6);
+        AddFoodByID(200);
+        AddFoodByID(201);
+        AddFoodByID(205);
+        AddFoodByID(206);
 
         //zero items on display
         itemsInItemPanel = 0;
@@ -184,6 +184,7 @@ public class Inventory : MonoBehaviour {
         int numArmor = armorInventory.Count;
         itemsInItemPanel = numArmor;
         gameManager.GetComponent<GameManager>().itemsOnDisplay = numArmor;
+        Debug.Log(numArmor);
         if (numArmor != 0){
             for (int i = 0; i < numArmor; i++){
                 item.GetComponentInChildren<Text>().text = armorInventory[i]._name;
@@ -222,7 +223,7 @@ public class Inventory : MonoBehaviour {
         if (numFood != 0){
             for (int i = 0; i < numFood; i++){
                 foodInventoryItem.GetComponentInChildren<Text>().text = foodInventory[i]._name;
-                foodInventoryItem.GetComponent<Item>().ID = foodInventory[i]._ID;
+                foodInventoryItem.GetComponent<Item>().ID = foodInventory[i].GetID();
                 Texture2D tex = foodInventory[i].GetIcon();
                 if (tex != null){
                     foodInventoryItem.GetComponentInChildren<RawImage>().texture = tex;
@@ -245,6 +246,58 @@ public class Inventory : MonoBehaviour {
             userFeedback.text = "No items to display";
             var alertText = GameObject.Instantiate(userFeedback);
             alertText.transform.SetParent(itemScroll.transform, false);
+        }
+    }
+
+    public Weapon GetWeaponByID(int ID) {
+        for(int i = 0; i < weaponInventory.Count; i++) {
+            if(weaponInventory[i].GetID() == ID) {
+                return weaponInventory[i];
+            }
+        }
+
+        return weaponInventory[0];
+    }
+    public Armor GetArmorByID(int ID) {
+        for (int i = 0; i < armorInventory.Count; i++) {
+            if (armorInventory[i].GetID() == ID) {
+                return armorInventory[i];
+            }
+        }
+
+        return armorInventory[0];
+    }
+    public Food GetFoodByID(int ID) {
+        for (int i = 0; i < foodInventory.Count; i++) {
+            if (foodInventory[i].GetID() == ID) {
+                return foodInventory[i];
+            }
+        }
+
+        return foodInventory[0];
+    }
+
+    public void RemoveItemByID(int ID) {
+        if(ID < 100) {
+            for (int i = 0; i < weaponInventory.Count; i++) {
+                if (weaponInventory[i].GetID() == ID) {
+                    weaponInventory.RemoveAt(i);
+                }
+            }
+        }
+        else if(ID < 200) {
+            for (int i = 0; i < armorInventory.Count; i++) {
+                if (armorInventory[i].GetID() == ID) {
+                    armorInventory.RemoveAt(i);
+                }
+            }
+        }
+        else if(ID < 300) {
+            for (int i = 0; i < foodInventory.Count; i++) {
+                if (foodInventory[i].GetID() == ID) {
+                    foodInventory.RemoveAt(i);
+                }
+            }
         }
     }
 
@@ -274,68 +327,81 @@ public class Inventory : MonoBehaviour {
         }
     }
 
-    public void AddWeaponToInventory(int ID){
+    public void AddWeaponByID(int ID){
 
         bool quantityIncreased = false;
+        Weapon weapon = completeWeaponList[0];
         //create item
-        Weapon weapon = completeWeaponList[ID];
+        for (int i = 0; i < completeWeaponList.Count; i++) {
+            if (ID == completeWeaponList[i].GetID()) {
+                weapon = completeWeaponList[i];
+                break;
+            }
+        }
         //if item is already in the list increment the quantity
-        for (int i = 0; i < weaponInventory.Count; i++){
-            if (IsEqual(weapon, weaponInventory[i])){
+        for (int i = 0; i < weaponInventory.Count; i++) {
+            if (weapon.GetID() == weaponInventory[i].GetID()) {
                 weaponInventory[i]._quantity++;
                 quantityIncreased = true;
                 break;
             }
         }
-        //if not add new item to list
-        if (quantityIncreased == false){
+        //if a quantity was not increased add new item to list
+        if (quantityIncreased == false) {
             weaponInventory.Add(weapon);
         }
 
     }
 
-    public void AddArmorToInventory(int ID){
+    public void AddArmorByID(int ID){
 
         bool quantityIncreased = false;
+        Armor armor = completeArmorList[0];
         //create item
-        Armor armor = completeArmorList[ID];
-
+        for (int i = 0; i < completeArmorList.Count; i++) {
+            if(ID == completeArmorList[i].GetID()) {
+                armor = completeArmorList[i];
+                break;
+            }
+        }
         //if item is already in the list increment the quantity
-        for (int i = 0; i < armorInventory.Count; i++)
-        {
-            if (IsEqual(armor, armorInventory[i]))
-            {
+        for (int i = 0; i < armorInventory.Count; i++){
+            if (armor.GetID() == armorInventory[i].GetID()){
                 armorInventory[i]._quantity++;
                 quantityIncreased = true;
                 break;
             }
         }
-        //if not add new item to list
-        if (quantityIncreased == false)
-        {
+
+
+        //if a quantity was not increased add new item to list
+        if (quantityIncreased == false){
             armorInventory.Add(armor);
         }
 
     }
 
-    public void AddFoodToInventory(int ID){
+    public void AddFoodByID(int ID){
 
         bool quantityIncreased = false;
+        Food food = completeFoodList[0];
         //create item
-        Food food = completeFoodList[ID];
+        for (int i = 0; i < completeFoodList.Count; i++) {
+            if (ID == completeFoodList[i].GetID()) {
+                food = completeFoodList[i];
+                break;
+            }
+        }
         //if item is already in the list increment the quantity
-        for (int i = 0; i < foodInventory.Count; i++)
-        {
-            if (IsEqual(food, foodInventory[i]))
-            {
+        for (int i = 0; i < foodInventory.Count; i++) {
+            if (food.GetID() == foodInventory[i].GetID()) {
                 foodInventory[i]._quantity++;
                 quantityIncreased = true;
                 break;
             }
         }
-        //if not add new item to list
-        if (quantityIncreased == false)
-        {
+        //if a quantity was not increased add new item to list
+        if (quantityIncreased == false) {
             foodInventory.Add(food);
         }
 
@@ -434,20 +500,11 @@ public class Inventory : MonoBehaviour {
 
     public void DeleteFoodItem(int ID) {
         for (int i = 0; i < foodInventory.Count; i++) {
-            if (foodInventory[i]._ID == ID) {
+            if (foodInventory[i].GetID() == ID) {
                 foodInventory.RemoveAt(i);
                 DisplayFood();
             }
         }
-    }
-
-    public Food GetFoodByID(int ID) {
-        for (int i = 0; i < foodInventory.Count; i++) {
-            if (foodInventory[i]._ID == ID) {
-                return foodInventory[i];
-            }
-        }
-        return foodInventory[0];
     }
 
     public void ClickRemoveWeaponItem(string name, int quantity){

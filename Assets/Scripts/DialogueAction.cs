@@ -11,8 +11,5 @@ public class DialogueAction : MonoBehaviour {
         if (messageID < 10000) {
             GameObject.Find("ConversationManager").GetComponent<ConversationManager>().CallDisplayResponse(messageID, characterID);
         }
-        else {
-            GameObject.Find("ConversationManager").GetComponent<ConversationManager>().MakeAComment(messageID);
-        }
     }
 }

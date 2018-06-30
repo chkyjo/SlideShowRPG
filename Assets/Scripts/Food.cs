@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Food{
 
-    public int _ID;
+    int _ID;
     Texture2D _icon;
     public string _name;
     public int _calories;
@@ -23,5 +23,9 @@ public class Food{
     public Texture2D GetIcon()
     {
         return _icon;
+    }
+
+    public int GetID() {
+        return _ID;
     }
 }

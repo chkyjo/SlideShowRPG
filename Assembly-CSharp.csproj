@@ -54,7 +54,6 @@
      <Compile Include="Assets\Scripts\AnimationComplete.cs" />
      <Compile Include="Assets\Scripts\Armor.cs" />
      <Compile Include="Assets\Scripts\AttackAction.cs" />
-     <Compile Include="Assets\Scripts\AttackPersonAction.cs" />
      <Compile Include="Assets\Scripts\CancelDecisionButtonScript.cs" />
      <Compile Include="Assets\Scripts\Character.cs" />
      <Compile Include="Assets\Scripts\CharactersManager.cs" />
@@ -66,6 +65,7 @@
      <Compile Include="Assets\Scripts\GameManager.cs" />
      <Compile Include="Assets\Scripts\Inventory.cs" />
      <Compile Include="Assets\Scripts\Item.cs" />
+     <Compile Include="Assets\Scripts\Missions.cs" />
      <Compile Include="Assets\Scripts\NarrativeManager.cs" />
      <Compile Include="Assets\Scripts\NextRoomAction.cs" />
      <Compile Include="Assets\Scripts\ObserveOption.cs" />

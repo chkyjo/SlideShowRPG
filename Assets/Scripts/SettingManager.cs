@@ -107,24 +107,22 @@ public class SettingManager : MonoBehaviour{
     }
 
     public string GetWeather(){
-        if(weather == 0)
-        {
+        if(weather == 0){
             return "rainy";
-        }else if(weather == 1)
-        {
-            return "snowy";
-        }else if(weather == 2)
-        {
-            return "sunny";
-        }else if(weather == 3)
-        {
-            return "misty";
-        }else if(weather == 4)
-        {
-            return "Windy";
         }
-        else
-        {
+        else if(weather == 1){
+            return "snowy";
+        }
+        else if(weather == 2){
+            return "sunny";
+        }
+        else if(weather == 3){
+            return "misty";
+        }
+        else if(weather == 4){
+            return "windy";
+        }
+        else{
             return "bleak";
         }
     }
@@ -138,9 +136,6 @@ public class SettingManager : MonoBehaviour{
                     ++second;
                 }
 
-                playerManager.GetComponent<PlayerManager>().UpdateCalories();
-                playerManager.GetComponent<PlayerManager>().UpdateHealth();
-
                 if (second >= 60){
                     second = 0;
                     minute++;
@@ -153,23 +148,13 @@ public class SettingManager : MonoBehaviour{
                     }
                     if (minute % 5 == 0) {
                         if (playerManager.GetComponent<PlayerManager>().calories == 0) {
-                            if (playerManager.GetComponent<PlayerManager>().health > 0) {
-                                playerManager.GetComponent<PlayerManager>().health--;
-                            }
+                            playerManager.GetComponent<PlayerManager>().SubtractHealth(1);
                         }
                         else {
-                            if (playerManager.GetComponent<PlayerManager>().health < 100) {
-                                playerManager.GetComponent<PlayerManager>().health++;
-                            }
+                            playerManager.GetComponent<PlayerManager>().AddHealth(1);
                         }
                     }
-                    if (playerManager.GetComponent<PlayerManager>().calories > 0) {
-                        playerManager.GetComponent<PlayerManager>().calories--;
-                    }
-                }
-
-                if(playerManager.GetComponent<PlayerManager>().health <= 0) {
-                    deathPanel.SetActive(true);
+                    playerManager.GetComponent<PlayerManager>().SubtractCalories(1);
                 }
 
                 if (hour < 10){

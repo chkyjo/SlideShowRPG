@@ -19,7 +19,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 224446448084283974}
-  - component: {fileID: 114941711635938616}
+  - component: {fileID: 114779725574894980}
   m_Layer: 5
   m_Name: AttackPersonDecisionObject
   m_TagString: Untagged
@@ -145,7 +145,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114941711635938616}
+      - m_Target: {fileID: 114779725574894980}
         m_MethodName: AttackPerson
         m_Mode: 1
         m_Arguments:
@@ -190,8 +190,8 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Talk to someone
---- !u!114 &114941711635938616
+  m_Text: "Sarah\r Parley\r"
+--- !u!114 &114779725574894980
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -199,10 +199,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1238966459736780}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b1c1bbc8c230564488ec4dedda59e6f0, type: 3}
+  m_Script: {fileID: 11500000, guid: ffe895d4cc0b661459a5af13aa4d39a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterID: 0
+  characterID: 475
+  healthBar: {fileID: 0}
+  attackButton: {fileID: 0}
 --- !u!114 &114946039591725628
 MonoBehaviour:
   m_ObjectHideFlags: 1

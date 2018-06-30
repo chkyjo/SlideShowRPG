@@ -10,6 +10,7 @@ public class ConversationManager : MonoBehaviour {
     public GameObject characterResponseObject;
     public GameObject playerResponseObject;
     public GameObject conversationScroll;
+    public GameObject startMissionDialogueObject;
 
     public int leftTraining = 0;
 
@@ -32,29 +33,6 @@ public class ConversationManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        characterResponses[0].text = "What would you like to know?";
-        characterResponses[0].numDialogueOptions = 2;
-        characterResponses[0].dialogueOptions = new int[2] { 2, 5 };
-
-        characterResponses[1].text = "There will be a feast to celebrate the election of the new king.";
-        characterResponses[1].numDialogueOptions = 3;
-        characterResponses[1].dialogueOptions = new int[3] { 0, 4, 5 };
-
-        characterResponses[2].text = "They are the worlds deadliest fighters, and the true saviors of this land.";
-        characterResponses[2].numDialogueOptions = 3;
-        characterResponses[2].dialogueOptions = new int[3] { 0, 3, 5 };
-
-        characterResponses[3].text = "When the lords deem you ready.";
-        characterResponses[3].numDialogueOptions = 2;
-        characterResponses[3].dialogueOptions = new int[2] { 0, 5 };
-
-        characterResponses[4].text = "She is no king.";
-        characterResponses[4].numDialogueOptions = 2;
-        characterResponses[4].dialogueOptions = new int[2] { 0, 5 };
-
-        //characterResponses[5].text = "Well, I am ...";
-        //characterResponses[5].numDialogueOptions = 1;
-        //characterResponses[5].dialogueOptions = new int[1] { 0 };
 
         playerResponses[0].labelText = "Ask about current events";
         playerResponses[0].dialogueText = "Anything interesting going on?";
@@ -90,6 +68,11 @@ public class ConversationManager : MonoBehaviour {
         playerResponses[6].dialogueText = "How's the weather?";
         playerResponses[6].ID = 11;
         playerResponses[6].characterResponseID = 11;
+
+        playerResponses[7].labelText = "Talk about something else";
+        playerResponses[7].dialogueText = "There was something else I wanted to talk about";
+        playerResponses[7].ID = 12;
+        playerResponses[7].characterResponseID = 12;
     }
 	
 	// Update is called once per frame
@@ -113,10 +96,16 @@ public class ConversationManager : MonoBehaviour {
             GameObject.FindWithTag("SettingManager").GetComponent<SettingManager>().GetTime()[0] > 5) {//if character is gregory highlark and time is right, add training option
 
             AddDialogueOption(20, characterID);
+        }else if (characterID == 1000 && GameObject.FindWithTag("SettingManager").GetComponent<SettingManager>().GetTime()[0] == 12) {
+            AddMissionDialogueOption(characterID, 0);
         }
-        AddDialogueOption(0, characterID);
-        AddDialogueOption(5, characterID);
-
+        else {
+            AddDialogueOption(0, characterID);
+            AddDialogueOption(1, characterID);
+            AddDialogueOption(5, characterID);
+            AddDialogueOption(6, characterID);
+        }
+        
     }
 
     public IEnumerator DisplayGreeting(int characterID, string greeting) {
@@ -137,102 +126,12 @@ public class ConversationManager : MonoBehaviour {
 
             AddDialogueOption(20, characterID);
         }
+        if (characterID == 1000 &&
+            GameObject.FindWithTag("SettingManager").GetComponent<SettingManager>().GetTime()[0] == 12) {
 
-    }
-
-    //display the dialogue message that the player selected
-    public void DisplayDialogueChoice(string message, int dialogueID) {
-        playerResponseObject.GetComponentInChildren<Text>().text = message;
-        var response = GameObject.Instantiate(playerResponseObject);
-        response.transform.SetParent(conversationScroll.transform, false);
-
-        //add room if necessary
-        //Debug.Log("EXPANING WITH DIALOGUE CHOICE!!!!");
-        ExpandConversationScroll();
-    }
-
-    public void MakeAComment(int commentID) {
-
-        if (commentID == 10000) {//player commented on the characters skills
-            
-          
-            
+            AddMissionDialogueOption(characterID, 0);
         }
 
-    }
-
-    //type of dialogue option that reveals a trait about the character
-    public GameObject AskAboutCharacter(int questionID, int characterID) {
-        GameObject characterManager = GameObject.FindWithTag("CharacterManager");
-        Character tempChar = GameObject.FindWithTag("CharacterManager").GetComponent<CharactersManager>().GetCharacter(characterID);
-        int randNum = UnityEngine.Random.Range(0, 5);
-        characterResponseObject.GetComponentsInChildren<Text>()[0].text = "Well I " + characterManager.GetComponent<CharactersManager>().GetTrait(tempChar.GetTraits()[randNum]) + ".";
-        tempChar.SetPlayerKnowledge(randNum);
-        characterManager.GetComponent<CharactersManager>().UpdateInfoPanel(characterID);
-
-        AddDialogueOption(0, characterID);
-        AddDialogueOption(5, characterID);
-        AddDialogueOption(6, characterID);
-
-        return characterResponseObject;
-
-    }
-
-    //sole perpose is to call DisplayResponse
-    public void CallDisplayResponse(int questionID, int characterID) {
-        StartCoroutine(DisplayResponse(questionID, characterID));
-    }
-
-    //called by calldisplayresponse because IEnumerator
-    public IEnumerator DisplayResponse(int questionID, int characterID) {
-
-        GameObject placeholder = GameObject.Find("Placeholder");
-
-        //clear dialogue options
-        for (int i = 0; i < dialogueOptionsPanel.transform.childCount; i++) {
-            Destroy(dialogueOptionsPanel.transform.GetChild(i).gameObject);
-        }
-
-        if(questionID == 10) {
-
-            var charResponse = Instantiate(AskAboutCharacter(questionID, characterID));
-            charResponse.transform.SetParent(placeholder.transform, false);
-        }
-        else if (questionID == 11){
-            string weather = GameObject.FindWithTag("SettingManager").GetComponent<SettingManager>().GetWeather();
-            characterResponseObject.GetComponentsInChildren<Text>()[0].text = "It looks a bit " + weather + " out there. You might want to wear a coat.";
-            var charResponse = Instantiate(characterResponseObject);
-            charResponse.transform.SetParent(placeholder.transform, false);
-
-            AddDialogueOption(0, characterID);
-            AddDialogueOption(5, characterID);
-            AddDialogueOption(6, characterID);
-        }
-        else if (questionID == 20) {
-            characterResponseObject.GetComponentsInChildren<Text>()[0].text = "Let's get to it.";
-            var charResponse = Instantiate(characterResponseObject);
-            charResponse.transform.SetParent(placeholder.transform, false);
-
-            StartCoroutine(GameObject.FindWithTag("DecisionManager").GetComponent<DecisionManager>().DisplayTrainingWindow());
-
-        }
-        else {
-            //display response
-            characterResponseObject.GetComponentsInChildren<Text>()[0].text = characterResponses[questionID].text;
-            var charResponse = Instantiate(characterResponseObject);
-            charResponse.transform.SetParent(placeholder.transform, false);
-
-            //add dialogue options
-            for (int i = 0; i < characterResponses[questionID].numDialogueOptions; i++) {
-                AddDialogueOption(characterResponses[questionID].dialogueOptions[i], characterID);
-            }
-        }
-
-        //pause added so that the gameobject has time to be placed in the placeholder to later be transformed into the conversation panel because otherwise it wont account for the dynamic size
-        yield return new WaitForSeconds(0.001f);
-        placeholder.transform.GetChild(0).transform.SetParent(conversationScroll.transform, false);
-        
-        ExpandConversationScroll();
     }
 
     //called by decision manager when player selects the person to talk to
@@ -245,12 +144,13 @@ public class ConversationManager : MonoBehaviour {
             if (time[0] < 7) {
                 return "Well, actually on time I see, " + GameObject.FindWithTag("PlayerManager").GetComponent<PlayerManager>().GetName() + ". Let's begin.";
             }
-            else if(time[0] >= 7 && time[0] < 11) {
+            else if (time[0] >= 7 && time[0] < 11) {
                 return "Well it's about time " + GameObject.FindWithTag("PlayerManager").GetComponent<PlayerManager>().GetName() + "! C'mon you lazy idiot, take out your sword.";
             }
-            else if(time[0] < 12){
+            else if (time[0] < 12) {
                 return "Go eat.";
-            }else if(time[0] >= 12) {
+            }
+            else if (time[0] >= 12) {
                 return "Let's go! Time for hunting!";
             }
         }
@@ -293,28 +193,169 @@ public class ConversationManager : MonoBehaviour {
         return "Hello child";
     }
 
+    //display the dialogue message that the player selected
+    public void DisplayDialogueChoice(string message, int dialogueID) {
+        playerResponseObject.GetComponentInChildren<Text>().text = message;
+        var response = GameObject.Instantiate(playerResponseObject);
+        response.transform.SetParent(conversationScroll.transform, false);
+
+        //add room if necessary
+        //Debug.Log("EXPANING WITH DIALOGUE CHOICE!!!!");
+        ExpandConversationScroll();
+    }
+
+    //sole perpose is to call DisplayResponse
+    public void CallDisplayResponse(int questionID, int characterID) {
+        StartCoroutine(DisplayResponseToMessage(questionID, characterID));
+    }
+
+    //called by calldisplayresponse because IEnumerator can't be called by an object that will be destroyed
+    public IEnumerator DisplayResponseToMessage(int messageID, int characterID) {
+
+        GameObject placeholder = GameObject.Find("Placeholder");
+
+        if(messageID == 0) {//asking about current events
+            characterResponseObject.GetComponentsInChildren<Text>()[0].text = "What would you like to know?";
+            var charResponse = Instantiate(characterResponseObject);
+            charResponse.transform.SetParent(placeholder.transform, false);
+
+            for (int i = 0; i < dialogueOptionsPanel.transform.childCount; i++) {
+                Destroy(dialogueOptionsPanel.transform.GetChild(i).gameObject);
+            }
+
+            AddDialogueOption(2, characterID);
+            AddDialogueOption(7, characterID);
+        }
+        else if(messageID == 1) {//asking about the day
+            characterResponseObject.GetComponentsInChildren<Text>()[0].text = "For recruits such as yourself there is training until 11. Then you hunt until 5. There will be a feast later to celebrate the election of the new king.";
+            var charResponse = Instantiate(characterResponseObject);
+            charResponse.transform.SetParent(placeholder.transform, false);
+
+            for (int i = 0; i < dialogueOptionsPanel.transform.childCount; i++) {
+                Destroy(dialogueOptionsPanel.transform.GetChild(i).gameObject);
+            }
+
+            AddDialogueOption(4, characterID);
+            AddDialogueOption(7, characterID);
+        }
+        else if(messageID == 2) {//asking about leaders
+            characterResponseObject.GetComponentsInChildren<Text>()[0].text = "They have performed great feats and were deamed worthy by the previous leaders.";
+            var charResponse = Instantiate(characterResponseObject);
+            charResponse.transform.SetParent(placeholder.transform, false);
+
+            for (int i = 0; i < dialogueOptionsPanel.transform.childCount; i++) {
+                Destroy(dialogueOptionsPanel.transform.GetChild(i).gameObject);
+            }
+
+            AddDialogueOption(3, characterID);
+            AddDialogueOption(7, characterID);
+        }
+        else if(messageID == 3) {//asking about rank
+            characterResponseObject.GetComponentsInChildren<Text>()[0].text = "When the lords deem you ready.";
+            var charResponse = Instantiate(characterResponseObject);
+            charResponse.transform.SetParent(placeholder.transform, false);
+        }
+        else if(messageID == 4) {//asking about the king
+            characterResponseObject.GetComponentsInChildren<Text>()[0].text = "Most of the protectors believe she cheated her way to the throne and is too young to rule.";
+            var charResponse = Instantiate(characterResponseObject);
+            charResponse.transform.SetParent(placeholder.transform, false);
+        }
+        else if (messageID == 10) {//asking about character
+            var charResponse = Instantiate(GetTraitResponse(messageID, characterID));
+            charResponse.transform.SetParent(placeholder.transform, false);
+        }
+        else if (messageID == 11) {//asking about weather
+            var charResponse = Instantiate(GetWeatherResponse(characterID));
+            charResponse.transform.SetParent(placeholder.transform, false);
+        }
+        else if (messageID == 12) {//talk about something else
+            characterResponseObject.GetComponentsInChildren<Text>()[0].text = "Yes?";
+            var charResponse = Instantiate(characterResponseObject);
+            charResponse.transform.SetParent(placeholder.transform, false);
+
+            for (int i = 0; i < dialogueOptionsPanel.transform.childCount; i++) {
+                Destroy(dialogueOptionsPanel.transform.GetChild(i).gameObject);
+            }
+            AddDialogueOption(0, characterID);
+            AddDialogueOption(1, characterID);
+            AddDialogueOption(5, characterID);
+            AddDialogueOption(6, characterID);
+        }
+        else if (messageID == 20) {//wanting to begin training
+            characterResponseObject.GetComponentsInChildren<Text>()[0].text = "Let's get to it.";
+            var charResponse = Instantiate(characterResponseObject);
+            charResponse.transform.SetParent(placeholder.transform, false);
+
+            StartCoroutine(GameObject.FindWithTag("DecisionManager").GetComponent<DecisionManager>().DisplayTrainingWindow(characterID));
+
+        }
+        else if(messageID == 22) {//accepting arrest
+
+        }
+        else if(messageID == 23) {//resist arrest
+            GameObject.Find("ConversationBackgroundPanel").SetActive(false);
+            int[] IDs = { 1005, 1006 };
+            GameObject.Find("DecisionManager").GetComponent<DecisionManager>().AttackPeople(IDs);
+
+            characterResponseObject.GetComponentsInChildren<Text>()[0].text = "Then draw your sword.";
+            var charResponse = Instantiate(characterResponseObject);
+            charResponse.transform.SetParent(placeholder.transform, false);
+        }
+        else if (messageID == 30) {
+            characterResponseObject.GetComponentsInChildren<Text>()[0].text = "Alright. To the woods beyond the archway over there.";
+            var charResponse = Instantiate(characterResponseObject);
+            charResponse.transform.SetParent(placeholder.transform, false);
+        }
+
+        //pause added so that the gameobject has time to be placed in the placeholder to later be transformed into the conversation panel because otherwise it wont account for the dynamic size
+        yield return new WaitForSeconds(0.001f);
+        placeholder.transform.GetChild(0).transform.SetParent(conversationScroll.transform, false);
+        
+
+        ExpandConversationScroll();
+    }
+
+    //type of dialogue option that reveals a trait about the character
+    public GameObject GetTraitResponse(int questionID, int characterID) {
+        GameObject characterManager = GameObject.FindWithTag("CharacterManager");
+        Character tempChar = GameObject.FindWithTag("CharacterManager").GetComponent<CharactersManager>().GetCharacter(characterID);
+        int randNum = UnityEngine.Random.Range(0, 5);
+        characterResponseObject.GetComponentsInChildren<Text>()[0].text = "Well I...";
+        tempChar.SetPlayerKnowledge(randNum);
+        characterManager.GetComponent<CharactersManager>().UpdateInfoPanel(characterID);
+
+        return characterResponseObject;
+
+    }
+
+    //display response to question about weather
+    public GameObject GetWeatherResponse(int characterID) {
+        string weather = GameObject.FindWithTag("SettingManager").GetComponent<SettingManager>().GetWeather();
+        if(weather == "rainy") {
+            characterResponseObject.GetComponentsInChildren<Text>()[0].text = "It looks a bit " + weather + " out there. You might want to wear a coat.";
+        }
+        if (weather == "windy") {
+            characterResponseObject.GetComponentsInChildren<Text>()[0].text = "It's blowing me away how " + weather + " it is.";
+        }
+        if (weather == "snowy") {
+            characterResponseObject.GetComponentsInChildren<Text>()[0].text = "It's cold out there. Haven't seen this much snow in a while.";
+        }
+        if (weather == "sunny") {
+            characterResponseObject.GetComponentsInChildren<Text>()[0].text = "It's beautiful outside.";
+        }
+        if (weather == "misty") {
+            characterResponseObject.GetComponentsInChildren<Text>()[0].text = "It's strangly misty. Gives me the creeps.";
+        }
+
+        return characterResponseObject;
+    }
+
     //add dialogue option based on options ID, pass in character to pass on to the response when the dialogue is used
     public void AddDialogueOption(int optionID, int characterID) {
 
         GameObject dialogueObj;
 
-        if(optionID == 21) {
-            dialogueDecisionObject.GetComponentsInChildren<Text>()[1].text = "Leave";
-            dialogueDecisionObject.GetComponent<DialogueAction>().dialogueMessage = "I'm leaving";
-            dialogueDecisionObject.GetComponent<DialogueAction>().characterID = characterID;
-            dialogueDecisionObject.GetComponent<DialogueAction>().messageID = 21;
-            dialogueObj = GameObject.Instantiate(dialogueDecisionObject);
-            dialogueObj.transform.SetParent(dialogueOptionsPanel.transform, false);
-        }
-        else if (optionID != 20) {
-            dialogueDecisionObject.GetComponentsInChildren<Text>()[1].text = playerResponses[optionID].labelText;
-            dialogueDecisionObject.GetComponent<DialogueAction>().dialogueMessage = playerResponses[optionID].dialogueText;
-            dialogueDecisionObject.GetComponent<DialogueAction>().characterID = characterID;
-            dialogueDecisionObject.GetComponent<DialogueAction>().messageID = playerResponses[optionID].ID;
-            dialogueObj = GameObject.Instantiate(dialogueDecisionObject);
-            dialogueObj.transform.SetParent(dialogueOptionsPanel.transform, false);
-        }
-        else {//if dialogue is to begin training
+        if (optionID == 20) {//if dialogue is to begin training
             dialogueDecisionObject.GetComponentsInChildren<Text>()[1].text = "Begin training";
             dialogueDecisionObject.GetComponent<DialogueAction>().dialogueMessage = "I'm ready to start training";
             dialogueDecisionObject.GetComponent<DialogueAction>().characterID = characterID;
@@ -322,6 +363,53 @@ public class ConversationManager : MonoBehaviour {
             dialogueObj = GameObject.Instantiate(dialogueDecisionObject);
             dialogueObj.transform.SetParent(dialogueOptionsPanel.transform, false);
         }
+        else if (optionID == 21) {
+            dialogueDecisionObject.GetComponentsInChildren<Text>()[1].text = "Leave";
+            dialogueDecisionObject.GetComponent<DialogueAction>().dialogueMessage = "I'm leaving";
+            dialogueDecisionObject.GetComponent<DialogueAction>().characterID = characterID;
+            dialogueDecisionObject.GetComponent<DialogueAction>().messageID = 21;
+            dialogueObj = GameObject.Instantiate(dialogueDecisionObject);
+            dialogueObj.transform.SetParent(dialogueOptionsPanel.transform, false);
+        }
+        else if(optionID == 22) {
+            dialogueDecisionObject.GetComponentsInChildren<Text>()[1].text = "Come quietly";
+            dialogueDecisionObject.GetComponent<DialogueAction>().dialogueMessage = "Alright, I'll cooporate";
+            dialogueDecisionObject.GetComponent<DialogueAction>().characterID = characterID;
+            dialogueDecisionObject.GetComponent<DialogueAction>().messageID = 22;
+            dialogueObj = GameObject.Instantiate(dialogueDecisionObject);
+            dialogueObj.transform.SetParent(dialogueOptionsPanel.transform, false);
+        }
+        else if(optionID == 23) {
+            dialogueDecisionObject.GetComponentsInChildren<Text>()[1].text = "Refuse";
+            dialogueDecisionObject.GetComponent<DialogueAction>().dialogueMessage = "I'm not going with you";
+            dialogueDecisionObject.GetComponent<DialogueAction>().characterID = characterID;
+            dialogueDecisionObject.GetComponent<DialogueAction>().messageID = 23;
+            dialogueObj = GameObject.Instantiate(dialogueDecisionObject);
+            dialogueObj.transform.SetParent(dialogueOptionsPanel.transform, false);
+        }
+        else{
+            dialogueDecisionObject.GetComponentsInChildren<Text>()[1].text = playerResponses[optionID].labelText;
+            dialogueDecisionObject.GetComponent<DialogueAction>().dialogueMessage = playerResponses[optionID].dialogueText;
+            dialogueDecisionObject.GetComponent<DialogueAction>().characterID = characterID;
+            dialogueDecisionObject.GetComponent<DialogueAction>().messageID = playerResponses[optionID].ID;
+            dialogueObj = GameObject.Instantiate(dialogueDecisionObject);
+            dialogueObj.transform.SetParent(dialogueOptionsPanel.transform, false);
+        }
+
+    }
+
+    //add dialogue option based on options ID, pass in character to pass on to the response when the dialogue is used
+    public void AddMissionDialogueOption(int characterID, int missionID) {
+
+        GameObject dialogueObj;
+
+        startMissionDialogueObject.GetComponentsInChildren<Text>()[1].text = "Start mission";
+        startMissionDialogueObject.GetComponent<DialogueAction>().dialogueMessage = "I'm ready";
+        startMissionDialogueObject.GetComponent<DialogueAction>().characterID = characterID;
+        startMissionDialogueObject.GetComponent<DialogueAction>().messageID = 30;
+        startMissionDialogueObject.GetComponent<Missions>().missionID = missionID;
+        dialogueObj = GameObject.Instantiate(startMissionDialogueObject);
+        dialogueObj.transform.SetParent(dialogueOptionsPanel.transform, false);
 
     }
 

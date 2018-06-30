@@ -140,6 +140,10 @@ public class CharactersManager : MonoBehaviour {
             }
             tempChar.SetGoals(tempGoals);
 
+            if(UnityEngine.Random.Range(0, 1000) < 40) {
+                tempChar.SetLocation(3);
+            }
+
             //zero relationship list
             //int[][] relationships = new int[1000][];
             //tempChar.SetRelationships(relationships);
@@ -160,7 +164,7 @@ public class CharactersManager : MonoBehaviour {
         int[] goalsToInt = new int[5] { 1, 2, 3, 4, 5 };
         string[] goals;
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 7; i++) {
             ID = 1000 + i;
             firstAndLast = names[i].Split(' ');
             gender = UnityEngine.Random.Range(0, 2);
@@ -169,13 +173,60 @@ public class CharactersManager : MonoBehaviour {
             for (int j = 0; j < 5; j++){
                 traitsToInt[j] = Convert.ToInt16(listOfTraits[j]);
             }
-            Character tempChar = new Character(ID, firstAndLast[0], firstAndLast[1], gender, 20, 6, 150, traitsToInt, goalsToInt, goalsToInt);
+            Character tempChar = new Character(ID, firstAndLast[0], firstAndLast[1], gender, 20, 100, traitsToInt, goalsToInt, goalsToInt);
 
+            if(ID == 1000) {
+                tempChar.AddBehavior(1, 0);
+                tempChar.AddBehavior(2, 1);
+                int[] trainingHours = { 7, 11 };
+                tempChar.SetTrainingHours(trainingHours);
+            }
             if (ID < 1004){
                 tempChar.SetLocation(3);
+                tempChar.SetImportance(1);
+            }
+            if(ID == 1005 || ID == 1006) {
+                tempChar.SetGender(0);
             }
             completeListOfCharacters.Add(tempChar);
         }
+    }
+
+    public bool ProvokeCharacter(int characterID, int behaviorID) {
+        for (int i = 0; i < 2; i++) {
+            if(completeListOfCharacters[characterID].GetBehavior(i) == behaviorID) {
+                return ActivateBehavior(behaviorID, characterID);
+            }
+        }
+        return false;
+    }
+
+    public bool ActivateBehavior(int behaviorID, int characterID) {
+        if (behaviorID == 1) {
+            Character tempChar = completeListOfCharacters[characterID];
+            int[] trainingHours = tempChar.GetTrainingHours();
+            int hour = GameObject.Find("SettingManager").GetComponent<SettingManager>().GetTime()[0];
+            if (hour >= trainingHours[0] && hour < trainingHours[1]) {
+                string greeting = "Hey! Did I say you could take a break?";
+                completeListOfCharacters[characterID].SetRelationship(completeListOfCharacters[characterID].GetRelationship() - 5);
+                GameObject.Find("DecisionManager").GetComponent<DecisionManager>().TalkTo(characterID, greeting);
+            }
+            return true;
+        }else if(behaviorID == 2) {
+            Character tempChar = completeListOfCharacters[characterID];
+            int[] trainingHours = tempChar.GetTrainingHours();
+            int hour = GameObject.Find("SettingManager").GetComponent<SettingManager>().GetTime()[0];
+            if (hour >= trainingHours[0] && hour < trainingHours[1] && tempChar.GetWarned() == 0) {
+                tempChar.SetWarned(1);
+                string greeting = "What are you doing? Get back to training! If you leave I will be forced to have you executed.";
+                completeListOfCharacters[characterID].SetRelationship(completeListOfCharacters[characterID].GetRelationship() - 5);
+                GameObject.Find("DecisionManager").GetComponent<DecisionManager>().TalkTo(characterID, greeting);
+                return true;
+            }
+            StartCoroutine(GameObject.Find("DecisionManager").GetComponent<DecisionManager>().SendGuardsForPlayer());
+            return false;
+        }
+        return false;
     }
 
     public Character GetCharacter(int index){
@@ -191,6 +242,8 @@ public class CharactersManager : MonoBehaviour {
     public string GetGoal(int index){
         return completeListOfGoals[index];
     }
+
+    
 
     public void UpdateInfoPanel(int characterID) {
 

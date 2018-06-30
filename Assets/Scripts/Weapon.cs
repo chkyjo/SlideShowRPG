@@ -10,8 +10,7 @@ public class Weapon{
     public int _quantity;
     public int _weight;
 
-    public Weapon(int ID, Texture2D icon, string name, int damage, int quantity, int weight)
-    {
+    public Weapon(int ID, Texture2D icon, string name, int damage, int quantity, int weight){
         _ID = 0;
         _icon = icon;
         _name = name;
@@ -23,5 +22,9 @@ public class Weapon{
     public Texture2D GetIcon()
     {
         return _icon;
+    }
+
+    public int GetID() {
+        return _ID;
     }
 }

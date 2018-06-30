@@ -11,9 +11,8 @@ public class Armor{
     public int _quantity;
     public int _weight;
 
-    public Armor(int ID, Texture2D icon, string name, int defense, int quantity, int weight)
-    {
-        _ID = 0;
+    public Armor(int ID, Texture2D icon, string name, int defense, int quantity, int weight){
+        _ID = ID;
         _icon = icon;
         _name = name;
         _defense = defense;
@@ -24,5 +23,9 @@ public class Armor{
     public Texture2D GetIcon()
     {
         return _icon;
+    }
+
+    public int GetID() {
+        return _ID;
     }
 }

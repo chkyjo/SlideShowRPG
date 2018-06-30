@@ -11,8 +11,7 @@ public class Character {
     int _gender; //0 male, 1 female
     int _age;
     int _health;
-    int _height;
-    int _weight;
+    int _importance;
 
     int[] _traits; //things that make them unique
     int[] _goals; //things they want to accomplish
@@ -24,14 +23,19 @@ public class Character {
 
     int _roomLocation;
 
-    public Character(int ID, string firstName, string lastName, int gender, int age, int height, int weight, int[] traits, int[] goals, int[] skills) {
+    int[] _trainingHours;
+    int _warned;
+    int[] _behaviors;
+
+    public Character(int ID, string firstName, string lastName, int gender, int age, int health, int[] traits, int[] goals, int[] skills) {
         _ID = ID;
         _firstName = firstName;
         _lastName = lastName;
         _gender = gender;
         _age = age;
-        _height = height;
-        _weight = weight;
+        _health = health;
+        _importance = 0;
+
         _traits = traits;
         _goals = goals;
         _skills = skills;
@@ -39,17 +43,24 @@ public class Character {
         _relationships = new int[1][];
         _roomLocation = -1;
         _playerKnowledge = new int[15];
+
+
+        _trainingHours = new int[2] { 0, 0 };
+        _warned = 0;
+        _behaviors = new int[2]{0,0};
+
     }
 
     public Character() {
         _status = "Alive";
         _roomLocation = -1;
-        _ID = 0;
         _health = 100;
+        _importance = 0;
+
         _relationships = new int[1][];
         _relationship = 50;
-        _playerKnowledge = new int[15];
-
+        _playerKnowledge = new int[15] { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+        _behaviors = new int[2] { 0, 0 };
     }
 
     public int GetID() {
@@ -73,11 +84,8 @@ public class Character {
     public int GetHealth() {
         return _health;
     }
-    public int GetHeight() {
-        return _height;
-    }
-    public int GetWeight() {
-        return _weight;
+    public int GetImportance() {
+        return _importance;
     }
     public int GetLocation() {
         return _roomLocation;
@@ -102,6 +110,17 @@ public class Character {
         return _playerKnowledge;
     }
 
+    public int[] GetTrainingHours() {
+        return _trainingHours;
+    }
+    public int GetWarned() {
+        return _warned;
+    }
+    public int GetBehavior(int index) {
+        return _behaviors[index];
+    }
+    
+
     public void SetID(int ID) {
         _ID = ID;
     }
@@ -120,14 +139,15 @@ public class Character {
     public void SetAge(int age) {
         _age = age;
     }
-    public void SetHealth(int health) {
-        _health = health;
+    public void SubtractHealth(int health) {
+        _health -= health;
+        if(_health < 0) {
+            _health = 0;
+            _status = "Dead";
+        }
     }
-    public void SetHeight(int height) {
-        _height = height;
-    }
-    public void SetWeight(int weight) {
-        _weight = weight;
+    public void SetImportance(int importance) {
+        _importance = importance;
     }
 
     public void SetTraits(int[] traits) {
@@ -145,12 +165,21 @@ public class Character {
     public void SetPlayerKnowledge(int index){
         _playerKnowledge[index] = 1;
     }
-
     public void SetLocation(int location){
         _roomLocation = location;
     }
     public void SetRelationship(int relationship)
     {
         _relationship = relationship;
+    }
+
+    public void SetTrainingHours(int[] hours) {
+        _trainingHours = hours;
+    }
+    public void SetWarned(int warned) {
+        _warned = warned;
+    }
+    public void AddBehavior(int behavior, int index) {
+        _behaviors[index] = behavior;
     }
 }

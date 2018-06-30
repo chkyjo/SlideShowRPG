@@ -9,6 +9,7 @@ public class AnimationComplete : MonoBehaviour {
     public GameObject inventoryButton;
     public GameObject decisionPanel;
     public GameObject skipButton;
+    public GameObject indoorPanel;
 
 	// Use this for initialization
 	void Start () {
@@ -28,5 +29,10 @@ public class AnimationComplete : MonoBehaviour {
         inventoryButton.SetActive(true);
         decisionPanel.SetActive(true);
         skipButton.SetActive(false);
+    }
+
+    public void AnimateIndoorPanel() {
+        GameObject.Find("IntroPanel").SetActive(false);
+        indoorPanel.SetActive(true);
     }
 }
