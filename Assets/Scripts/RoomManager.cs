@@ -8,8 +8,6 @@ public class RoomManager : MonoBehaviour {
 
     int[] publicLocations = new int[10];
 
-    string[] observationTexts = new string[10];
-
     void Awake() {
         int[] options = new int[1] { 5 };
         string observationText = "You look around your room. Your only possessions were already on your person. " +
@@ -99,7 +97,7 @@ public class RoomManager : MonoBehaviour {
         rooms[5] = new Room("Open field", 0, observationText, 2, options, exitTexts, leaveTexts, connectedRooms);
 
         options = new int[0] { };
-        observationText = "Think bundles of trees quickly hide the far edges of the forest. Only a faint trickle of light pierces the trees from the open field at the Protectors castle.";
+        observationText = "Thick bundles of trees quickly hide the far edges of the forest. Only a faint trickle of light pierces the trees from the open field at the Protectors castle.";
         exitTexts = new string[1];
         exitTexts[0] = "Open field";
         leaveTexts = new string[1];
@@ -108,7 +106,14 @@ public class RoomManager : MonoBehaviour {
         connectedRooms[0] = 5;
         rooms[6] = new Room("Woods", 0, observationText, 1, options, exitTexts, leaveTexts, connectedRooms);
 
-        
+        options = new int[0] { };
+        observationText = "It was deathly quiet. You were the only one in your cell. A couple of travelers were in the cell two cells down. Your cell was nothing but a box. Two of the walls were made of rock, the other two were iron bars.";
+        exitTexts = new string[0];
+        leaveTexts = new string[0];
+        connectedRooms = new int[0];
+        rooms[7] = new Room("Prison", 0, observationText, 0, options, exitTexts, leaveTexts, connectedRooms);
+
+
 
 
         publicLocations[0] = 1;

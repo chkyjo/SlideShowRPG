@@ -11,6 +11,7 @@ public class Character {
     int _gender; //0 male, 1 female
     int _age;
     int _health;
+    string _greeting;
     int _importance;
 
     int[] _traits; //things that make them unique
@@ -18,12 +19,14 @@ public class Character {
     int[] _skills; //things they are good at
     int[][] _relationships; //how they feel about others
     int _relationship; //how they feel about you
-
     int[] _playerKnowledge;
 
     int _roomLocation;
+    int[] _missions;
+    int[][] _missionTimes;
 
-    int[] _trainingHours;
+    int[] _trainings;
+    int[][] _trainingHours;
     int _warned;
     int[] _behaviors;
 
@@ -34,6 +37,7 @@ public class Character {
         _gender = gender;
         _age = age;
         _health = health;
+        _greeting = "";
         _importance = 0;
 
         _traits = traits;
@@ -41,11 +45,14 @@ public class Character {
         _skills = skills;
         _relationship = 50;
         _relationships = new int[1][];
-        _roomLocation = -1;
         _playerKnowledge = new int[15];
 
+        _roomLocation = -1;
+        _missions = new int[3] {0,0,0 };
+        _missionTimes = new int[3][];
 
-        _trainingHours = new int[2] { 0, 0 };
+        _trainings = new int[3] { 0, 0, 0 };
+        _trainingHours = new int[2][];
         _warned = 0;
         _behaviors = new int[2]{0,0};
 
@@ -55,11 +62,14 @@ public class Character {
         _status = "Alive";
         _roomLocation = -1;
         _health = 100;
+        _greeting = "";
         _importance = 0;
 
         _relationships = new int[1][];
         _relationship = 50;
         _playerKnowledge = new int[15] { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+        _missions = new int[3] { 0, 0, 0 };
+        _trainings = new int[3] { 0, 0, 0 };
         _behaviors = new int[2] { 0, 0 };
     }
 
@@ -84,12 +94,13 @@ public class Character {
     public int GetHealth() {
         return _health;
     }
+    public string GetGreeting() {
+        return _greeting;
+    }
     public int GetImportance() {
         return _importance;
     }
-    public int GetLocation() {
-        return _roomLocation;
-    }
+    
 
     public int[] GetTraits() {
         return _traits;
@@ -109,8 +120,20 @@ public class Character {
     public int[] GetPlayerKnowledge(){
         return _playerKnowledge;
     }
+    public int GetLocation() {
+        return _roomLocation;
+    }
+    public int[] GetMissions() {
+        return _missions;
+    }
+    public int[][] GetMissionTimes() {
+        return _missionTimes;
+    }
 
-    public int[] GetTrainingHours() {
+    public int[] GetTrainings() {
+        return _trainings;
+    }
+    public int[][] GetTrainingHours() {
         return _trainingHours;
     }
     public int GetWarned() {
@@ -141,10 +164,13 @@ public class Character {
     }
     public void SubtractHealth(int health) {
         _health -= health;
-        if(_health < 0) {
+        if (_health < 0) {
             _health = 0;
             _status = "Dead";
         }
+    }
+    public void SetGreeting(string greeting) {
+        _greeting = greeting;
     }
     public void SetImportance(int importance) {
         _importance = importance;
@@ -165,15 +191,33 @@ public class Character {
     public void SetPlayerKnowledge(int index){
         _playerKnowledge[index] = 1;
     }
+
     public void SetLocation(int location){
         _roomLocation = location;
     }
+    public void SetMissions(int[] missions) {
+        _missions = missions;
+    }
+    public void SetMissionTimes(int[][] missionTimes) {
+        _missionTimes = missionTimes;
+    }
+
+
     public void SetRelationship(int relationship)
     {
         _relationship = relationship;
     }
+    public void AddRelationship(int rel) {
+        _relationship += rel;
+    }
+    public void SubtractRelationship(int rel) {
+        _relationship -= rel;
+    }
 
-    public void SetTrainingHours(int[] hours) {
+    public void SetTrainings(int[] trainings) {
+        _trainings = trainings;
+    }
+    public void SetTrainingHours(int[][] hours) {
         _trainingHours = hours;
     }
     public void SetWarned(int warned) {

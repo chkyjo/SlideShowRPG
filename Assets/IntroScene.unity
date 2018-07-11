@@ -1991,7 +1991,7 @@ GameObject:
   - component: {fileID: 310384253}
   - component: {fileID: 310384252}
   m_Layer: 5
-  m_Name: CancelButton
+  m_Name: CancelEatingButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6124,7 +6124,7 @@ MonoBehaviour:
   conversationScroll: {fileID: 1387973958}
   startMissionDialogueObject: {fileID: 1549203441080918, guid: 16e719879a66549478bdbaaf51d7db7a,
     type: 2}
-  leftTraining: 0
+  conversationBackgroundPanel: {fileID: 1985660525}
 --- !u!1 &885925595
 GameObject:
   m_ObjectHideFlags: 0
@@ -7044,7 +7044,7 @@ GameObject:
   - component: {fileID: 1051293970}
   - component: {fileID: 1051293969}
   m_Layer: 5
-  m_Name: StartButton
+  m_Name: StartEatingButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10090,8 +10090,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   missionID: 0
+  progressID: 0
   conversationBackgroundPanel: {fileID: 1985660525}
   characterManager: {fileID: 253748275}
+  progressMission: {fileID: 1841157177711362, guid: 19649695f50083a4ba148345fe3a5724,
+    type: 2}
+  characterResponseObject: {fileID: 0}
 --- !u!4 &1472930310
 Transform:
   m_ObjectHideFlags: 0
@@ -10495,6 +10499,8 @@ MonoBehaviour:
   dialogueOptionsPanel: {fileID: 921555058}
   converstationScrollBar: {fileID: 614818676}
   conversationScroll: {fileID: 1387973958}
+  startMissionDialogue: {fileID: 1549203441080918, guid: 16e719879a66549478bdbaaf51d7db7a,
+    type: 2}
   eatingBackgroundPanel: {fileID: 152504021}
   caloriesConsumedStatus: {fileID: 2344028}
   eatingMeal: 0
@@ -10743,6 +10749,17 @@ MonoBehaviour:
       - m_Target: {fileID: 1985660525}
         m_MethodName: SetActive
         m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1529840410}
+        m_MethodName: ClearConversation
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -13960,7 +13977,7 @@ MonoBehaviour:
   swordSkill: 0
   health: 0
   calories: 0
-  name: 
+  playerName: 
 --- !u!224 &2080602107
 RectTransform:
   m_ObjectHideFlags: 0

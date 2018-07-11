@@ -17,7 +17,7 @@ public class PlayerManager : MonoBehaviour {
 
     public int health;
     public int calories;
-    public string name;
+    public string playerName;
 
     public static PlayerManager Instance;
 
@@ -56,7 +56,7 @@ public class PlayerManager : MonoBehaviour {
     public void GrabPlayerInfo() {
         gender = GameObject.Find("GenderDropdown").GetComponent<Dropdown>().value;
         age = (int)GameObject.Find("AgeSlider").GetComponent<Slider>().value;
-        name = GameObject.Find("PlayerNameInputField").transform.GetChild(2).GetComponent<Text>().text;
+        playerName = GameObject.Find("PlayerNameInputField").transform.GetChild(2).GetComponent<Text>().text;
     }
 
     public void DisplayAgeSelection() {
@@ -113,7 +113,7 @@ public class PlayerManager : MonoBehaviour {
     }
 
     public string GetName() {
-        return name;
+        return playerName;
     }
 
     public void Restart() {

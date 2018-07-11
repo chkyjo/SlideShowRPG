@@ -7,7 +7,6 @@ using UnityEngine.UI;
 public class CharactersManager : MonoBehaviour {
 
     List<Character> completeListOfCharacters = new List<Character>();
-    List<Character> scriptedCharacters = new List<Character>();
 
     public GameObject characterInfoPanel;
     public Slider relationshipSlider;
@@ -63,7 +62,6 @@ public class CharactersManager : MonoBehaviour {
 	}
 
     public Character[] GetCharactersInRoom(int roomIndex){
-        Debug.Log(completeListOfCharacters.Count);
         List<Character> characters = new List<Character>();
         for(int i = 0; i < completeListOfCharacters.Count; i++){
             if (completeListOfCharacters[i].GetLocation() == roomIndex){
@@ -164,7 +162,7 @@ public class CharactersManager : MonoBehaviour {
         int[] goalsToInt = new int[5] { 1, 2, 3, 4, 5 };
         string[] goals;
 
-        for (int i = 0; i < 7; i++) {
+        for(int i = 0; i < 9; i++) {
             ID = 1000 + i;
             firstAndLast = names[i].Split(' ');
             gender = UnityEngine.Random.Range(0, 2);
@@ -178,8 +176,17 @@ public class CharactersManager : MonoBehaviour {
             if(ID == 1000) {
                 tempChar.AddBehavior(1, 0);
                 tempChar.AddBehavior(2, 1);
-                int[] trainingHours = { 7, 11 };
+                int[] trainings = new int[] { 1, 0, 0 };
+                tempChar.SetTrainings(trainings);
+                int[][] trainingHours = new int[3][];
+                trainingHours[0] = new int[] { 7, 11 };
                 tempChar.SetTrainingHours(trainingHours);
+                int[] missions = new int[] { 1, 0, 0 };
+                int[][] missionTimes = new int[3][];
+                missionTimes[0] = new int[] { 12, 13 };
+                tempChar.SetMissions(missions);
+                tempChar.SetMissionTimes(missionTimes);
+                
             }
             if (ID < 1004){
                 tempChar.SetLocation(3);
@@ -187,6 +194,10 @@ public class CharactersManager : MonoBehaviour {
             }
             if(ID == 1005 || ID == 1006) {
                 tempChar.SetGender(0);
+            }
+            if(ID == 1007 || ID == 1008) {
+                tempChar.SetLocation(7);
+                tempChar.SetImportance(1);
             }
             completeListOfCharacters.Add(tempChar);
         }
@@ -203,27 +214,40 @@ public class CharactersManager : MonoBehaviour {
 
     public bool ActivateBehavior(int behaviorID, int characterID) {
         if (behaviorID == 1) {
-            Character tempChar = completeListOfCharacters[characterID];
-            int[] trainingHours = tempChar.GetTrainingHours();
-            int hour = GameObject.Find("SettingManager").GetComponent<SettingManager>().GetTime()[0];
-            if (hour >= trainingHours[0] && hour < trainingHours[1]) {
-                string greeting = "Hey! Did I say you could take a break?";
-                completeListOfCharacters[characterID].SetRelationship(completeListOfCharacters[characterID].GetRelationship() - 5);
-                GameObject.Find("DecisionManager").GetComponent<DecisionManager>().TalkTo(characterID, greeting);
+            for(int i = 0; i < 3; i++) {
+                Character tempChar = completeListOfCharacters[characterID];
+                int[][] trainingHours = tempChar.GetTrainingHours();
+                int hour = GameObject.Find("SettingManager").GetComponent<SettingManager>().GetTime()[0];
+                if(tempChar.GetTrainings()[i] != 0) {
+                    if (hour >= trainingHours[i][0] && hour < trainingHours[i][1]) {
+                        string greeting = "Hey! Did I say you could take a break?";
+                        completeListOfCharacters[characterID].SetRelationship(completeListOfCharacters[characterID].GetRelationship() - 5);
+                        GameObject.Find("DecisionManager").GetComponent<DecisionManager>().TalkTo(characterID, greeting);
+                    }
+                }
             }
+            
             return true;
         }else if(behaviorID == 2) {
             Character tempChar = completeListOfCharacters[characterID];
-            int[] trainingHours = tempChar.GetTrainingHours();
+            int[][] trainingHours = tempChar.GetTrainingHours();
             int hour = GameObject.Find("SettingManager").GetComponent<SettingManager>().GetTime()[0];
-            if (hour >= trainingHours[0] && hour < trainingHours[1] && tempChar.GetWarned() == 0) {
-                tempChar.SetWarned(1);
-                string greeting = "What are you doing? Get back to training! If you leave I will be forced to have you executed.";
-                completeListOfCharacters[characterID].SetRelationship(completeListOfCharacters[characterID].GetRelationship() - 5);
-                GameObject.Find("DecisionManager").GetComponent<DecisionManager>().TalkTo(characterID, greeting);
-                return true;
+            for(int i = 0; i < 3; i++) {
+                int[] trainings = tempChar.GetTrainings();
+                if(trainings[i] != 0) {
+                    if (hour >= trainingHours[i][0] && hour < trainingHours[i][1] && tempChar.GetWarned() == 0) {
+                        tempChar.SetWarned(1);
+                        string greeting = "What are you doing? Get back to training! If you leave I will be forced to have you executed.";
+                        completeListOfCharacters[characterID].SetRelationship(completeListOfCharacters[characterID].GetRelationship() - 5);
+                        GameObject.Find("DecisionManager").GetComponent<DecisionManager>().TalkTo(characterID, greeting);
+                        return true;
+                    }
+                    else if (hour >= trainingHours[i][0] && hour < trainingHours[i][1] && tempChar.GetWarned() == 1) {
+                        StartCoroutine(GameObject.Find("DecisionManager").GetComponent<DecisionManager>().SendGuardsForPlayer());
+                    }
+                }
             }
-            StartCoroutine(GameObject.Find("DecisionManager").GetComponent<DecisionManager>().SendGuardsForPlayer());
+            
             return false;
         }
         return false;

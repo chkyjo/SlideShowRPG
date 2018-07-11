@@ -141,7 +141,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05a9c630419bdb84aace32ae539bfa77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  missionID: 0
+  missionID: 1
+  progressID: 0
+  conversationBackgroundPanel: {fileID: 0}
+  characterManager: {fileID: 0}
+  progressMission: {fileID: 0}
 --- !u!114 &114309976048958150
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -237,7 +241,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Ask about current events
+  m_Text: Start Mission
 --- !u!114 &114738684239556504
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -303,9 +307,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71b01c2e4dee7c14a8c6cbeb52393d05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dialogueMessage: 
-  messageID: 0
-  characterID: 0
+  dialogueMessage: I'm ready
+  messageID: 30
+  characterID: 1000
 --- !u!222 &222001967117570318
 CanvasRenderer:
   m_ObjectHideFlags: 1

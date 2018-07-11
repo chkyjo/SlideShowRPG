@@ -45,8 +45,10 @@ public class Inventory : MonoBehaviour {
 
         AddFoodByID(200);
         AddFoodByID(201);
+        AddFoodByID(203);
         AddFoodByID(205);
         AddFoodByID(206);
+        AddFoodByID(208);
 
         //zero items on display
         itemsInItemPanel = 0;

@@ -29,7 +29,7 @@ public class SettingManager : MonoBehaviour{
     int minute;
     int hour;
     float timeScale;
-    bool timePause;
+    bool timePause = false;
 
     public int opponentID;
 
