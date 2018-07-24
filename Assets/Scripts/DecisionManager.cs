@@ -83,28 +83,30 @@ public class DecisionManager : MonoBehaviour {
 
     }
 
+    
+
     //fill decision panel based on inventory and scene
     private void FillDecisionPanel() {
+
+        SettingManager sM = settingManager.GetComponent<SettingManager>();
+        CharactersManager cM = characterManager.GetComponent<CharactersManager>();
+
         //add exits based on the room
         AddRoomExits();
 
         //add the observe action
         AddDecision(2);
 
-        //if there are people in the area add the talk action
-        if (settingManager.GetComponent<SettingManager>().numCharactersInSetting > 0) {
+        //if there are people in the area add the talk action and the attack action
+        if (cM.GetNumCharactersInRoom(sM.GetRoom()) > 0) {
             AddDecision(1);
-        }
-
-        //if there is something in the players inventory and there are people to throw things at add the throw action
-        if (inventoryManager.GetComponent<Inventory>().GetInventoryCounts()[3] > 0 && settingManager.GetComponent<SettingManager>().numCharactersInSetting > 0) {
-            AddDecision(0);
-        }
-
-        //if there are living things in the area add the attack action
-        if (settingManager.GetComponent<SettingManager>().numCharactersInSetting > 0) {
             AddDecision(3);
+            //if there is also something in the players inventory add the throw action
+            if (inventoryManager.GetComponent<Inventory>().GetInventoryCounts()[3] > 0) {
+                AddDecision(0);
+            }
         }
+        
 
         //if there are item up for grabs add the take action
 
@@ -252,14 +254,14 @@ public class DecisionManager : MonoBehaviour {
         var UF = Instantiate(userFeedBackObject);
         UF.transform.SetParent(decisionScroller.transform, false);
 
+        SettingManager sM = settingManager.GetComponent<SettingManager>();
+
         //allow user to select who to talk to
-        int numCharacters = settingManager.GetComponent<SettingManager>().numCharactersInSetting;
-        Character tempChar;
-        for (int i = 0; i < numCharacters; i++){
-            tempChar = settingManager.GetComponent<SettingManager>().charactersInSetting[i];
-            if (tempChar.GetStatus() != "Dead") {
-                attackPersonDecisionObject.GetComponentsInChildren<Text>()[1].text = tempChar.GetFirstName() + " " + tempChar.GetLastName();
-                attackPersonDecisionObject.GetComponent<AttackAction>().characterID = tempChar.GetID();
+        Character[] characters = characterManager.GetComponent<CharactersManager>().GetCharactersInRoom(sM.GetRoom());
+        for (int i = 0; i < characters.Length; i++){
+            if (characters[i].GetStatus() != "Dead") {
+                attackPersonDecisionObject.GetComponentsInChildren<Text>()[1].text = characters[i].GetFirstName() + " " + characters[i].GetLastName();
+                attackPersonDecisionObject.GetComponent<AttackAction>().characterID = characters[i].GetID();
                 var obj = GameObject.Instantiate(attackPersonDecisionObject);
                 obj.transform.SetParent(decisionScroller.transform, false);
                 itemsInDecisionPanel++;
@@ -377,12 +379,13 @@ public class DecisionManager : MonoBehaviour {
         var UF = Instantiate(userFeedBackObject);
         UF.transform.SetParent(decisionScroller.transform, false);
 
+        SettingManager sM = settingManager.GetComponent<SettingManager>();
+
         //allow user to select who or what they want to throw the item at depending on the scene
-        int numCharacters = settingManager.GetComponent<SettingManager>().numCharactersInSetting;
-        for (int i = 0; i < numCharacters; i++) {
-            throwItemAtDecisionObject.GetComponentsInChildren<Text>()[1].text = settingManager.GetComponent<SettingManager>().charactersInSetting[i].GetFirstName()
-                + " " + settingManager.GetComponent<SettingManager>().charactersInSetting[i].GetLastName();
-            throwItemAtDecisionObject.GetComponent<ThrowAction>().characterID = settingManager.GetComponent<SettingManager>().charactersInSetting[i].GetID();
+        Character[] characters = characterManager.GetComponent<CharactersManager>().GetCharactersInRoom(sM.GetRoom());
+        for (int i = 0; i < characters.Length; i++) {
+            throwItemAtDecisionObject.GetComponentsInChildren<Text>()[1].text = characters[i].GetFirstName() + " " + characters[i].GetLastName();
+            throwItemAtDecisionObject.GetComponent<ThrowAction>().characterID = characters[i].GetID();
             throwItemAtDecisionObject.GetComponent<ThrowAction>().itemID = itemID;
             var obj = GameObject.Instantiate(throwItemAtDecisionObject);
             obj.transform.SetParent(decisionScroller.transform, false);
@@ -426,14 +429,14 @@ public class DecisionManager : MonoBehaviour {
 
         GameObject playerManager = GameObject.FindWithTag("PlayerManager");
         int caloriesGained = 0;
-        settingManager.GetComponent<SettingManager>().SetTimeScale(0.0415f);
+        settingManager.GetComponent<SettingManager>().SetTimeScale(0.0083f);
 
         while (eatingMeal == 1){
             if(playerManager.GetComponent<PlayerManager>().calories < 1000) {
                 playerManager.GetComponent<PlayerManager>().calories++;
                 caloriesConsumedStatus.text = (++caloriesGained).ToString() + " calories";
                 playerManager.GetComponent<PlayerManager>().UpdateCalories();
-                yield return new WaitForSeconds(0.05f);
+                yield return new WaitForSeconds(0.01f);
             }
             else {
                 eatingMeal = 0;
@@ -456,14 +459,15 @@ public class DecisionManager : MonoBehaviour {
         var UF = Instantiate(userFeedBackObject);
         UF.transform.SetParent(decisionScroller.transform, false);
 
+        SettingManager sM = settingManager.GetComponent<SettingManager>();
+
         //allow user to select who to talk to
-        int numCharacters = settingManager.GetComponent<SettingManager>().numCharactersInSetting;
-        for (int i = 0; i < numCharacters; i++){
-            Character tempChar = settingManager.GetComponent<SettingManager>().charactersInSetting[i];
-            if (tempChar.GetStatus() != "Dead") {
-                talkToDecisionObject.GetComponentsInChildren<Text>()[1].text = tempChar.GetFirstName() + " " + tempChar.GetLastName();
-                talkToDecisionObject.GetComponent<TalkToOption>().characterID = tempChar.GetID();
-                if (tempChar.GetImportance() == 1) {
+        Character[] characters = characterManager.GetComponent<CharactersManager>().GetCharactersInRoom(sM.GetRoom());
+        for (int i = 0; i < characters.Length; i++){
+            if (characters[i].GetStatus() != "Dead") {
+                talkToDecisionObject.GetComponentsInChildren<Text>()[1].text = characters[i].GetFirstName() + " " + characters[i].GetLastName();
+                talkToDecisionObject.GetComponent<TalkToOption>().characterID = characters[i].GetID();
+                if (characters[i].GetImportance() == 1) {
                     talkToDecisionObject.transform.GetChild(0).GetComponent<Image>().color = new Color(1, 0, 0, 1);
                 }
                 else {
@@ -495,15 +499,6 @@ public class DecisionManager : MonoBehaviour {
         //set the conversation panel to active and get the character being talked to
         conversationBackgroundPanel.SetActive(true);
         Character talkingTo = characterManager.GetComponent<CharactersManager>().GetCharacter(characterID);
-
-        //clear previous dialogue
-        for (int i = 0; i < conversationScroll.transform.childCount; i++) {
-            Destroy(conversationScroll.transform.GetChild(i).gameObject);
-        }
-
-        //reset scrollbar and scroll area
-        converstationScrollBar.value = 0;
-        conversationScroll.GetComponent<RectTransform>().offsetMax = new Vector2(-15, 0);
 
         //Add greeting from the character, done before adding to info panel to update player knowledge, since greeting tells player about characters personality
         StartCoroutine(GameObject.FindWithTag("ConversationManager").GetComponent<ConversationManager>().DisplayGreeting(characterID));
@@ -537,11 +532,7 @@ public class DecisionManager : MonoBehaviour {
         }
         relationshipSlider.value = talkingTo.GetRelationship();
 
-        //clear previous dialogue options
-        for(int i = 0; i < dialogueOptionsPanel.transform.childCount; i++){
-            Destroy(dialogueOptionsPanel.transform.GetChild(i).gameObject);
-        }
-
+        CheckCharacterForConvos(characterID);
         CheckCharacterForTraining(characterID);
         CheckCharacterForMissions(characterID);
 
@@ -618,6 +609,13 @@ public class DecisionManager : MonoBehaviour {
         }
     }
 
+    public void CheckCharacterForConvos(int characterID) {
+        int convoID = characterManager.GetComponent<CharactersManager>().GetCharacter(characterID).GetConvo();
+        if (convoID != 0) {
+            GameObject.Find("ConversationManager").GetComponent<ConversationManager>().StartConversation(convoID, characterID);
+        }
+    }
+
     public void CheckCharacterForTraining(int characterID) {
         CharactersManager cM = GameObject.Find("CharacterManager").GetComponent<CharactersManager>();
 
@@ -653,19 +651,6 @@ public class DecisionManager : MonoBehaviour {
                 }
             }
         }
-    }
-
-    //called when user completes the selections for an action
-    public void RefreshDecisionList(){
-        ClearDecisionPanel();
-        FillDecisionPanel();
-    }
-    //called by RefreshDecisionList
-    private void ClearDecisionPanel(){
-        for (int i = 0; i < decisionScroller.transform.childCount; i++){
-            Destroy(decisionScroller.transform.GetChild(i).gameObject);
-        }
-        itemsInDecisionPanel = 0;
     }
 
     //called when user selects to wait in a bed
@@ -723,7 +708,7 @@ public class DecisionManager : MonoBehaviour {
                 TalkTo(1000, greeting);
             }
 
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(0.08f);
         }
     }
     public void StopTraining() {
@@ -743,10 +728,7 @@ public class DecisionManager : MonoBehaviour {
         float randWait = Random.Range(10, 30);
         yield return new WaitForSeconds(randWait);
 
-        ConversationManager cM = GameObject.Find("ConversationManager").GetComponent<ConversationManager>();
-
-        string greeting = cM.StartConversation(1, 1007);
-        TalkTo(1007, greeting);
+        TalkTo(1007);
 
         while (true) {
             if(settingManager.GetComponent<SettingManager>().GetTime()[0] == 8) {
@@ -790,15 +772,27 @@ public class DecisionManager : MonoBehaviour {
         //update the current room to the setting manager
         settingManager.GetComponent<SettingManager>().currentRoom = nextRoomID;
         settingManager.GetComponent<SettingManager>().DisplayRoom();
-        //find the characters in the room and update the setting manager
-        Character[] characters = characterManager.GetComponent<CharactersManager>().GetCharactersInRoom(nextRoomID);
-        settingManager.GetComponent<SettingManager>().SetCharactersInSetting(characters);
-        if(nextRoomID == 7) {
-            Debug.Log(characters.Length);
-        }
-        
+
         //update the decision list
+        for (int i = 0; i < decisionScroller.transform.childCount; i++) {
+            Destroy(decisionScroller.transform.GetChild(i).gameObject);
+        }
         RefreshDecisionList();
+    }
+
+    //called when user completes the selections for an action
+    public void RefreshDecisionList() {
+        ClearDecisionPanel();
+        FillDecisionPanel();
+    }
+    //called by RefreshDecisionList
+    private void ClearDecisionPanel() {
+        for (int i = 0; i < decisionScroller.transform.childCount; i++) {
+            if (decisionScroller.transform.GetChild(i).gameObject.name != "ProgressMission(Clone)") {
+                Destroy(decisionScroller.transform.GetChild(i).gameObject);
+            }
+        }
+        itemsInDecisionPanel = 0;
     }
     //called when player leaves training after being warned not to
     public IEnumerator SendGuardsForPlayer() {
@@ -812,7 +806,6 @@ public class DecisionManager : MonoBehaviour {
 
         string greeting = GameObject.Find("PlayerManager").GetComponent<PlayerManager>().name + ", please come with us.";
         TalkTo(1005, greeting);
-        GameObject.Find("ConversationManager").GetComponent<ConversationManager>().AddDialogueOption(22, 1005);
-        GameObject.Find("ConversationManager").GetComponent<ConversationManager>().AddDialogueOption(23, 1005);
+       
     }
 }

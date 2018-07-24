@@ -21,6 +21,8 @@ public class Character {
     int _relationship; //how they feel about you
     int[] _playerKnowledge;
 
+    int[] _convoQueue;
+
     int _roomLocation;
     int[] _missions;
     int[][] _missionTimes;
@@ -47,6 +49,8 @@ public class Character {
         _relationships = new int[1][];
         _playerKnowledge = new int[15];
 
+        _convoQueue = new int[1];
+
         _roomLocation = -1;
         _missions = new int[3] {0,0,0 };
         _missionTimes = new int[3][];
@@ -68,6 +72,9 @@ public class Character {
         _relationships = new int[1][];
         _relationship = 50;
         _playerKnowledge = new int[15] { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+
+        _convoQueue = new int[1];
+
         _missions = new int[3] { 0, 0, 0 };
         _trainings = new int[3] { 0, 0, 0 };
         _behaviors = new int[2] { 0, 0 };
@@ -114,6 +121,11 @@ public class Character {
     public int[][] GetRelationships() {
         return _relationships;
     }
+
+    public int GetConvo() {
+        return _convoQueue[0];
+    }
+
     public int GetRelationship() {
         return _relationship;
     }
@@ -190,6 +202,10 @@ public class Character {
     }
     public void SetPlayerKnowledge(int index){
         _playerKnowledge[index] = 1;
+    }
+
+    public void SetConvoQueue(int convoID) {
+        _convoQueue[0] = convoID;
     }
 
     public void SetLocation(int location){

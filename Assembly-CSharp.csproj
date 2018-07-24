@@ -74,6 +74,7 @@
      <Compile Include="Assets\Scripts\RoomManager.cs" />
      <Compile Include="Assets\Scripts\SceneLoader.cs" />
      <Compile Include="Assets\Scripts\SettingManager.cs" />
+     <Compile Include="Assets\Scripts\SpeechAlertManager.cs" />
      <Compile Include="Assets\Scripts\TalkOption.cs" />
      <Compile Include="Assets\Scripts\TalkToOption.cs" />
      <Compile Include="Assets\Scripts\ThrowAction.cs" />

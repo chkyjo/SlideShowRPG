@@ -113,6 +113,13 @@ public class RoomManager : MonoBehaviour {
         connectedRooms = new int[0];
         rooms[7] = new Room("Prison", 0, observationText, 0, options, exitTexts, leaveTexts, connectedRooms);
 
+        options = new int[0] { };
+        observationText = "Very little light made it through the trees.";
+        exitTexts = new string[0];
+        leaveTexts = new string[0];
+        connectedRooms = new int[0];
+        rooms[8] = new Room("Deep Woods", 0, observationText, 0, options, exitTexts, leaveTexts, connectedRooms);
+
 
 
 

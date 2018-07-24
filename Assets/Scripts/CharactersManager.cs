@@ -76,6 +76,16 @@ public class CharactersManager : MonoBehaviour {
         return arrayOfCharacters;
     }
 
+    public int GetNumCharactersInRoom(int roomIndex) {
+        int numCharacters = 0;
+        for (int i = 0; i < completeListOfCharacters.Count; i++) {
+            if (completeListOfCharacters[i].GetLocation() == roomIndex) {
+                numCharacters++;
+            }
+        }
+        return numCharacters;
+    }
+
     private void InitCompleteLists(){
         string stringOfNames = maleFirstNameListTextFile.text;
         completeListOfMaleFirstNames = stringOfNames.Split('\n');
@@ -188,6 +198,9 @@ public class CharactersManager : MonoBehaviour {
                 tempChar.SetMissionTimes(missionTimes);
                 
             }
+            if(ID == 1002) {
+                tempChar.SetConvoQueue(2);
+            }
             if (ID < 1004){
                 tempChar.SetLocation(3);
                 tempChar.SetImportance(1);
@@ -198,6 +211,7 @@ public class CharactersManager : MonoBehaviour {
             if(ID == 1007 || ID == 1008) {
                 tempChar.SetLocation(7);
                 tempChar.SetImportance(1);
+                tempChar.SetConvoQueue(1);
             }
             completeListOfCharacters.Add(tempChar);
         }

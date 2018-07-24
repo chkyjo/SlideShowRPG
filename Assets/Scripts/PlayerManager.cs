@@ -17,7 +17,7 @@ public class PlayerManager : MonoBehaviour {
 
     public int health;
     public int calories;
-    public string playerName;
+    string playerName;
 
     public static PlayerManager Instance;
 
