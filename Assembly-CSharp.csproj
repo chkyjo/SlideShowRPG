@@ -55,8 +55,10 @@
      <Compile Include="Assets\Scripts\Armor.cs" />
      <Compile Include="Assets\Scripts\AttackAction.cs" />
      <Compile Include="Assets\Scripts\CancelDecisionButtonScript.cs" />
+     <Compile Include="Assets\Scripts\CategoryManager.cs" />
      <Compile Include="Assets\Scripts\Character.cs" />
      <Compile Include="Assets\Scripts\CharactersManager.cs" />
+     <Compile Include="Assets\Scripts\CombatAction.cs" />
      <Compile Include="Assets\Scripts\ConversationManager.cs" />
      <Compile Include="Assets\Scripts\DecisionManager.cs" />
      <Compile Include="Assets\Scripts\DialogueAction.cs" />

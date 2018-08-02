@@ -13,6 +13,8 @@ public class ConversationManager : MonoBehaviour {
     public GameObject conversationScroll;
     public GameObject startMissionDialogueObject;
     public GameObject conversationBackgroundPanel;
+    public Scrollbar converstationScrollBar;
+    public GameObject characterInfoPanel;
 
     struct ConvoNode {
         public int nodeID;
@@ -24,8 +26,7 @@ public class ConversationManager : MonoBehaviour {
         public int parameter1;
     }
 
-    ConvoNode[] prisonConvo = new ConvoNode[100];
-    ConvoNode[] huntingConvo = new ConvoNode[100];
+    ConvoNode[][] conversations = new ConvoNode[10][];
 
     float savedHeight;
 
@@ -35,124 +36,81 @@ public class ConversationManager : MonoBehaviour {
     }
 
     void InitializeConversations() {
-        StreamReader file = new StreamReader(Application.persistentDataPath + "/PrisonConvo.txt", true);
+
+        string[] textFileNames = new string[10] {"DefaultConvo.txt", "PrisonConvo.txt", "AkayshaConvo.txt", "ArrestConvo.txt", "BenConvo.txt", "TakeTheShotConvo.txt", "", "", "", "" };
+
+        conversations[0] = new ConvoNode[100];
+        conversations[1] = new ConvoNode[100];
+        conversations[2] = new ConvoNode[100];
+        conversations[3] = new ConvoNode[10];
+        conversations[4] = new ConvoNode[10];
+        conversations[5] = new ConvoNode[10];
 
         int nodeIndex = 0;
 
         int numChildren = 0;
         int[] childIndexes = new int[5];
         string nextLine;
+        StreamReader file;
 
-        //get root data
-        string rootString = file.ReadLine();
-        prisonConvo[0].nodeID = 0;
-        prisonConvo[0].characterResponse = rootString.TrimStart('(');
+        for (int i = 0; i < 6; i++) {
+            file = new StreamReader(Application.persistentDataPath + "/" + textFileNames[i], true);
 
-        while (!file.EndOfStream) {
-            nextLine = file.ReadLine();
-            if (nextLine.StartsWith(":")) {//if child index add to child indexes
-                childIndexes[numChildren] = Convert.ToInt16(nextLine.TrimStart(':'));
-                numChildren++;
-            }
-            else if (numChildren != 0) {//if line is not a child index and numchildren is not 0
-                //add children to character response
-                prisonConvo[nodeIndex].playerOptions = new int[numChildren];
-                for (int i = 0; i < numChildren; i++) {
-                    prisonConvo[nodeIndex].playerOptions[i] = childIndexes[i];
+            //get root data
+            conversations[i][0].nodeID = 0;
+            conversations[i][0].characterResponse = file.ReadLine();
+
+            while (!file.EndOfStream) {
+                nextLine = file.ReadLine();
+                if (nextLine.StartsWith(":")) {//if child index add to child indexes
+                    childIndexes[numChildren] = Convert.ToInt16(nextLine.TrimStart(':'));
+                    numChildren++;
                 }
-                if (nodeIndex == 0) {//if root also up the index
+                else if (numChildren != 0) {//if line is not a child index and numchildren is not 0
+                                            //add children to character response
+                    conversations[i][nodeIndex].playerOptions = new int[numChildren];
+                    for (int j = 0; j < numChildren; j++) {
+                        conversations[i][nodeIndex].playerOptions[j] = childIndexes[j];
+                    }
+                    if (nodeIndex == 0) {//if root also up the index
+                        nodeIndex++;
+                    }
+                    numChildren = 0;
+                }
+
+                if (nextLine.StartsWith("/")) {//if summary
+                    conversations[i][nodeIndex].responseSummary = nextLine.TrimStart('/');
+                }
+
+                if (nextLine.StartsWith(")")) {//if player response add the string
+                    conversations[i][nodeIndex].playerResponse = nextLine.TrimStart(')');
+                }
+
+                if (nextLine.StartsWith("(")) {//if character response add the string
+                    conversations[i][nodeIndex].characterResponse = nextLine.TrimStart('(');
+                }
+
+                if (nextLine.StartsWith(">")) {//if effect
+                    string[] splitEffect = nextLine.TrimStart('>').Split('-');
+                    if (splitEffect.Length == 2) {
+                        conversations[i][nodeIndex].effect = Convert.ToInt16(splitEffect[0]);
+                        conversations[i][nodeIndex].parameter1 = Convert.ToInt16(splitEffect[1]);
+                    }
+                    else {
+                        conversations[i][nodeIndex].effect = Convert.ToInt16(splitEffect[0]);
+                    }
+
+                }
+
+                if (nextLine.StartsWith("-")) {//if ID
+                    conversations[i][nodeIndex].nodeID = Convert.ToInt16(nextLine.TrimStart('-'));
                     nodeIndex++;
                 }
-                numChildren = 0;
             }
 
-            if (nextLine.StartsWith("/")) {//if summary
-                prisonConvo[nodeIndex].responseSummary = nextLine.TrimStart('/');
-            }
-
-            if (nextLine.StartsWith(")")) {//if player response add the string
-                prisonConvo[nodeIndex].playerResponse = nextLine.TrimStart(')');
-            }
-
-            if (nextLine.StartsWith("(")) {//if character response add the string
-                prisonConvo[nodeIndex].characterResponse = nextLine.TrimStart('(');
-            }
-
-            if (nextLine.StartsWith(">")) {//if effect
-                string[] splitEffect = nextLine.TrimStart('>').Split('-');
-                if(splitEffect.Length == 2) {
-                    prisonConvo[nodeIndex].effect = Convert.ToInt16(splitEffect[0]);
-                    prisonConvo[nodeIndex].parameter1 = Convert.ToInt16(splitEffect[1]);
-                }
-                else {
-                    prisonConvo[nodeIndex].effect = Convert.ToInt16(splitEffect[0]);
-                }
-                
-            }
-
-            if (nextLine.StartsWith("-")) {//if ID
-                prisonConvo[nodeIndex].nodeID = Convert.ToInt16(nextLine);
-                nodeIndex++;
-            }
+            file.Close();
+            nodeIndex = 0;
         }
-
-        file.Close();
-
-        file = new StreamReader(Application.persistentDataPath + "/AkayshaConvo.txt", true);
-
-        nodeIndex = 0;
-        huntingConvo[0].characterResponse = file.ReadLine().TrimStart('(');
-        huntingConvo[0].nodeID = 0;
-
-        while (!file.EndOfStream) {
-            nextLine = file.ReadLine();
-            if (nextLine.StartsWith(":")) {//if child index add to child indexes
-                childIndexes[numChildren] = Convert.ToInt16(nextLine.TrimStart(':'));
-                numChildren++;
-            }
-            else if (numChildren != 0) {//if line is not a child index and numchildren is not 0
-                //add children to character response
-                huntingConvo[nodeIndex].playerOptions = new int[numChildren];
-                for (int i = 0; i < numChildren; i++) {
-                    huntingConvo[nodeIndex].playerOptions[i] = childIndexes[i];
-                }
-                if (nodeIndex == 0) {//if root also up the index
-                    nodeIndex++;
-                }
-                numChildren = 0;
-            }
-
-            if (nextLine.StartsWith("/")) {//if summary
-                huntingConvo[nodeIndex].responseSummary = nextLine.TrimStart('/');
-            }
-
-            if (nextLine.StartsWith(")")) {//if player response add the string
-                huntingConvo[nodeIndex].playerResponse = nextLine.TrimStart(')');
-            }
-
-            if (nextLine.StartsWith("(")) {//if character response add the string
-                huntingConvo[nodeIndex].characterResponse = nextLine.TrimStart('(');
-            }
-
-            if (nextLine.StartsWith(">")) {//if effect
-                string[] splitEffect = nextLine.TrimStart('>').Split('-');
-                if (splitEffect.Length == 2) {
-                    huntingConvo[nodeIndex].effect = Convert.ToInt16(splitEffect[0]);
-                    huntingConvo[nodeIndex].parameter1 = Convert.ToInt16(splitEffect[1]);
-                }
-                else {
-                    huntingConvo[nodeIndex].effect = Convert.ToInt16(splitEffect[0]);
-                }
-
-            }
-
-            if (nextLine.StartsWith("-")) {//if IDs add ID and increase index
-                huntingConvo[nodeIndex].nodeID = Convert.ToInt16(nextLine);
-                nodeIndex++;
-            }
-        }
-
-        file.Close();
     }
 
     public IEnumerator DisplayGreeting(int characterID) {
@@ -241,38 +199,8 @@ public class ConversationManager : MonoBehaviour {
     //display the dialogue message that the player selected
     public void DisplayDialogueChoice(string message) {
         playerResponseObject.GetComponentInChildren<Text>().text = message;
-        var response = GameObject.Instantiate(playerResponseObject);
+        var response = Instantiate(playerResponseObject);
         response.transform.SetParent(conversationScroll.transform, false);
-    }
-
-    //sole perpose is to call DisplayResponse
-    public void CallDisplayResponse(int questionID, int characterID) {
-        StartCoroutine(DisplayResponseToMessage(questionID, characterID));
-    }
-
-    //called by calldisplayresponse because IEnumerator can't be called by an object that will be destroyed
-    public IEnumerator DisplayResponseToMessage(int messageID, int characterID) {
-
-        GameObject placeholder = GameObject.Find("Placeholder");
-
-        
-
-        //pause added so that the gameobject has time to be placed in the placeholder to later be transformed into the conversation panel because otherwise it wont account for the dynamic size
-        yield return new WaitForSeconds(0.001f);
-        placeholder.transform.GetChild(0).transform.SetParent(conversationScroll.transform, false);
-
-        yield return new WaitForEndOfFrame();
-
-        ExpandConversationScroll();
-    }
-
-    public IEnumerator ArrestPlayer() {
-        yield return new WaitForSeconds(3f);
-        conversationBackgroundPanel.SetActive(false);
-
-        string leaveText = "The guards arrest you and take you to your prison cell.";
-        GameObject.Find("DecisionManager").GetComponent<DecisionManager>().NextRoom(7, leaveText);
-        StartCoroutine(GameObject.Find("DecisionManager").GetComponent<DecisionManager>().StartPrison());
     }
 
     //type of dialogue option that reveals a trait about the character
@@ -288,111 +216,156 @@ public class ConversationManager : MonoBehaviour {
 
     }
 
+    public void CauseEffect(int effect, int characterID, int parameter1) {
+        if (effect == 1) {//resetConvo
+            ResetConvo(characterID);
+        }
+        else if(effect == 2) {//ask about weather
+            StartCoroutine(DisplayCharacterResponse(GetWeatherResponse()));
+        }
+		else if(effect == 3){//addrel
+            Character tempChar = GameObject.Find("CharacterManager").GetComponent<CharactersManager>().GetCharacter(characterID);
+            tempChar.AddRelationship(parameter1);
+            characterInfoPanel.transform.GetChild(17).GetComponent<Slider>().value = tempChar.GetRelationship();
+        }
+		else if(effect == 4){//subrel
+            Character tempChar = GameObject.Find("CharacterManager").GetComponent<CharactersManager>().GetCharacter(characterID);
+            tempChar.SubtractRelationship(parameter1);
+            characterInfoPanel.transform.GetChild(17).GetComponent<Slider>().value = tempChar.GetRelationship();
+        }
+        else if(effect == 5) {//make hostile
+
+        }
+        else if (effect == 6) {//startMission
+            GameObject.Find("MissionManager").GetComponent<Missions>().StartMission(1);
+        }
+        else if (effect == 7) {//addQuest
+
+        }
+        else if (effect == 8) {//arrestPlayer
+            StartCoroutine(DisplayCharacterResponse("This way."));
+            StartCoroutine(ArrestPlayer());
+        }
+        else if (effect == 9) {//ask about character
+            GetToKnowCharacter(characterID);
+        }
+        else if(effect == 10) {
+            StartCoroutine(GameObject.Find("DecisionManager").GetComponent<DecisionManager>().DisplayTrainingWindow());
+        }
+        else if(effect == 11) {
+            GameObject.Find("MissionManager").GetComponent<Missions>().fireAtDeer = 0;
+        }
+    }
+
+    public void GetToKnowCharacter(int characterID) {
+        int randNum = UnityEngine.Random.Range(0, 5);
+        CharactersManager cM = GameObject.Find("CharacterManager").GetComponent<CharactersManager>();
+        Character tempChar = cM.GetCharacter(characterID);
+        tempChar.SetPlayerKnowledge(randNum);
+        characterInfoPanel.GetComponentsInChildren<Text>()[randNum + 1].text = cM.GetTrait(tempChar.GetTraits()[randNum]);
+
+    }
+
+    public void ResetConvo(int characterID) {
+        for (int i = 0; i < dialogueOptionsPanel.transform.childCount; i++) {
+            Destroy(dialogueOptionsPanel.transform.GetChild(i).gameObject);
+        }
+        Character tempChar = GameObject.Find("CharacterManager").GetComponent<CharactersManager>().GetCharacter(characterID);
+        for(int i = 0; i < 3; i++) {
+            if(tempChar.GetConvoList()[i] != -1) {
+                AddConversation(tempChar.GetConvoList()[i], characterID);
+            } 
+            
+        }
+    }
+
+    public IEnumerator ArrestPlayer() {
+        yield return new WaitForSeconds(3f);
+        ClearConversation();
+        conversationBackgroundPanel.SetActive(false);
+
+        string leaveText = "The guards arrest you and take you to your prison cell.";
+        GameObject.Find("DecisionManager").GetComponent<DecisionManager>().NextRoom(7, leaveText);
+        StartCoroutine(GameObject.Find("DecisionManager").GetComponent<DecisionManager>().StartPrison());
+    }
+
     //display response to question about weather
-    public GameObject GetWeatherResponse(int characterID) {
+    public string GetWeatherResponse() {
         string weather = GameObject.FindWithTag("SettingManager").GetComponent<SettingManager>().GetWeather();
+        string response;
         if(weather == "rainy") {
-            characterResponseObject.GetComponentsInChildren<Text>()[0].text = "It looks a bit " + weather + " out there. You might want to wear a coat.";
+            response = "It looks a bit " + weather + " out there. You might want to wear a coat.";
         }
-        if (weather == "windy") {
-            characterResponseObject.GetComponentsInChildren<Text>()[0].text = "It's blowing me away how " + weather + " it is.";
+        else if (weather == "windy") {
+            response = "It's blowing me away how " + weather + " it is.";
         }
-        if (weather == "snowy") {
-            characterResponseObject.GetComponentsInChildren<Text>()[0].text = "It's cold out there. Haven't seen this much snow in a while.";
+        else if (weather == "snowy") {
+            response = "It's cold out there. Haven't seen this much snow in a while.";
         }
-        if (weather == "sunny") {
-            characterResponseObject.GetComponentsInChildren<Text>()[0].text = "It's beautiful outside.";
+        else if (weather == "sunny") {
+            response = "It's beautiful outside.";
         }
-        if (weather == "misty") {
-            characterResponseObject.GetComponentsInChildren<Text>()[0].text = "It's strangly misty. Gives me the creeps.";
+        else {
+            response = "It's strangly misty. Gives me the creeps.";
         }
 
-        return characterResponseObject;
+        return response;
+    }
+
+    public void AddConversation(int convoID, int characterID) {
+        
+        dialogueDecisionObject.GetComponentsInChildren<Text>()[1].text = conversations[convoID][1].responseSummary;
+        dialogueDecisionObject.GetComponent<DialogueAction>().dialogueMessage = conversations[convoID][1].playerResponse;
+        dialogueDecisionObject.GetComponent<DialogueAction>().characterID = characterID;
+        dialogueDecisionObject.GetComponent<DialogueAction>().messageID = conversations[convoID][1].nodeID;
+        dialogueDecisionObject.GetComponent<DialogueAction>().convoID = convoID;
+        dialogueDecisionObject.GetComponent<DialogueAction>().effect = conversations[convoID][1].effect;
+        dialogueDecisionObject.GetComponent<DialogueAction>().parameter = conversations[convoID][1].parameter1;
+        var dialogueObj = Instantiate(dialogueDecisionObject);
+        dialogueObj.transform.SetParent(dialogueOptionsPanel.transform, false);
+        
     }
 
     //adds initial player response options and returns the string of the characters greeting
     public void StartConversation(int convoID, int characterID) {
-
-        if(convoID == 1) {
-
-            characterResponseObject.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = prisonConvo[0].characterResponse;
-            var obj = Instantiate(characterResponseObject);
-            obj.transform.SetParent(conversationScroll.transform, false);
-
-            for (int i = 0; i < prisonConvo[0].playerOptions.Length; i++) {
-                int responseID = prisonConvo[0].playerOptions[i];
-                dialogueDecisionObject.GetComponentsInChildren<Text>()[1].text = prisonConvo[responseID].responseSummary;
-                dialogueDecisionObject.GetComponent<DialogueAction>().dialogueMessage = prisonConvo[responseID].playerResponse;
-                dialogueDecisionObject.GetComponent<DialogueAction>().characterID = characterID;
-                dialogueDecisionObject.GetComponent<DialogueAction>().messageID = prisonConvo[responseID].nodeID;
-                dialogueDecisionObject.GetComponent<DialogueAction>().convoID = convoID;
-                var dialogueObj = GameObject.Instantiate(dialogueDecisionObject);
-                dialogueObj.transform.SetParent(dialogueOptionsPanel.transform, false);
-            }
-            
-        }else if (convoID == 2) {
-            for (int i = 0; i < huntingConvo[0].playerOptions.Length; i++) {
-                int responseID = huntingConvo[0].playerOptions[i];
-                dialogueDecisionObject.GetComponentsInChildren<Text>()[1].text = huntingConvo[responseID].responseSummary;
-                dialogueDecisionObject.GetComponent<DialogueAction>().dialogueMessage = huntingConvo[responseID].playerResponse;
-                dialogueDecisionObject.GetComponent<DialogueAction>().characterID = characterID;
-                dialogueDecisionObject.GetComponent<DialogueAction>().messageID = huntingConvo[responseID].nodeID;
-                dialogueDecisionObject.GetComponent<DialogueAction>().convoID = convoID;
-                var dialogueObj = GameObject.Instantiate(dialogueDecisionObject);
-                dialogueObj.transform.SetParent(dialogueOptionsPanel.transform, false);
-            }
+        StartCoroutine(DisplayCharacterResponse(conversations[convoID][0].characterResponse));
+        for (int i = 0; i < conversations[convoID][0].playerOptions.Length; i++) {
+            int responseID = conversations[convoID][0].playerOptions[i];
+            dialogueDecisionObject.GetComponentsInChildren<Text>()[1].text = conversations[convoID][responseID].responseSummary;
+            DialogueAction dA = dialogueDecisionObject.GetComponent<DialogueAction>();
+            dA.dialogueMessage = conversations[convoID][responseID].playerResponse;
+            dA.characterID = characterID;
+            dA.messageID = conversations[convoID][responseID].nodeID;
+            dA.convoID = convoID;
+            dA.effect = conversations[convoID][responseID].effect;
+            dA.parameter = conversations[convoID][responseID].parameter1;
+            var dialogueObj = Instantiate(dialogueDecisionObject);
+            dialogueObj.transform.SetParent(dialogueOptionsPanel.transform, false);
         }
-
-        GameObject.Find("CharacterManager").GetComponent<CharactersManager>().GetCharacter(characterID).SetConvoQueue(0);
     }
 
     public void GetCharacterResponse(int convoID, int nodeID, int characterID) {
 
-        for(int i = 0; i < dialogueOptionsPanel.transform.childCount; i++) {
+        for (int i = 0; i < dialogueOptionsPanel.transform.childCount; i++) {
             Destroy(dialogueOptionsPanel.transform.GetChild(i).gameObject);
         }
-
-        //depending on the conversation
-        if(convoID == 1) {
-            //for each character response
-            for(int i = 0; i < prisonConvo.Length; i++) {
-                //if the character response ID matches the requested ID
-                if(prisonConvo[i].nodeID == nodeID) {
-                    //display the response
-                    StartCoroutine(DisplayCharacterResponse(prisonConvo[i].characterResponse));
-                    //if there are player options to respond to the response
-                    if (prisonConvo[i].playerOptions != null) {
-                        //Get each option and display it
-                        for (int j = 0; j < prisonConvo[i].playerOptions.Length; j++) {
-                            int playerResponseID = prisonConvo[i].playerOptions[j];
-                            dialogueDecisionObject.GetComponentsInChildren<Text>()[1].text = prisonConvo[nodeID].responseSummary;
-                            dialogueDecisionObject.GetComponent<DialogueAction>().dialogueMessage = prisonConvo[nodeID].playerResponse;
-                            dialogueDecisionObject.GetComponent<DialogueAction>().characterID = characterID;
-                            dialogueDecisionObject.GetComponent<DialogueAction>().messageID = nodeID;
-                            dialogueDecisionObject.GetComponent<DialogueAction>().convoID = convoID;
-                            var dialogueObj = GameObject.Instantiate(dialogueDecisionObject);
-                            dialogueObj.transform.SetParent(dialogueOptionsPanel.transform, false);
-                        }
-                    }
-                }
-            }
-        }else if(convoID == 2) {
-            for (int i = 0; i < huntingConvo.Length; i++) {
-                if (huntingConvo[i].nodeID == nodeID) {
-                    StartCoroutine(DisplayCharacterResponse(huntingConvo[i].characterResponse));
-                    if (huntingConvo[i].playerOptions != null) {
-                        for (int j = 0; j < huntingConvo[i].playerOptions.Length; j++) {
-                            int playerResponseID = huntingConvo[i].playerOptions[j];
-                            dialogueDecisionObject.GetComponentsInChildren<Text>()[1].text = huntingConvo[playerResponseID].responseSummary;
-                            dialogueDecisionObject.GetComponent<DialogueAction>().dialogueMessage = huntingConvo[playerResponseID].playerResponse;
-                            dialogueDecisionObject.GetComponent<DialogueAction>().characterID = characterID;
-                            dialogueDecisionObject.GetComponent<DialogueAction>().messageID = nodeID;
-                            dialogueDecisionObject.GetComponent<DialogueAction>().convoID = convoID;
-                            var dialogueObj = GameObject.Instantiate(dialogueDecisionObject);
-                            dialogueObj.transform.SetParent(dialogueOptionsPanel.transform, false);
-                        }
-                    }
-                }
+        
+        //display the response
+        StartCoroutine(DisplayCharacterResponse(conversations[convoID][nodeID].characterResponse));
+        //if there are player options to respond to the response
+        if (conversations[convoID][nodeID].playerOptions != null) {
+            //Get each option and display it
+            for (int j = 0; j < conversations[convoID][nodeID].playerOptions.Length; j++) {
+                int playerResponseID = conversations[convoID][nodeID].playerOptions[j];
+                dialogueDecisionObject.GetComponentsInChildren<Text>()[1].text = conversations[convoID][playerResponseID].responseSummary;
+                dialogueDecisionObject.GetComponent<DialogueAction>().dialogueMessage = conversations[convoID][playerResponseID].playerResponse;
+                dialogueDecisionObject.GetComponent<DialogueAction>().characterID = characterID;
+                dialogueDecisionObject.GetComponent<DialogueAction>().messageID = conversations[convoID][playerResponseID].nodeID;
+                dialogueDecisionObject.GetComponent<DialogueAction>().convoID = convoID;
+                dialogueDecisionObject.GetComponent<DialogueAction>().effect = conversations[convoID][playerResponseID].effect;
+                dialogueDecisionObject.GetComponent<DialogueAction>().parameter = conversations[convoID][playerResponseID].parameter1;
+                var dialogueObj = Instantiate(dialogueDecisionObject);
+                dialogueObj.transform.SetParent(dialogueOptionsPanel.transform, false);
             }
         }
     }
@@ -408,6 +381,21 @@ public class ConversationManager : MonoBehaviour {
         GameObject.Find("Placeholder").transform.GetChild(0).transform.SetParent(conversationScroll.transform, false);
 
         ExpandConversationScroll();
+    }
+
+    public void ClearConversation() {
+        for(int i = 0; i < conversationScroll.transform.childCount; i++) {
+            Destroy(conversationScroll.transform.GetChild(i).gameObject);
+        }
+
+        //reset scrollbar and scroll area
+        converstationScrollBar.value = 0;
+        conversationScroll.GetComponent<RectTransform>().offsetMax = new Vector2(-15, 0);
+
+        for (int i = 0; i < dialogueOptionsPanel.transform.childCount; i++) {
+            Destroy(dialogueOptionsPanel.transform.GetChild(i).gameObject);
+        }
+
     }
 
     public void ExpandConversationScroll() {

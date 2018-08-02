@@ -17,9 +17,12 @@ public class NextRoomAction : MonoBehaviour{
 
     }
 
-    public void NextRoom()
-    {
+    public void NextRoom(){
         GameObject.Find("DecisionManager").GetComponent<DecisionManager>().NextRoom(nextRoomID, leaveText);
+    }
+
+    public void DisplayExitOptions() {
+        GameObject.Find("DecisionManager").GetComponent<DecisionManager>().DisplayExitOptions();
     }
 
 }

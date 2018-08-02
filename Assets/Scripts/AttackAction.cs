@@ -35,4 +35,8 @@ public class AttackAction : MonoBehaviour {
             
         }
     }
+
+    public void OpenCombatOptions() {
+        GameObject.Find("DecisionManager").GetComponent<DecisionManager>().DisplayCombatOptions();
+    }
 }

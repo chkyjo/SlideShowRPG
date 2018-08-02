@@ -19,9 +19,9 @@ public class Character {
     int[] _skills; //things they are good at
     int[][] _relationships; //how they feel about others
     int _relationship; //how they feel about you
-    int[] _playerKnowledge;
+    int[] _playerKnowledge; //what the player knows about the character
 
-    int[] _convoQueue;
+    int[] _convoList;
 
     int _roomLocation;
     int[] _missions;
@@ -36,6 +36,7 @@ public class Character {
         _ID = ID;
         _firstName = firstName;
         _lastName = lastName;
+        _status = "Alive";
         _gender = gender;
         _age = age;
         _health = health;
@@ -49,7 +50,7 @@ public class Character {
         _relationships = new int[1][];
         _playerKnowledge = new int[15];
 
-        _convoQueue = new int[1];
+        _convoList = new int[3] { 0, -1, -1 };
 
         _roomLocation = -1;
         _missions = new int[3] {0,0,0 };
@@ -73,7 +74,7 @@ public class Character {
         _relationship = 50;
         _playerKnowledge = new int[15] { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
-        _convoQueue = new int[1];
+        _convoList = new int[3] { 0, -1, -1 };
 
         _missions = new int[3] { 0, 0, 0 };
         _trainings = new int[3] { 0, 0, 0 };
@@ -122,9 +123,10 @@ public class Character {
         return _relationships;
     }
 
-    public int GetConvo() {
-        return _convoQueue[0];
+    public int[] GetConvoList() {
+        return _convoList;
     }
+    
 
     public int GetRelationship() {
         return _relationship;
@@ -204,8 +206,8 @@ public class Character {
         _playerKnowledge[index] = 1;
     }
 
-    public void SetConvoQueue(int convoID) {
-        _convoQueue[0] = convoID;
+    public void AddConvo(int convoID, int index) {
+        _convoList[index] = convoID;
     }
 
     public void SetLocation(int location){

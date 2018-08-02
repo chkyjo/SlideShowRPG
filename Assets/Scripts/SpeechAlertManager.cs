@@ -11,9 +11,14 @@ public class SpeechAlertManager : MonoBehaviour {
     }
 
     public void OpenConversation() {
-        GameObject.Find("DecisionManager").GetComponent<DecisionManager>().TalkTo(characterID, text);
-        GameObject.Find("ConversationManager").GetComponent<ConversationManager>().StartConversation(convoID, characterID);
+        if(convoID != -1) {
+            GameObject.Find("DecisionManager").GetComponent<DecisionManager>().TalkTo(characterID, "");
+            GameObject.Find("ConversationManager").GetComponent<ConversationManager>().StartConversation(convoID, characterID);
+        }
+        
         Destroy(gameObject);
     }
+
+
 
 }

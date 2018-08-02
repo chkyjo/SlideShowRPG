@@ -199,7 +199,7 @@ public class CharactersManager : MonoBehaviour {
                 
             }
             if(ID == 1002) {
-                tempChar.SetConvoQueue(2);
+                tempChar.AddConvo(2, 1);
             }
             if (ID < 1004){
                 tempChar.SetLocation(3);
@@ -211,7 +211,6 @@ public class CharactersManager : MonoBehaviour {
             if(ID == 1007 || ID == 1008) {
                 tempChar.SetLocation(7);
                 tempChar.SetImportance(1);
-                tempChar.SetConvoQueue(1);
             }
             completeListOfCharacters.Add(tempChar);
         }
@@ -227,12 +226,15 @@ public class CharactersManager : MonoBehaviour {
     }
 
     public bool ActivateBehavior(int behaviorID, int characterID) {
-        if (behaviorID == 1) {
+		
+        if (behaviorID == 1) {//character doesn not like when player stops during training
             for(int i = 0; i < 3; i++) {
                 Character tempChar = completeListOfCharacters[characterID];
                 int[][] trainingHours = tempChar.GetTrainingHours();
                 int hour = GameObject.Find("SettingManager").GetComponent<SettingManager>().GetTime()[0];
+				//for each training slot
                 if(tempChar.GetTrainings()[i] != 0) {
+					//if the hour is between the training times for a training
                     if (hour >= trainingHours[i][0] && hour < trainingHours[i][1]) {
                         string greeting = "Hey! Did I say you could take a break?";
                         completeListOfCharacters[characterID].SetRelationship(completeListOfCharacters[characterID].GetRelationship() - 5);
@@ -242,7 +244,7 @@ public class CharactersManager : MonoBehaviour {
             }
             
             return true;
-        }else if(behaviorID == 2) {
+        }else if(behaviorID == 2) {//character does not like when player leaves during training
             Character tempChar = completeListOfCharacters[characterID];
             int[][] trainingHours = tempChar.GetTrainingHours();
             int hour = GameObject.Find("SettingManager").GetComponent<SettingManager>().GetTime()[0];
@@ -250,13 +252,14 @@ public class CharactersManager : MonoBehaviour {
                 int[] trainings = tempChar.GetTrainings();
                 if(trainings[i] != 0) {
                     if (hour >= trainingHours[i][0] && hour < trainingHours[i][1] && tempChar.GetWarned() == 0) {
-                        tempChar.SetWarned(1);
+                        tempChar.SetWarned(1);//set that the character warned the player about leaving during training
                         string greeting = "What are you doing? Get back to training! If you leave I will be forced to have you executed.";
                         completeListOfCharacters[characterID].SetRelationship(completeListOfCharacters[characterID].GetRelationship() - 5);
                         GameObject.Find("DecisionManager").GetComponent<DecisionManager>().TalkTo(characterID, greeting);
                         return true;
                     }
                     else if (hour >= trainingHours[i][0] && hour < trainingHours[i][1] && tempChar.GetWarned() == 1) {
+						//if player was already warned
                         StartCoroutine(GameObject.Find("DecisionManager").GetComponent<DecisionManager>().SendGuardsForPlayer());
                     }
                 }

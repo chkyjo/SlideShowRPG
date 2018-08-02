@@ -10,6 +10,10 @@ public class GameManager : MonoBehaviour {
     public Button armorButton;
     public Button foodButton;
     public GameObject cheatPanel;
+    public GameObject mainTextObject;
+    public GameObject mainTextAreaPanel;
+    public GameObject decisionPanel;
+    public GameObject inventoryButton;
 
     private string selected;
 
@@ -22,18 +26,24 @@ public class GameManager : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        if (Input.GetKeyDown("f")) {
+        if (Input.GetKeyDown("0")) {
             cheatPanel.SetActive(true);
         }
-        if (Input.GetKeyDown("g")) {
+        if (Input.GetKeyDown("9")) {
             cheatPanel.SetActive(false);
         }
     }
 
     public void SetUpGame() {
 
-        //settingManager.NewWeather();
+        string text = "By the time you were 9 you had already been training for 5 years.Your sword was already an extension of your arm.You went everywhere with it.As you slid the blade into your hilt you pondered what the day would be like.Training started in 15 minutes and you were no doubt expected to be there.Gregory, the instructor, would have you publicly shamed if you were late, which was surely better than the punishment of death should you not show up.";
+        var mainText = Instantiate(mainTextObject);
+        mainText.transform.GetChild(0).gameObject.SetActive(true);
+        mainText.transform.GetChild(0).GetComponent<Text>().text = text;
+        mainText.transform.SetParent(mainTextAreaPanel.transform, false);
 
+        decisionPanel.SetActive(true);
+        inventoryButton.SetActive(true);
     }
 
     public void GrabPlayerInfo() {

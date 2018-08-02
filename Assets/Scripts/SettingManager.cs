@@ -61,12 +61,6 @@ public class SettingManager : MonoBehaviour{
         SetTemp();
 	}
 
-    // Update is called once per frame
-    void Update() {
-
-        
-	}
-
     public int GetRoom(){
         return currentRoom;
     }
@@ -199,6 +193,15 @@ public class SettingManager : MonoBehaviour{
 
             yield return new WaitForSeconds(1f);
         }
+    }
+
+    public IEnumerator SecondsTimer(int seconds) {
+        for(int i = 0; i < seconds; i++) {
+            GameObject.Find("MissionManager").GetComponent<Missions>().currentTime = i;
+            Debug.Log(i);
+            yield return new WaitForSeconds(1f);
+        }
+        GameObject.Find("MissionManager").GetComponent<Missions>().currentTime = 10;
     }
 
     public void SetCharactersInSetting(Character[] characters){

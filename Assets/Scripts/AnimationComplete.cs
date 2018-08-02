@@ -25,14 +25,7 @@ public class AnimationComplete : MonoBehaviour {
         nextText.SetActive(true);
     }
 
-    public void StartCombat(){
-        inventoryButton.SetActive(true);
-        decisionPanel.SetActive(true);
-        skipButton.SetActive(false);
-    }
-
-    public void AnimateIndoorPanel() {
-        GameObject.Find("IntroPanel").SetActive(false);
-        indoorPanel.SetActive(true);
+    public void Begin() {
+        GameObject.Find("GameManager").GetComponent<GameManager>().SetUpGame();
     }
 }

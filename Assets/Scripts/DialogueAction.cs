@@ -6,15 +6,22 @@ public class DialogueAction : MonoBehaviour {
     public int messageID;
     public int characterID;
     public int convoID;
+    public int effect;
+    public int parameter;
 
     public void MakeDialogue(){
+        //display the players choice
         GameObject.Find("ConversationManager").GetComponent<ConversationManager>().DisplayDialogueChoice(dialogueMessage);
-        if (convoID != 0) {
+        //if there is an effect to this response
+        if (effect != 0) {
+            GameObject.Find("ConversationManager").GetComponent<ConversationManager>().CauseEffect(effect, characterID, parameter);
+        }
+        
+        if(!(convoID == -1)) {
+            //display character response to choice and add new dialogue options
             GameObject.Find("ConversationManager").GetComponent<ConversationManager>().GetCharacterResponse(convoID, messageID, characterID);
         }
-        else if (messageID != -1) {
-            GameObject.Find("ConversationManager").GetComponent<ConversationManager>().CallDisplayResponse(messageID, characterID);
-        }
+        
         Destroy(this.gameObject);
     }
 }
