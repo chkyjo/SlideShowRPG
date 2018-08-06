@@ -10,11 +10,15 @@ public class Missions : MonoBehaviour {
     public GameObject characterManager;
     public GameObject progressMission;
     public GameObject characterResponseObject;
-    public GameObject SpeechAlertObject;
+    
     public GameObject exclaimationPanel;
     public GameObject exclaimationObject;
     public GameObject mainTextObject;
     public GameObject mainTextAreaPanel;
+
+    public GameObject SpeechAlertObject;
+    public GameObject speechAlertPanel;
+    public GameObject exlamationAlertPanel;
     public int currentTime = 0;
     public int fireAtDeer = 1;
 
@@ -68,6 +72,7 @@ public class Missions : MonoBehaviour {
         SettingManager sM = GameObject.Find("SettingManager").GetComponent<SettingManager>();
         GameObject decisionPanel = GameObject.Find("DecisionPanel");
         PlayerManager pM = GameObject.Find("PlayerManager").GetComponent<PlayerManager>();
+        ConversationManager convoM = GameObject.Find("ConversationManager").GetComponent<ConversationManager>();
 
         bool notArrived = true;
 
@@ -114,7 +119,8 @@ public class Missions : MonoBehaviour {
         SpeechAlertObject.transform.GetChild(0).GetChild(1).GetComponent<Text>().text = "Ben";
         SpeechAlertObject.transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<Text>().text = "I'm scared...";
         var speechObject = Instantiate(SpeechAlertObject);
-        speechObject.transform.SetParent(GameObject.Find("SpeechAlertPanel").transform, false);
+        speechAlertPanel.SetActive(true);
+        speechObject.transform.SetParent(speechAlertPanel.transform, false);
 
 
         cM.GetCharacter(1002).SetGreeting("What...");
@@ -128,7 +134,8 @@ public class Missions : MonoBehaviour {
         SpeechAlertObject.transform.GetChild(0).GetChild(1).GetComponent<Text>().text = "Akaysha";
         SpeechAlertObject.transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<Text>().text = "...";
         speechObject = Instantiate(SpeechAlertObject);
-        speechObject.transform.SetParent(GameObject.Find("SpeechAlertPanel").transform, false);
+        speechAlertPanel.SetActive(true);
+        speechObject.transform.SetParent(speechAlertPanel.transform, false);
 
         yield return new WaitForSeconds(20f);
 
@@ -150,25 +157,26 @@ public class Missions : MonoBehaviour {
         SpeechAlertObject.transform.GetChild(0).GetChild(1).GetComponent<Text>().text = "Akaysha";
         SpeechAlertObject.transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<Text>().text = "I'm gonna take the shot.";
         speechObject = Instantiate(SpeechAlertObject);
-        speechObject.transform.SetParent(GameObject.Find("SpeechAlertPanel").transform, false);
+        speechAlertPanel.SetActive(true);
+        speechObject.transform.SetParent(speechAlertPanel.transform, false);
 
         yield return new WaitForSeconds(20f);
 
         if (fireAtDeer == 1) {
-            text = "Akaysha releases an arrow which glides passed the trees and pierces the deer under the neck. It doesn't move or cry out. Moments later an arrow makes a thud on a tree right by your head. " + 15;
+            text = "Akaysha releases an arrow which glides passed the trees and pierces the deer under the neck. It doesn't move or cry out. Moments later an arrow makes a thud on a tree right by your head.";
             UpdateMainText(text);
             sM.combat = 1;
-            //akaysha yells to run
-            
             StartCoroutine(sM.SecondsTimer(15));
             while (sM.combat == 1 && currentTime != 15) {
                 if(currentTime == 3) {
+                    //akaysha yells to run
                     var ex = Instantiate(exclaimationObject);
-                    ex.transform.GetChild(1).GetComponent<Text>().text = "Run!";
+                    ex.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = "Akaysha!";
+                    ex.transform.GetChild(0).GetChild(1).GetComponent<Text>().text = "Run!";
+                    exclaimationPanel.SetActive(true);
                     ex.transform.SetParent(exclaimationPanel.transform, false);
                 }
-                text = "Akaysha releases an arrow which glides passed the trees and pierces the deer under the neck. It doesn't move or cry out. Moments later an arrow makes a thud on a tree right by your head. " + (15 - currentTime);
-                UpdateMainText(text);
+                
                 if (sM.combat == 1) {
                     yield return new WaitForSeconds(.2f);
                 }
@@ -181,12 +189,14 @@ public class Missions : MonoBehaviour {
             SpeechAlertObject.transform.GetChild(0).GetChild(1).GetComponent<Text>().text = "Akaysha";
             SpeechAlertObject.transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<Text>().text = "Let's get out of here then.";
             speechObject = Instantiate(SpeechAlertObject);
-            speechObject.transform.SetParent(GameObject.Find("SpeechAlertPanel").transform, false);
+            speechAlertPanel.SetActive(true);
+            speechObject.transform.SetParent(speechAlertPanel.transform, false);
 
-            yield return new WaitForSeconds(10);
-            if(sM.GetRoom() == -1) {
-                sM.combat = 1;
-            }
+            yield return new WaitForSeconds(3);
+
+            text = "A little more cautious now you and your group start heading back the way you came.";
+            UpdateMainText(text);
+
         }
 
         if(sM.combat == 1) {
@@ -201,22 +211,36 @@ public class Missions : MonoBehaviour {
 
             if(sM.combat == 1) {
                 sM.combat = 0;
-                int gender = GameObject.Find("PlayerManager").GetComponent<PlayerManager>().gender;
+                int gender = pM.gender;
                 string[] genders = { "boy", "girl" };
                 text = "Men approach you from behind nearby trees. \"This one's just a " + genders[gender] + ",\" Someone says.";
                 UpdateMainText(text);
                 yield return new WaitForSeconds(10);
                 //conversation with leader
+                GameObject.Find("DecisionManager").GetComponent<DecisionManager>().TalkTo(1000, "");
+                convoM.StartConversation(6, 1009);
             }
         }
-        else {
+        else if(fireAtDeer == 1){
             SpeechAlertObject.GetComponent<SpeechAlertManager>().convoID = -1;
             SpeechAlertObject.GetComponent<SpeechAlertManager>().characterID = 1003;
             SpeechAlertObject.GetComponent<SpeechAlertManager>().text = "That was way too close.";
             SpeechAlertObject.transform.GetChild(0).GetChild(1).GetComponent<Text>().text = "Ben";
             SpeechAlertObject.transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<Text>().text = "That was way too close.";
             speechObject = Instantiate(SpeechAlertObject);
-            speechObject.transform.SetParent(GameObject.Find("SpeechAlertPanel").transform, false);
+            speechAlertPanel.SetActive(true);
+            speechObject.transform.SetParent(speechAlertPanel.transform, false);
+
+            yield return new WaitForSeconds(5);
+
+            SpeechAlertObject.GetComponent<SpeechAlertManager>().convoID = -1;
+            SpeechAlertObject.GetComponent<SpeechAlertManager>().characterID = 1002;
+            SpeechAlertObject.GetComponent<SpeechAlertManager>().text = "I agree, let's find Gregory.";
+            SpeechAlertObject.transform.GetChild(0).GetChild(1).GetComponent<Text>().text = "Akaysha";
+            SpeechAlertObject.transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<Text>().text = "I agree, let's find Gregory.";
+            speechObject = Instantiate(SpeechAlertObject);
+            speechAlertPanel.SetActive(true);
+            speechObject.transform.SetParent(speechAlertPanel.transform, false);
         }
         
     }

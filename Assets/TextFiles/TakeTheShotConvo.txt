@@ -1,0 +1,33 @@
+I'm going to take the shot.
+:1
+:2
+/Wait
+)Wait.
+(Why not?
+>0
+}1
+:3
+:4
+-1
+/Do it
+)Do it.
+(...
+>0
+-2
+/Closer shot
+)We need a closer shot
+(I can hit it fine from here.
+>0
+-3
+/Suspect trap
+)It feels like a trap.
+(A trap? How?
+>0
+}2
+:5
+-4
+/It's too close
+)It's too close it would have heard us.
+(...
+>11
+-5

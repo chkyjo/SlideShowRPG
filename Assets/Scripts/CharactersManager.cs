@@ -172,7 +172,7 @@ public class CharactersManager : MonoBehaviour {
         int[] goalsToInt = new int[5] { 1, 2, 3, 4, 5 };
         string[] goals;
 
-        for(int i = 0; i < 9; i++) {
+        for(int i = 0; i < 10; i++) {
             ID = 1000 + i;
             firstAndLast = names[i].Split(' ');
             gender = UnityEngine.Random.Range(0, 2);
@@ -210,6 +210,9 @@ public class CharactersManager : MonoBehaviour {
             }
             if(ID == 1007 || ID == 1008) {
                 tempChar.SetLocation(7);
+                tempChar.SetImportance(1);
+            }
+            if(ID == 1009) {
                 tempChar.SetImportance(1);
             }
             completeListOfCharacters.Add(tempChar);

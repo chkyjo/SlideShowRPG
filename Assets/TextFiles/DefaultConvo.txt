@@ -1,0 +1,91 @@
+Hello, child.
+:1
+/Talk about something
+)Can I talk to you about something?
+(Sure.
+>0
+}1
+:2
+:3
+:4
+:5
+:6
+-1
+/Ask about the day
+)What's the day going to be like?
+(Recruits such as yourself are training until 11. After that you hunt with your trainer until 5. Later there will be a feast to celebrate the election of the new King.
+>0
+}1
+:2
+:3
+:4
+:5
+:6
+-2
+/Ask about current events
+)What's going on in the world?
+(What would you like to know?
+>0
+}2
+:7
+:8
+:9
+-3
+/Ask about the character
+)Tell me about yourself.
+(Well, I...
+>9
+}1
+:2
+:3
+:4
+:5
+:6
+-4
+/Ask about the weather
+)Whats the weather like?
+(\
+>2
+}1
+:2
+:3
+:4
+:5
+:6
+-5
+/Talk about somthing else
+)Nevermind.
+(Sure.
+>0
+}0
+:1
+-6
+/Ask about the new King
+)What's the new King like?
+(Many think she cheated for the crown. Most think she is too young to rule.
+>0
+}2
+:7
+:8
+:9
+-7
+/Ask about The Protectors
+)What's going on with The Protectors?
+(Most of our forces are in Gorkaria, keeping the monsters from pushing us out to the sea.
+>0
+}2
+:7
+:8
+:9
+-8
+/Talk about something else
+)Nevermind.
+(Sure.
+>0
+}1
+:2
+:3
+:4
+:5
+:6
+-9

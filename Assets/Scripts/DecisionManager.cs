@@ -23,7 +23,7 @@ public class DecisionManager : MonoBehaviour {
     public GameObject talkToDecisionObject;
     public GameObject observeDecisionObject;
     public GameObject nextRoomDecisionObject;
-    public GameObject openExitsDecisionObject;
+    public GameObject mapPanel;
 
     public GameObject waitInBedDecisionObject;
     public GameObject waitInSeatingDecisionObject;
@@ -143,7 +143,7 @@ public class DecisionManager : MonoBehaviour {
         ClearDecisionPanel();
         SettingManager sM = settingManager.GetComponent<SettingManager>();
         CharactersManager cM = characterManager.GetComponent<CharactersManager>();
-        
+
         AddDecision(3);//attack
         if (inventoryManager.GetComponent<Inventory>().GetInventoryCounts()[3] > 0) {
             AddDecision(0);//throw
@@ -271,8 +271,18 @@ public class DecisionManager : MonoBehaviour {
     public void DisplayExitOptions() {
         ClearDecisionPanel();
         Room room = roomManager.GetComponent<RoomManager>().GetRoom(settingManager.GetComponent<SettingManager>().currentRoom);
+
+        mapPanel.SetActive(true);
+        mapPanel.transform.GetChild(0).gameObject.GetComponent<RawImage>().texture = room.GetRoomImage();
+
         for (int i = 0; i < room._numExits; i++) {
-            AddExit(room._exitTexts[i], room._connectedRooms[i], room._leaveTexts[i]);
+            //exitButton = Instantiate(nex)
+            nextRoomDecisionObject.GetComponentsInChildren<Text>()[0].text = room._exitTexts[i];
+            nextRoomDecisionObject.GetComponent<NextRoomAction>().nextRoomID = room._connectedRooms[i];
+            nextRoomDecisionObject.GetComponent<NextRoomAction>().leaveText = room._leaveTexts[i];
+            var button = Instantiate(nextRoomDecisionObject, new Vector3(room.GetCoord(i)[0], room.GetCoord(i)[1], 0), Quaternion.identity);
+            button.transform.SetParent(mapPanel.transform, false);
+            itemsInDecisionPanel++;
         }
 
         //add cancel button
@@ -280,16 +290,13 @@ public class DecisionManager : MonoBehaviour {
         canceButton.transform.SetParent(decisionScroller.transform, false);
     }
 
-    void AddExit(string exitText, int nextRoomID, string leaveActionText) {
-        nextRoomDecisionObject.GetComponentsInChildren<Text>()[1].text = exitText;
-        nextRoomDecisionObject.GetComponent<NextRoomAction>().nextRoomID = nextRoomID;
-        nextRoomDecisionObject.GetComponent<NextRoomAction>().leaveText = leaveActionText;
-        var obj = GameObject.Instantiate(nextRoomDecisionObject);
-        obj.transform.SetParent(decisionScroll.transform, false);
-        itemsInDecisionPanel++;
-    }
+    public void CancelLeaving() {
+        mapPanel.SetActive(false);
 
-    
+        for (int i = 2; i < mapPanel.transform.childCount; i++) {
+            Destroy(mapPanel.transform.GetChild(i).gameObject);
+        }
+    }
 
     void AddRoomOptions() {
         int currentRoom = settingManager.GetComponent<SettingManager>().GetRoom();
@@ -861,6 +868,12 @@ public class DecisionManager : MonoBehaviour {
     //called when user selects an exit option by NextRoomAction.cs
     public void NextRoom(int nextRoomID, string leaveText){
 
+        mapPanel.SetActive(false);
+
+        for(int i = 2; i < mapPanel.transform.childCount; i++) {
+            Destroy(mapPanel.transform.GetChild(i).gameObject);
+        }
+
         CharactersManager cM = characterManager.GetComponent<CharactersManager>();
         SettingManager sM = settingManager.GetComponent<SettingManager>();
         Character[] characters = cM.GetCharactersInRoom(sM.GetRoom());
@@ -869,6 +882,8 @@ public class DecisionManager : MonoBehaviour {
                 return;
             }
         }
+
+     
 
         //update main text with the leaving dialogue from the current room to the selected room
         UpdateMainText(leaveText);

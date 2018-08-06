@@ -1,0 +1,108 @@
+What's your name?
+:1
+:2
+:3
+/Give your name
+)\
+(Do you value your life?
+>0
+}1
+:4
+:5
+:6
+-1
+/Who the heck are you
+)Who the heck are you?
+(I'm asking the questions here!
+>0
+-2
+/Tell off
+)Go screw yourself.
+(That is very unwise.
+>0
+}0
+:1
+:2
+:3
+-3
+/What
+)What kind of question is that?
+(The kind of question you should answer.
+>0
+}1
+:4
+:5
+:6
+-4
+/Of course
+)Of course
+(Then I have a proposition for you. You can leave with us, or you can die here along with anyone else you're out here with.
+>0
+}2
+:7
+:8
+:9
+-5
+/Beg
+)Please don't kill me!
+(It's your lucky day, kid. I need a living specimen to bring to the queen for interrogation.
+>0
+}3
+:10
+:11
+:12
+-6
+/What do you want with me
+)What do you want with me.
+(That will come later.
+>0
+}2
+:7
+:8
+:9
+-7
+/Refuse
+)I'll never go with you?
+(Is your pride more valuable than your life?
+>0
+}4
+:13
+:14
+-8
+/Accept
+)I'll go with you.
+(Excellent.
+>13
+-9
+/I'll tell you anything
+)I'll tell you anything.
+(Good to hear.
+>13
+-10
+/Refuse
+)I would never betray The Protectors.
+(Is your pride worth more than your life?
+>0
+}4
+:13
+:14
+-11
+/What do you want
+)What do you want?
+(That will come later.
+>0
+}3
+:10
+:11
+:12
+-12
+/Yes
+)Go screw yourself.
+(Alright then.
+>0
+-13
+/...
+)...
+(That's what I thought.
+>13
+-14

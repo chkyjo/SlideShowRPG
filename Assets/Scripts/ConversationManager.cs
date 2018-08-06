@@ -37,7 +37,7 @@ public class ConversationManager : MonoBehaviour {
 
     void InitializeConversations() {
 
-        string[] textFileNames = new string[10] {"DefaultConvo.txt", "PrisonConvo.txt", "AkayshaConvo.txt", "ArrestConvo.txt", "BenConvo.txt", "TakeTheShotConvo.txt", "", "", "", "" };
+        string[] textFileNames = new string[10] {"DefaultConvo.txt", "PrisonConvo.txt", "AkayshaConvo.txt", "ArrestConvo.txt", "BenConvo.txt", "TakeTheShotConvo.txt", "CapturedConvo.txt", "", "", "" };
 
         conversations[0] = new ConvoNode[100];
         conversations[1] = new ConvoNode[100];
@@ -45,6 +45,7 @@ public class ConversationManager : MonoBehaviour {
         conversations[3] = new ConvoNode[10];
         conversations[4] = new ConvoNode[10];
         conversations[5] = new ConvoNode[10];
+        conversations[6] = new ConvoNode[20];
 
         int nodeIndex = 0;
 
@@ -53,8 +54,8 @@ public class ConversationManager : MonoBehaviour {
         string nextLine;
         StreamReader file;
 
-        for (int i = 0; i < 6; i++) {
-            file = new StreamReader(Application.persistentDataPath + "/" + textFileNames[i], true);
+        for (int i = 0; i < 7; i++) {
+            file = new StreamReader("Assets/TextFiles/" + textFileNames[i], true);
 
             //get root data
             conversations[i][0].nodeID = 0;
@@ -220,20 +221,20 @@ public class ConversationManager : MonoBehaviour {
         if (effect == 1) {//resetConvo
             ResetConvo(characterID);
         }
-        else if(effect == 2) {//ask about weather
+        else if (effect == 2) {//ask about weather
             StartCoroutine(DisplayCharacterResponse(GetWeatherResponse()));
         }
-		else if(effect == 3){//addrel
+        else if (effect == 3) {//addrel
             Character tempChar = GameObject.Find("CharacterManager").GetComponent<CharactersManager>().GetCharacter(characterID);
             tempChar.AddRelationship(parameter1);
             characterInfoPanel.transform.GetChild(17).GetComponent<Slider>().value = tempChar.GetRelationship();
         }
-		else if(effect == 4){//subrel
+        else if (effect == 4) {//subrel
             Character tempChar = GameObject.Find("CharacterManager").GetComponent<CharactersManager>().GetCharacter(characterID);
             tempChar.SubtractRelationship(parameter1);
             characterInfoPanel.transform.GetChild(17).GetComponent<Slider>().value = tempChar.GetRelationship();
         }
-        else if(effect == 5) {//make hostile
+        else if (effect == 5) {//make hostile
 
         }
         else if (effect == 6) {//startMission
@@ -249,12 +250,24 @@ public class ConversationManager : MonoBehaviour {
         else if (effect == 9) {//ask about character
             GetToKnowCharacter(characterID);
         }
-        else if(effect == 10) {
+        else if (effect == 10) {
             StartCoroutine(GameObject.Find("DecisionManager").GetComponent<DecisionManager>().DisplayTrainingWindow());
         }
-        else if(effect == 11) {
+        else if (effect == 11) {
             GameObject.Find("MissionManager").GetComponent<Missions>().fireAtDeer = 0;
         }
+        else if (effect == 12) {
+            //give name
+        }
+        else if(effect == 13) {
+            //travel with the others
+            string text = "You leave with the others.";
+            GameObject.Find("DecisionManager").GetComponent<DecisionManager>().UpdateMainText(text);
+        }
+    }
+
+    public void TravelWithOthers() {
+
     }
 
     public void GetToKnowCharacter(int characterID) {
@@ -349,9 +362,12 @@ public class ConversationManager : MonoBehaviour {
         for (int i = 0; i < dialogueOptionsPanel.transform.childCount; i++) {
             Destroy(dialogueOptionsPanel.transform.GetChild(i).gameObject);
         }
-        
-        //display the response
-        StartCoroutine(DisplayCharacterResponse(conversations[convoID][nodeID].characterResponse));
+
+        if (conversations[convoID][nodeID].characterResponse != "\\") {
+            //display the response
+            StartCoroutine(DisplayCharacterResponse(conversations[convoID][nodeID].characterResponse));
+        }
+
         //if there are player options to respond to the response
         if (conversations[convoID][nodeID].playerOptions != null) {
             //Get each option and display it

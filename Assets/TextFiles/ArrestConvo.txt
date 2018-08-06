@@ -1,0 +1,13 @@
+Come with us now.
+:1
+:2
+/Refuse
+)I'm not going with you.
+(Then we will take you by force.
+>0
+-1
+/Allow
+)I'll go.
+(This way.
+>4
+-2

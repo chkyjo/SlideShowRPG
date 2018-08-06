@@ -1,0 +1,95 @@
+...
+:1
+:2
+:3
+/Ask about the hunt
+)So what are we hunting exactly?
+(Just dinner.
+>0
+}1
+:4
+-1
+/Ask about safety
+)Are you sure it's safe out here?
+(The area should be cleared.
+>0
+}2
+:5
+-2
+/Ask about joining the older hunters
+)When will we go out with the other hunters?
+(Once we become Protectors we'll be able to hunt real beasts.
+>0
+}3
+:6
+:7
+:8
+-3
+/How long have you been here?
+)When were you brought here?
+(I've been here since I was 10. I'm 14 now.
+>0
+}4
+:9
+-4
+/Express concern
+)What if they missed one?
+(You're not scared are you?
+>0
+}5
+:10
+:11
+-5
+/Brag
+)I could kill a big one easily
+(Have you even killed anything?
+>0
+}6
+:12
+:13
+-6
+/Express eagerness
+)I can't wait.
+(Me neither. I've been ready since I got here. Anyone can hunt deer.
+>3-5
+-7
+/Express dislike
+)I wish I didn't have to.
+(Why? Scared?
+>0
+}5
+:10
+:11
+-8
+/Have you killed anything
+)Have you killed anything?
+(Only the monster that killed my parents.
+>0
+}8
+:14
+-9
+/A little
+)A little.
+(You better stay back then. I don't want you getting us killed if things go bad.
+>4-5
+-10
+/No
+)No I'm fine.
+(Good. I don't want you getting us killed if things do go wrong.
+>0
+-11
+/(lie) I killed a Guron
+)Yeah, I've killed a Guron.
+(Big deal.
+>0
+-12
+/No
+)No...
+(That's what I thought
+>0
+-13
+/Sorry
+)I'm sorry
+(It was a long time ago.
+>3-10
+-14

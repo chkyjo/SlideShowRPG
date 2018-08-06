@@ -7,6 +7,7 @@ public class SpeechAlertManager : MonoBehaviour {
     public int convoID;
 
     public void EndAndDestroy() {
+        gameObject.transform.parent.gameObject.SetActive(false);
         Destroy(gameObject);
     }
 

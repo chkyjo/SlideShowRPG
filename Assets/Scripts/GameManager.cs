@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Video;
 
 public class GameManager : MonoBehaviour {
 
@@ -14,6 +15,11 @@ public class GameManager : MonoBehaviour {
     public GameObject mainTextAreaPanel;
     public GameObject decisionPanel;
     public GameObject inventoryButton;
+    public GameObject skipButton;
+    public GameObject healthBar;
+    public GameObject hungerBar;
+    public GameObject videoPlayer;
+    public VideoClip vC;
 
     private string selected;
 
@@ -22,6 +28,7 @@ public class GameManager : MonoBehaviour {
     // Use this for initialization
     void Start() {
         itemsOnDisplay = 0;
+        //videoPlayer.GetComponent<VideoPlayer>().Play();
     }
 
     // Update is called once per frame
@@ -36,7 +43,7 @@ public class GameManager : MonoBehaviour {
 
     public void SetUpGame() {
 
-        string text = "By the time you were 9 you had already been training for 5 years.Your sword was already an extension of your arm.You went everywhere with it.As you slid the blade into your hilt you pondered what the day would be like.Training started in 15 minutes and you were no doubt expected to be there.Gregory, the instructor, would have you publicly shamed if you were late, which was surely better than the punishment of death should you not show up.";
+        string text = "By the time you were 9 you had been training for 5 years. Your sword was already an extension of your arm. You went everywhere with it. As you slid the blade into your hilt you pondered what the day would be like. Training started in 15 minutes and you were no doubt expected to be there. Gregory, the instructor, would have you publicly shamed if you were late, which was surely better than the punishment of death should you not show up.";
         var mainText = Instantiate(mainTextObject);
         mainText.transform.GetChild(0).gameObject.SetActive(true);
         mainText.transform.GetChild(0).GetComponent<Text>().text = text;
@@ -44,6 +51,10 @@ public class GameManager : MonoBehaviour {
 
         decisionPanel.SetActive(true);
         inventoryButton.SetActive(true);
+        skipButton.SetActive(false);
+        healthBar.SetActive(true);
+        hungerBar.SetActive(true);
+        
     }
 
     public void GrabPlayerInfo() {
