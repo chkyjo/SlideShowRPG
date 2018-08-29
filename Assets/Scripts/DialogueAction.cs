@@ -22,6 +22,5 @@ public class DialogueAction : MonoBehaviour {
             GameObject.Find("ConversationManager").GetComponent<ConversationManager>().GetCharacterResponse(convoID, messageID, characterID);
         }
         
-        Destroy(this.gameObject);
     }
 }

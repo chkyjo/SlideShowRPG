@@ -22,10 +22,12 @@ public class AnimationComplete : MonoBehaviour {
 	}
 
     public void StartNextPassage(){
+        gameObject.SetActive(false);
         nextText.SetActive(true);
     }
 
     public void Begin() {
+        gameObject.SetActive(false);
         GameObject.Find("GameManager").GetComponent<GameManager>().SetUpGame();
     }
 }

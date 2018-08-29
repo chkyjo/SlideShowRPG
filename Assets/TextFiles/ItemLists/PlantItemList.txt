@@ -1,0 +1,3 @@
+0 pivra 10
+1 alacia 10
+2 povacis 10

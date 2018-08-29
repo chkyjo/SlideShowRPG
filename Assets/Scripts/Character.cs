@@ -1,35 +1,37 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
+﻿
 public class Character {
-
     int _ID;
     string _firstName;
     string _lastName;
-    string _status;
+    string _status; //dead - wounded/50% or less health - [type of sickness] - healthy
     int _gender; //0 male, 1 female
-    int _age;
+    int _lifeStage; //1 child, 2 adolescent, 3 adult, 4 middle aged, 5 elderly
+    int _age; //8 - 12, 13 - 18, 19 - 30, 31 - 50, 50+
     int _health;
-    string _greeting;
-    int _importance;
+    string _greeting; //this characters default greeting
+    int _importance; //if this character is influential to the main story
 
+    //lists of things they hate, dislike, are okay with, like and love
+    CharacterManager.loves[] _loves;
+    CharacterManager.likes[] _likes;
+    CharacterManager.okays[] _okays;
+    CharacterManager.dislikes[] _dislikes;
+    CharacterManager.hates[] _hates;
+    
     int[] _traits; //things that make them unique
     int[] _goals; //things they want to accomplish
     int[] _skills; //things they are good at
-    int[][] _relationships; //how they feel about others
     int _relationship; //how they feel about you
-    int[] _playerKnowledge; //what the player knows about the character
 
     int[] _convoList;
 
     int _roomLocation;
-    int[] _missions;
-    int[][] _missionTimes;
+    int[] _missions; //missions this character offers
+    int[][] _missionTimes; //times the missions are offered
 
     int[] _trainings;
     int[][] _trainingHours;
-    int _warned;
+    int _provoked;
     int[] _behaviors;
 
     public Character(int ID, string firstName, string lastName, int gender, int age, int health, int[] traits, int[] goals, int[] skills) {
@@ -47,8 +49,6 @@ public class Character {
         _goals = goals;
         _skills = skills;
         _relationship = 50;
-        _relationships = new int[1][];
-        _playerKnowledge = new int[15];
 
         _convoList = new int[3] { 0, -1, -1 };
 
@@ -58,7 +58,7 @@ public class Character {
 
         _trainings = new int[3] { 0, 0, 0 };
         _trainingHours = new int[2][];
-        _warned = 0;
+        _provoked = 0;
         _behaviors = new int[2]{0,0};
 
     }
@@ -70,9 +70,7 @@ public class Character {
         _greeting = "";
         _importance = 0;
 
-        _relationships = new int[1][];
         _relationship = 50;
-        _playerKnowledge = new int[15] { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
         _convoList = new int[3] { 0, -1, -1 };
 
@@ -108,7 +106,21 @@ public class Character {
     public int GetImportance() {
         return _importance;
     }
-    
+    public CharacterManager.likes[] GetLikes() {
+        return _likes;
+    }
+    public CharacterManager.dislikes[] GetDislikes() {
+        return _dislikes;
+    }
+    public CharacterManager.hates[] GetHates() {
+        return _hates;
+    }
+    public CharacterManager.loves[] GetLoves() {
+        return _loves;
+    }
+    public CharacterManager.okays[] GetOkays() {
+        return _okays;
+    }
 
     public int[] GetTraits() {
         return _traits;
@@ -119,9 +131,6 @@ public class Character {
     public int[] GetSkills() {
         return _skills;
     }
-    public int[][] GetRelationships() {
-        return _relationships;
-    }
 
     public int[] GetConvoList() {
         return _convoList;
@@ -130,9 +139,6 @@ public class Character {
 
     public int GetRelationship() {
         return _relationship;
-    }
-    public int[] GetPlayerKnowledge(){
-        return _playerKnowledge;
     }
     public int GetLocation() {
         return _roomLocation;
@@ -151,13 +157,12 @@ public class Character {
         return _trainingHours;
     }
     public int GetWarned() {
-        return _warned;
+        return _provoked;
     }
     public int GetBehavior(int index) {
         return _behaviors[index];
     }
     
-
     public void SetID(int ID) {
         _ID = ID;
     }
@@ -190,6 +195,23 @@ public class Character {
         _importance = importance;
     }
 
+    public void SetPreferences(CharacterManager.loves[] loves) {
+        _loves = loves;
+    }
+    public void SetPreferences(CharacterManager.likes[] likes) {
+        _likes = likes;
+    }
+    public void SetPreferences(CharacterManager.okays[] okays) {
+        _okays = okays;
+    }
+    public void SetPreferences(CharacterManager.dislikes[] dislikes) {
+        _dislikes = dislikes;
+    }
+    public void SetPreferences(CharacterManager.hates[] hates) {
+        _hates = hates;
+    }
+    
+
     public void SetTraits(int[] traits) {
         _traits = traits;
     }
@@ -198,12 +220,6 @@ public class Character {
     }
     public void SetSkills(int[] skills) {
         _skills = skills;
-    }
-    public void SetRelationships(int[][] relationships) {
-        _relationships = relationships;
-    }
-    public void SetPlayerKnowledge(int index){
-        _playerKnowledge[index] = 1;
     }
 
     public void AddConvo(int convoID, int index) {
@@ -221,8 +237,7 @@ public class Character {
     }
 
 
-    public void SetRelationship(int relationship)
-    {
+    public void SetRelationship(int relationship){
         _relationship = relationship;
     }
     public void AddRelationship(int rel) {
@@ -239,7 +254,7 @@ public class Character {
         _trainingHours = hours;
     }
     public void SetWarned(int warned) {
-        _warned = warned;
+        _provoked = warned;
     }
     public void AddBehavior(int behavior, int index) {
         _behaviors[index] = behavior;

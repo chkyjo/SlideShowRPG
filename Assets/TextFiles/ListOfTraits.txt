@@ -1,19 +1,11 @@
 goofy
 humorous
-loves to laugh
 afraid of the dark
-loves a good story
-likes cats
-likes dogs
-likes all animals
-hates dogs
-hates cats
 rough
 large
 talks loud
 often mean spirited
 no filter
-loves to fight
 talks loud
 confident
 charismatic
@@ -21,7 +13,6 @@ determined
 hungry for revenge
 doesn't talk much
 pretty
-likes getting drunk
 content with father's forge
 doesn't like fighting
 grim outlook on world
@@ -30,8 +21,6 @@ enjoys torturing
 young
 no family
 abused by deceased parents
-loves to dance
-likes fasion
 enjoys running
 tortures cats
 romantic

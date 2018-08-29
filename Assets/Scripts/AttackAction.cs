@@ -8,10 +8,6 @@ public class AttackAction : MonoBehaviour {
     public Button attackButton;
     public Text resultText;
     
-    //called after selecting attack option
-    public void AttackDecision() {
-        GameObject.Find("DecisionManager").GetComponent<DecisionManager>().Attack();
-    }
     //called after selecting person to attack
     public void AttackPerson() {
         int[] IDs = new int[1] { characterID };
@@ -21,7 +17,7 @@ public class AttackAction : MonoBehaviour {
     public void Attack(){
         bool result;
         result = GameObject.Find("DecisionManager").GetComponent<DecisionManager>().AttackAction(characterID);
-        Character tempChar = GameObject.Find("CharacterManager").GetComponent<CharactersManager>().GetCharacter(characterID);
+        Character tempChar = GameObject.Find("CharacterManager").GetComponent<CharacterManager>().GetCharacter(characterID);
         healthBar.value = tempChar.GetHealth();
         if(healthBar.value <= 0) {
             healthBar.value = 0;

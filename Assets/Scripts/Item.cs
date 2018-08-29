@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class Item : MonoBehaviour {
@@ -18,7 +16,7 @@ public class Item : MonoBehaviour {
 	}
 
     public void PromptDelete(){
-        GameObject.Find("GameManager").GetComponent<GameManager>().DeleteItemPrompt(this.GetComponentInChildren<Text>().text);
+        GameObject.Find("GameManager").GetComponent<GameManager>().DeleteItemPrompt(GetComponentInChildren<Text>().text);
     }
 
     public void DisableItemButtons(){
@@ -26,6 +24,6 @@ public class Item : MonoBehaviour {
     }
 
     public void EatFoodItem(){
-        GameObject.Find("InventoryManager").GetComponent<Inventory>().EatFoodItem(ID);
+        GameObject.Find("InventoryManager").GetComponent<InventoryManager>().EatFoodItem(ID);
     }
 }
