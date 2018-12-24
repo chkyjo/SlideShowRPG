@@ -372,7 +372,7 @@ public class RoomManager : MonoBehaviour {
     }
 
     public Room GetCurrentRoom(){
-        return rooms[settingManager.GetComponent<SettingManager>().currentRoom];
+        return rooms[settingManager.GetComponent<SettingManager>().GetRoom()];
     }
 
     public void SetRoomObserved(int roomID, int observed) {
@@ -422,6 +422,12 @@ public class RoomManager : MonoBehaviour {
                 }
             }
         }
+    }
+
+    public void AddTempOptionToRoom(int roomID, int optionID) {
+
+        //add the options
+        rooms[roomID].AddTempOption(optionID);
     }
 
     //called when tracking a deer which adds the deer trail to the next room

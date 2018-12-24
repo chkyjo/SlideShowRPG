@@ -443,7 +443,7 @@ public class CharacterManager : MonoBehaviour {
 					//if the hour is between the training times for a training
                     if (hour >= trainingHours[i][0] && hour < trainingHours[i][1]) {
                         string greeting = "Hey! Did I say you could take a break?";
-                        completeListOfCharacters[characterID].SetRelationship(completeListOfCharacters[characterID].GetRelationship() - 5);
+                        completeListOfCharacters[characterID].SetRelationshipLvl(completeListOfCharacters[characterID].GetRelationshipLvl() - 5);
                         GameObject.Find("DecisionManager").GetComponent<DecisionManager>().TalkTo(characterID, greeting);
                     }
                 }
@@ -460,7 +460,7 @@ public class CharacterManager : MonoBehaviour {
                     if (hour >= trainingHours[i][0] && hour < trainingHours[i][1] && tempChar.GetWarned() == 0) {
                         tempChar.SetWarned(1);//set that the character warned the player about leaving during training
                         string greeting = "What are you doing? Get back to training! If you leave I will be forced to have you executed.";
-                        completeListOfCharacters[characterID].SetRelationship(completeListOfCharacters[characterID].GetRelationship() - 5);
+                        completeListOfCharacters[characterID].SetRelationshipLvl(completeListOfCharacters[characterID].GetRelationshipLvl() - 5);
                         GameObject.Find("DecisionManager").GetComponent<DecisionManager>().TalkTo(characterID, greeting);
                         return true;
                     }
@@ -536,7 +536,7 @@ public class CharacterManager : MonoBehaviour {
             }
         }
 
-        relationshipSlider.value = talkingTo.GetRelationship();
+        relationshipSlider.value = talkingTo.GetRelationshipLvl();
     }
 
     public Character GetRandomCharacter(){

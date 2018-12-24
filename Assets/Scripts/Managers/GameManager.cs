@@ -29,6 +29,7 @@ public class GameManager : MonoBehaviour {
     public GameObject nextRoomObject;
 
     private string selected;
+    int _interrupted = 0;
 
     public int itemsOnDisplay;
     public int lastPlayerAction;
@@ -131,6 +132,24 @@ public class GameManager : MonoBehaviour {
         var mainText = Instantiate(mainTextObject);
         mainText.transform.GetChild(0).GetComponent<Text>().text = text;
         mainText.transform.SetParent(mainTextAreaPanel.transform, false);
+    }
+
+    public void SetInterrupted() {
+        _interrupted = 1;
+        StartCoroutine(ResetInterrupted());
+    }
+    IEnumerator ResetInterrupted() {
+        SettingManager sM = GameObject.Find("SettingManager").GetComponent<SettingManager>();
+        int startingTime = sM.GetTotalMinutes();
+        int endTime = sM.GetTotalMinutes();
+        while(endTime < startingTime + 60) {
+            yield return new WaitForSeconds(0.5f);
+            endTime = sM.GetTotalMinutes();
+        }
+        _interrupted = 0;
+    }
+    public int GetInterrupted() {
+        return _interrupted;
     }
 
     public void MarkLocation() {

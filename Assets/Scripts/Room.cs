@@ -117,6 +117,7 @@ public class Room : MonoBehaviour{
         if(_tempOptions == null) {
             _tempOptions = new int[5] {-1, -1, -1, -1, -1 };
             _tempOptions[0] = optionID;
+            return;
         }
         for(int i = 0; i < _tempOptions.Length; i++) {
             if(_tempOptions[i] == -1) {

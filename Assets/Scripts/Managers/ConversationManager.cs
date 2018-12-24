@@ -218,13 +218,13 @@ public class ConversationManager : MonoBehaviour {
         }
         else if (effect == 3) {//addrel
             Character tempChar = GameObject.Find("CharacterManager").GetComponent<CharacterManager>().GetCharacter(characterID);
-            tempChar.AddRelationship(parameter1);
-            characterInfoPanel.transform.GetChild(4).GetComponent<Slider>().value = tempChar.GetRelationship();
+            tempChar.AddRelationshipLvl(parameter1);
+            characterInfoPanel.transform.GetChild(4).GetComponent<Slider>().value = tempChar.GetRelationshipLvl();
         }
         else if (effect == 4) {//subrel
             Character tempChar = GameObject.Find("CharacterManager").GetComponent<CharacterManager>().GetCharacter(characterID);
-            tempChar.SubtractRelationship(parameter1);
-            characterInfoPanel.transform.GetChild(4).GetComponent<Slider>().value = tempChar.GetRelationship();
+            tempChar.SubtractRelationshipLvl(parameter1);
+            characterInfoPanel.transform.GetChild(4).GetComponent<Slider>().value = tempChar.GetRelationshipLvl();
         }
         else if (effect == 5) {//make hostile
 

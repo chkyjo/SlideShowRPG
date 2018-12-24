@@ -9,6 +9,7 @@ public class PlayerManager : MonoBehaviour {
     public int gender;
     public Text sliderValueStatus;
     public int age;
+    int[] factions;
     
 
     int[] _followers;
@@ -32,7 +33,9 @@ public class PlayerManager : MonoBehaviour {
     int _calories;
     string playerName;
     int _swordSkill = 0;
-    int _perception = 100;
+    int _perception = 30;
+    int _deserter = 0;
+    int _agility = 30;
 
     public int[] position = {0,0};
 
@@ -182,6 +185,20 @@ public class PlayerManager : MonoBehaviour {
     }
     public int GetPerception() {
         return _perception;
+    }
+
+    public void SetDeserterStatus(int status) {
+        _deserter = status;
+    }
+    public int GetDeserterStatus() {
+        return _deserter;
+    }
+
+    public void SetAgility(int agility) {
+        _agility = agility;
+    }
+    public int GetAgility() {
+        return _agility;
     }
 
 

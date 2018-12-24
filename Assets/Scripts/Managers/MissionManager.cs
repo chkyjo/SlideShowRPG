@@ -22,10 +22,15 @@ public class MissionManager : MonoBehaviour {
     public GameObject SpeechAlertObject;
     public GameObject speechAlertPanel;
     public GameObject exlamationAlertPanel;
+
+    int currentMission;
+
     public int currentTime = 0;
     public int fireAtDeer = 1;
     int _targetRoom = -1;
     int _guide = 0;
+    int killedDeer = 0;
+    int desertedMission = 0;
 
     SettingManager sM;
     PlayerManager pM;
@@ -34,6 +39,7 @@ public class MissionManager : MonoBehaviour {
     CharacterManager cM;
     ConversationManager convoM;
     RoomManager rM;
+    Coroutine CO;
 
     public void Start() {
         sM = GameObject.Find("SettingManager").GetComponent<SettingManager>();
@@ -52,9 +58,11 @@ public class MissionManager : MonoBehaviour {
     public void StartMission(int ID) {
         switch (ID) {
             case 1:
-                StartCoroutine(HuntingMission());
+                currentMission = 1;
+                CO = StartCoroutine(HuntingMission());
                 break;
             case 2:
+                currentMission = 2;
                 break;
         }
     }
@@ -65,6 +73,10 @@ public class MissionManager : MonoBehaviour {
 
     public void UpdateProgress(int progID) {
         progressID = progID;
+    }
+
+    public int GetCurrentMission() {
+        return currentMission;
     }
 
     IEnumerator HuntingMission() {
@@ -91,7 +103,7 @@ public class MissionManager : MonoBehaviour {
         tempChar = cM.GetCharacter(1003);
         tempChar.SetLocation(848);
 
-        while (sM.currentRoom != 848) {
+        while (sM.GetRoom() != 848) {
             yield return new WaitForSeconds(.5f);
         }
 
@@ -141,18 +153,27 @@ public class MissionManager : MonoBehaviour {
 
         text = "Let's take a second to look around.";
         DisplaySpeechAlert(-1, 1002, "Akaysha", text);
+        dM.AddInterruption(20, 1002, "Where are you going?");
 
-        //add the follow tracks option
-        rM.AddOptionToRoom(sM.GetRoom(), 100);
         //wait until the player observes
-        while(gM.GetLastPlayerAction() != 2) {
+        while(gM.GetLastPlayerAction() != 2 || gM.GetLastPlayerAction() != 20) {
             yield return new WaitForSeconds(0.5f);
         }
+        if(gM.GetLastPlayerAction() == 20) {
+            StartCoroutine(DesertHuntingMission());
+        }
+
+        //add the follow tracks tutorial option to the list and room
+        dM.AddTutorialOption(100, new Color(0.3f, 0.1f, 0.1f), new Color(1f, 1f, 1f), "Follow deer tracks");
+        rM.AddTempOptionToRoom(sM.GetRoom(), 100);
 
         yield return new WaitForSeconds(1f);
 
         text = "You found tracks. Let's follow them.";
         DisplaySpeechAlert(-1, 1002, "Akaysha", text);
+
+        //add an interrupt for trying to leave
+        dM.AddInterruption(20, 1002, "Where are you going!");
 
         //wait until the player follows the track
         while (gM.GetLastPlayerAction() != 100) {
@@ -161,11 +182,18 @@ public class MissionManager : MonoBehaviour {
 
         text = "You discern that the tracks lead south.";
         UpdateMainText(text);
+        //add interruptions for going west, north, or east
+        dM.AddInterruption(21, 1002, "If you wander off they'll think you're a deserter!");
+        dM.AddInterruption(22, 1002, "If you wander off they'll think you're a deserter!");
+        dM.AddInterruption(23, 1002, "If you wander off they'll think you're a deserter!");
+        //remove the interrupt for leaving
+        dM.RemoveInterruption(20);
 
         //add the option to the next room and remove it from the current
         currentRoom = sM.GetRoom();
-        rM.AddOptionToRoom(currentRoom + 100, 100);
-        rM.RemoveOptionFromRoom(currentRoom, 100);
+        rM.AddTempOptionToRoom(currentRoom + 100, 100);
+        rM.RemoveTempOptionFromRoom(currentRoom, 100);
+        //reset the player's last action
         gM.SetLastPlayerAction(0);
 
         //wait until player follows tracks
@@ -173,19 +201,18 @@ public class MissionManager : MonoBehaviour {
             yield return new WaitForSeconds(0.5f);
         }
 
-        //add the shoot option to the room and the decision scroll and remove the follow option
-        rM.AddOptionToRoom(sM.currentRoom, 101);
-        rM.RemoveOptionFromRoom(sM.currentRoom, 100);
-
-        GameObject obj = Instantiate(chanceDecisionObject);
-        obj.GetComponent<ChanceAction>().SetActionID(101);
-        obj.GetComponentInChildren<Image>().color = new Color(0.7f, 0, 0);
-        obj.transform.GetChild(0).GetComponentInChildren<Text>().color = new Color(1,1,1);
-        obj.transform.GetChild(0).GetComponentInChildren<Text>().text = "Take the shot";
-        obj.transform.SetParent(decisionScroll.transform, false);
-
         text = "You follow the trail until you spot it about a 100 feet away. It was a buck, looking to be about 250 pounds.";
         UpdateMainText(text);
+
+        //add the shoot option to the room and the decision scroll and remove the follow option
+        rM.AddTempOptionToRoom(sM.GetRoom(), 101);
+        rM.RemoveTempOptionFromRoom(sM.GetRoom(), 100);
+        dM.AddTutorialOption(101, new Color(0.7f, 0, 0), new Color(1, 1, 1), "Take the shot");
+        //add an interrupt for trying to leave and remove other interrupts
+        dM.AddInterruption(20, 1002, "Where are you going?");
+        dM.RemoveInterruption(21);
+        dM.RemoveInterruption(22);
+        dM.RemoveInterruption(23);
 
         yield return new WaitForSeconds(1f);
 
@@ -196,7 +223,8 @@ public class MissionManager : MonoBehaviour {
             yield return new WaitForSeconds(0.5f);
         }
 
-        rM.RemoveOptionFromRoom(sM.currentRoom, 101);
+        rM.RemoveTempOptionFromRoom(sM.GetRoom(), 101);
+        dM.RemoveInterruption(20);
 
         text = "You land a direct hit to the neck.";
         UpdateMainText(text);
@@ -205,28 +233,77 @@ public class MissionManager : MonoBehaviour {
 
         text = "Wow, mildly impressive. Let's meet up with Gregory. We'll come back for the deer.";
         DisplaySpeechAlert(-1, 1002, "Akaysha", text);
+        killedDeer = 1;
 
         cM.GetCharacter(1000).SetLocation(852);
         cM.GetCharacter(1001).SetLocation(852);
 
         StartGuide(852);
 
-        while (sM.GetRoom() != _targetRoom) {
+        while (sM.GetRoom() != _targetRoom || sM.GetTime()[0] != 17) {
             yield return new WaitForSeconds(0.5f);
         }
         yield return new WaitForSeconds(0.5f);
 
-        text = pM.GetName() + "Got us a deer.";
+        if(sM.GetTime()[0] == 17) {
+            text = "We're going to be late for the feast. Let's head back. Hopefully Gregory isn't too furious.";
+            DisplaySpeechAlert(-1, 1002, "Akaysha", text);
+            StartCoroutine(HeadBack());
+            yield return null;
+        }
+
+        text = pM.GetName() + " got us a deer.";
         DisplaySpeechAlert(-1, 1002, "Akaysha", text);
 
         while (speechAlertPanel.active == true) {
             yield return new WaitForSeconds(0.5f);
         }
+        
 
-        text = pM.GetName() + "Good. All of you grab some of this pirva. The shiny blue plants.";
-        DisplaySpeechAlert(-1, 1000, "Gregory", text);
+        if(cM.GetCharacter(1002).GetStatus() == "DEAD" && cM.GetCharacter(1003).GetStatus() == "DEAD") {
+            text = pM.GetName() + "Where the hell are Akaysha and Ben?";
+            DisplaySpeechAlert(-1, 1000, "Gregory", text);
+        }
+        else {
+            text = pM.GetName() + "Good. All of you grab some of this pirva. The shiny blue plants.";
+            DisplaySpeechAlert(-1, 1000, "Gregory", text);
+        }
 
         
+    }
+
+    IEnumerator HeadBack() {
+
+        while (speechAlertPanel.active == true) {
+            yield return new WaitForSeconds(0.5f);
+        }
+        if(killedDeer == 1) {
+            string text = "We should go back for the deer.";
+            DisplaySpeechAlert(-1, 1002, "Akaysha", text);
+        }
+        StartGuide(1049);
+
+        while (sM.GetRoom() != _targetRoom || sM.GetTime()[0] != 19) {
+            yield return new WaitForSeconds(0.5f);
+        }
+        yield return new WaitForSeconds(0.5f);
+
+        if(killedDeer == 1 && sM.GetTime()[0] == 19) {
+            string text = "We have to leave the deer. Let's get to the feast.";
+            DisplaySpeechAlert(-1, 1002, "Akaysha", text);
+        }
+    }
+
+    IEnumerator DesertHuntingMission() {
+        pM.RemoveFollower(1002);
+        pM.RemoveFollower(1003);
+        cM.GetCharacter(1000).SetLocation(6003);
+        cM.GetCharacter(1001).SetLocation(6003);
+        cM.GetCharacter(1002).SetLocation(6003);
+        cM.GetCharacter(1003).SetLocation(6003);
+        pM.SetDeserterStatus(1);
+
+        yield return null;
     }
 
     public void StartGuide(int targetRoom) {
@@ -295,13 +372,15 @@ public class MissionManager : MonoBehaviour {
     }
 
     public void DisplaySpeechAlert(int convoID, int characterID, string nameLabel, string displayText) {
-        SpeechAlertObject.GetComponent<SpeechAlert>().convoID = convoID;
-        SpeechAlertObject.GetComponent<SpeechAlert>().characterID = characterID;
-        SpeechAlertObject.transform.GetChild(2).GetComponent<Text>().text = nameLabel;
-        SpeechAlertObject.transform.GetChild(3).GetComponent<Text>().text = displayText;
-        GameObject speechObject = Instantiate(SpeechAlertObject);
-        speechAlertPanel.SetActive(true);
-        speechObject.transform.SetParent(speechAlertPanel.transform, false);
+        if(cM.GetCharacter(characterID).GetStatus() != "DEAD") {
+            SpeechAlertObject.GetComponent<SpeechAlert>().convoID = convoID;
+            SpeechAlertObject.GetComponent<SpeechAlert>().characterID = characterID;
+            SpeechAlertObject.transform.GetChild(2).GetComponent<Text>().text = nameLabel;
+            SpeechAlertObject.transform.GetChild(3).GetComponent<Text>().text = displayText;
+            GameObject speechObject = Instantiate(SpeechAlertObject);
+            speechAlertPanel.SetActive(true);
+            speechObject.transform.SetParent(speechAlertPanel.transform, false);
+        }
     }
 
     IEnumerator HuntingMissionTwo() {
@@ -451,6 +530,10 @@ public class MissionManager : MonoBehaviour {
             speechAlertPanel.SetActive(true);
             speechObject.transform.SetParent(speechAlertPanel.transform, false);
         }
+    }
+
+    public void StopCurrentMission() {
+        StopCoroutine(CO);
     }
 
 

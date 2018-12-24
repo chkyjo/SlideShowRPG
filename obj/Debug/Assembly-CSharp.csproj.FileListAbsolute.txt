@@ -1,2 +1,3 @@
 C:\Users\chkyjo\Documents\Unity Projects\SlideShowRPGGitRepo\SlideShowRPG\obj\Debug\Assembly-CSharp.csprojResolveAssemblyReference.cache
 C:\Users\chkyjo\Documents\Unity Projects\SlideShowRPGGitRepo\SlideShowRPG\obj\Debug\Assembly-CSharp.csproj.CoreCompileInputs.cache
+C:\Users\chkyjo\Documents\Unity Projects\SlideShowRPGGitRepo\SlideShowRPG\obj\Debug\Assembly-CSharp.csprojAssemblyReference.cache

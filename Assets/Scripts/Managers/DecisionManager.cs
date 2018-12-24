@@ -66,6 +66,11 @@ public class DecisionManager : MonoBehaviour {
     public GameObject chanceDecisionObject;
 
     public GameObject combatBackgroundPanel;
+    public Button attemptCancelButton;
+    public GameObject opponentPanel;
+    public GameObject characterCombatObject;
+    public GameObject allyPanel;
+    public Button leaveButton;
 
     public GameObject mainTextAreaPanel;
     public GameObject mainTextObject;
@@ -75,9 +80,7 @@ public class DecisionManager : MonoBehaviour {
     int _warned = 0;
     int _chanceSpotDeer = 40;
 
-    public GameObject opponentPanel;
-    public GameObject opponentObject;
-    public Button leaveButton;
+    
 
     public GameObject indoorPanel;
 
@@ -86,9 +89,17 @@ public class DecisionManager : MonoBehaviour {
         public string response;
         public int characterResponseID;
     }
+    struct Interruption {
+        public int actionID;
+        public int characterID;
+        public string characterText;
+    }
+
+    List<Interruption> interruptions;
 
     // Use this for initialization
     void Start() {
+        interruptions = new List<Interruption>();
         itemsInDecisionPanel = 0;
         FillDecisionPanel();
 
@@ -175,12 +186,6 @@ public class DecisionManager : MonoBehaviour {
         if(actionID == 11) {
             DeerTrackingResult();
         }
-        else if(actionID == 100) {
-            GameObject.Find("GameManager").GetComponent<GameManager>().SetLastPlayerAction(100);
-        }
-        else if (actionID == 101) {
-            GameObject.Find("GameManager").GetComponent<GameManager>().SetLastPlayerAction(101);
-        }
     }
 
     public void DeerTrackingResult() {
@@ -242,7 +247,7 @@ public class DecisionManager : MonoBehaviour {
             }
         } while (tempRoom.GetRoomType() != "Forest");
         //add the tracking option to the next room to continue tracking
-        roomM.AddOptionToRoom(tempRoomID, 11);
+        roomM.AddTempOptionToRoom(tempRoomID, 11);
 
         resultText = "You follow the tracks and discern they head " + tempDir + ".";
         UpdateMainText(resultText);
@@ -283,7 +288,7 @@ public class DecisionManager : MonoBehaviour {
     }
 
     void AddExitOption() {
-        Room room = roomManager.GetComponent<RoomManager>().GetRoom(settingManager.GetComponent<SettingManager>().currentRoom);
+        Room room = roomManager.GetComponent<RoomManager>().GetRoom(settingManager.GetComponent<SettingManager>().GetRoom());
         Debug.Log(room._numExits);
         if (room._numExits > 0) {
             var obj = Instantiate(openCategoryDecisionObject);
@@ -295,7 +300,7 @@ public class DecisionManager : MonoBehaviour {
 
     public void DisplayExitOptions() {
         ClearDecisionPanel();
-        Room room = roomManager.GetComponent<RoomManager>().GetRoom(settingManager.GetComponent<SettingManager>().currentRoom);
+        Room room = roomManager.GetComponent<RoomManager>().GetRoom(settingManager.GetComponent<SettingManager>().GetRoom());
 
         mapPanel.SetActive(true);
         mapPanel.transform.GetChild(0).gameObject.GetComponent<RawImage>().texture = room.GetRoomImage();
@@ -514,11 +519,12 @@ public class DecisionManager : MonoBehaviour {
             obj.transform.SetParent(decisionScroller.transform, false);
         }
         else if(index == 100) {
-            AddTutorialOption(index, new Color(0.3f, 0.1f, 0.1f), new Color(1, 1, 1), "Follow deer tracks");
+            AddTutorialOption(100, new Color(0.3f, 0.1f, 0.1f), new Color(1f, 1f, 1f), "Follow deer tracks");
         }
         else if(index == 101) {
-            AddTutorialOption(index, new Color(0.7f, 0, 0), new Color(1, 1, 1), "Take the shot");
+            AddTutorialOption(101, new Color(0.7f, 0, 0), new Color(1, 1, 1), "Take the shot");
         }
+
 
         scrollBar.value = 1;
         decisionScroll.offsetMin = new Vector2(decisionScroll.offsetMin.x, 0);
@@ -531,11 +537,12 @@ public class DecisionManager : MonoBehaviour {
         obj.GetComponentInChildren<Image>().color = backColor;
         obj.transform.GetChild(0).GetComponentInChildren<Text>().color = textColor;
         obj.transform.GetChild(0).GetComponentInChildren<Text>().text = displayText;
-
+        obj.transform.GetChild(0).GetComponent<Button>().onClick.AddListener(delegate { GameObject.Find("GameManager").GetComponent<GameManager>().SetLastPlayerAction(actionID); });
+        obj.transform.GetChild(0).GetComponent<Button>().onClick.AddListener(delegate { Destroy(obj); });
         obj.transform.SetParent(decisionScroller.transform, false);
     }
 
-
+    //------------------------------------------------------------------------functions for attacking
     //called when the user selects the attack option
     public void Attack(){
         ClearDecisionPanel();
@@ -575,19 +582,17 @@ public class DecisionManager : MonoBehaviour {
     //called when the user selects the person to attack
     public void AttackPeople(int[] IDs) {
 
+        //clear panel of opponents
         for(int i = 0; i < opponentPanel.transform.childCount; i++) {
             Destroy(opponentPanel.transform.GetChild(i).gameObject);
         }
+        attemptCancelButton.interactable = true;
 
         for (int i = 0; i < IDs.Length; i++) {
             combatBackgroundPanel.SetActive(true);
-            Character tempChar = characterManager.GetComponent<CharacterManager>().GetCharacter(IDs[i]);
-            opponentObject.GetComponent<AttackAction>().characterID = IDs[i];
-            opponentObject.transform.GetChild(0).GetComponent<Text>().text = tempChar.GetFirstName() + " " + tempChar.GetLastName();
-            opponentObject.transform.GetChild(2).GetComponent<Text>().text = "34% chance for successful attack";
-            opponentObject.transform.GetChild(4).GetComponent<Slider>().value = tempChar.GetHealth();
-            var obj = Instantiate(opponentObject);
-            obj.transform.SetParent(opponentPanel.transform, false);
+            AddOpponent(IDs[i]);
+            //potentially add more opponents
+            ProvokeAttack(IDs[i]);
         }
 
         RefreshDecisionList();
@@ -613,6 +618,91 @@ public class DecisionManager : MonoBehaviour {
         }
         return false;
     }
+
+    //called by the attack action checking the response of other characters in the room
+    public void ProvokeAttack(int characterID) {
+        SettingManager sM = GameObject.Find("SettingManager").GetComponent<SettingManager>();
+        CharacterBehaviorManager cBM = GameObject.Find("CharacterBehaviorManager").GetComponent<CharacterBehaviorManager>();
+        CharacterManager cM = GameObject.Find("CharacterManager").GetComponent<CharacterManager>();
+        Character[] characters = characterManager.GetComponent<CharacterManager>().GetCharactersInRoom(sM.GetRoom());
+        MissionManager mM = GameObject.Find("MissionManager").GetComponent<MissionManager>();
+
+        //if there is a mission going on
+        int[] involved = cM.GetCharacter(characterID).GetInvolved();
+        if(mM.GetCurrentMission() != 0) {
+            if (involved != null) {
+                for (int i = 0; i < involved.Length; i++) {
+                    //if the character being attacked is part of the mission
+                    if (involved[i] == mM.GetCurrentMission()) {
+                        //stop the mission
+                        mM.StopCurrentMission();
+                    }
+                }
+            }
+        }
+        
+        //for each character find out which side their on
+        string feelingsAboutPlayer;
+        for(int i = 0; i < characters.Length; i++) {
+            feelingsAboutPlayer = cBM.GetCharacterFeelingsTowardsPlayer(characters[i]);
+
+            //if the character is in the same faction as the character being attacked
+            if(characters[i].GetFaction() == cM.GetCharacter(characterID).GetFaction()) {
+                if (feelingsAboutPlayer != "love" || feelingsAboutPlayer != "devotion") {
+                    AddOpponent(characters[i].GetID());
+                    return;
+                }
+            }
+            else {
+                if (feelingsAboutPlayer != "admiration" || feelingsAboutPlayer != "love" || feelingsAboutPlayer != "devotion") {
+                    AddOpponent(characters[i].GetID());
+                    return;
+                }
+            }
+
+            AddAlly(characters[i].GetID());
+
+        }
+    }
+
+    public void AddOpponent(int characterID) {
+        Character tempChar = characterManager.GetComponent<CharacterManager>().GetCharacter(characterID);
+        characterCombatObject.GetComponent<AttackAction>().characterID = characterID;
+        characterCombatObject.transform.GetChild(0).GetComponent<Text>().text = tempChar.GetFirstName() + " " + tempChar.GetLastName();
+        characterCombatObject.transform.GetChild(2).GetComponent<Text>().text = "34% chance for successful attack";
+        characterCombatObject.transform.GetChild(4).GetComponent<Slider>().value = tempChar.GetHealth();
+        var obj = Instantiate(characterCombatObject);
+        obj.transform.SetParent(opponentPanel.transform, false);
+    }
+
+    public void AddAlly(int characterID) {
+        Character tempChar = characterManager.GetComponent<CharacterManager>().GetCharacter(characterID);
+        characterCombatObject.GetComponent<AttackAction>().characterID = characterID;
+        characterCombatObject.transform.GetChild(0).GetComponent<Text>().text = tempChar.GetFirstName() + " " + tempChar.GetLastName();
+        characterCombatObject.transform.GetChild(2).GetComponent<Text>().text = "34% chance for successful attack";
+        characterCombatObject.transform.GetChild(4).GetComponent<Slider>().value = tempChar.GetHealth();
+        var obj = Instantiate(characterCombatObject);
+        obj.transform.SetParent(allyPanel.transform, false);
+    }
+
+    public void AttemptLeaveCombat() {
+        PlayerManager pM = GameObject.Find("PlayerManager").GetComponent<PlayerManager>();
+        int chance = pM.GetAgility() - (7 * combatBackgroundPanel.transform.childCount);
+        if(chance < 0) {
+            chance = 0;
+        }
+
+        int randNum = Random.Range(1, 101);
+
+        if(chance > randNum) {
+            combatBackgroundPanel.SetActive(false);
+        }
+        else {
+            attemptCancelButton.interactable = false;
+        }
+
+    }
+    //-------------------------------------------------------------------------functions for attacking
 
     //called when user selects the throw action
     public void Throw() {
@@ -701,7 +791,7 @@ public class DecisionManager : MonoBehaviour {
     public void ThrowItemAt(int characterID, int itemID) {
         string greeting = "What the hell was that for?";
         Character tempChar = characterManager.GetComponent<CharacterManager>().GetCharacter(characterID);
-        tempChar.SetRelationship(tempChar.GetRelationship() - 10);
+        tempChar.SetRelationshipLvl(tempChar.GetRelationshipLvl() - 10);
         inventoryManager.GetComponent<InventoryManager>().RemoveItemByID(itemID);
         TalkTo(characterID, greeting);
         RefreshDecisionList();
@@ -902,8 +992,9 @@ public class DecisionManager : MonoBehaviour {
         WorldItemsManager wIM = GameObject.Find("WorldItemsManager").GetComponent<WorldItemsManager>();
         RoomManager rM = roomManager.GetComponent<RoomManager>();
 
+        //add the item to inventory
         wIM.AddItemToInventory(worldItemID);
-
+        //remove the item from the room
         rM.RemoveItemFromRoom(worldItemID, roomID);
     }
 
@@ -1085,7 +1176,14 @@ public class DecisionManager : MonoBehaviour {
         RoomManager rM = roomManager.GetComponent<RoomManager>();
         SettingManager sM = settingManager.GetComponent<SettingManager>();
         CharacterManager cM = characterManager.GetComponent<CharacterManager>();
-        GameObject.Find("GameManager").GetComponent<GameManager>().SetLastPlayerAction(4);
+        GameObject.Find("GameManager").GetComponent<GameManager>().SetLastPlayerAction(20);
+
+        //check if there's an interruption
+        int interruptionIndex = CheckForInterruption(20, nextRoomID);
+        if(interruptionIndex != -1) {
+            InterruptAction(interruptionIndex);
+            return;
+        }
 
         //check if any characters have a beef with the player leaving
         Character[] characters = cM.GetCharactersInRoom(sM.GetRoom());
@@ -1103,11 +1201,11 @@ public class DecisionManager : MonoBehaviour {
         //update current room
         Room room = rM.GetRoom(nextRoomID);
         if (room.GetRoomType() == "Building") {
-            sM.currentRoom = room.GetTeleport();
-            room = rM.GetRoom(sM.currentRoom);
+            sM.SetRoom(room.GetTeleport());
+            room = rM.GetRoom(sM.GetRoom());
         }
         else {
-            sM.currentRoom = nextRoomID;
+            sM.SetRoom(nextRoomID);
         }
         sM.DisplayRoom();
 
@@ -1116,7 +1214,7 @@ public class DecisionManager : MonoBehaviour {
         int[] followers = pM.GetFollowers();
         for(int i = 0; i < 10; i++) {
             if(followers[i] != -1) {
-                cM.GetCharacter(followers[i]).SetLocation(sM.currentRoom);
+                cM.GetCharacter(followers[i]).SetLocation(sM.GetRoom());
             }
         }
 
@@ -1158,6 +1256,81 @@ public class DecisionManager : MonoBehaviour {
         RefreshDecisionList();
     }
 
+    public int CheckForInterruption(int actionID, int nextRoomID) {
+
+        //if the player has already been interrupted return 0
+        //action ID for leaving is 20: 21 leaving west, 22 leaving north, 23 leaving east...
+        if(GameObject.Find("GameManager").GetComponent<GameManager>().GetInterrupted() == 1) {
+            return -1;
+        }
+
+        //first check if there is an interruption for leaving
+        for (int i = 0; i < interruptions.Count; i++) {
+            if (interruptions[i].actionID == actionID) {
+                return i;
+            }
+        }
+
+        SettingManager sM = GameObject.Find("SettingManager").GetComponent<SettingManager>();
+
+        //if the next room is west
+        if (nextRoomID == sM.GetRoom() - 1) {
+            for (int i = 0; i < interruptions.Count; i++) {
+                if (interruptions[i].actionID == 21) {
+                    return i;
+                }
+            }
+        }
+        //if next room is north
+        else if(nextRoomID == sM.GetRoom() - 100) {
+            for (int i = 0; i < interruptions.Count; i++) {
+                if (interruptions[i].actionID == 22) {
+                    return i;
+                }
+            }
+        }
+        //if next room is east
+        else if (nextRoomID == sM.GetRoom() + 1) {
+            for (int i = 0; i < interruptions.Count; i++) {
+                if (interruptions[i].actionID == 23) {
+                    return i;
+                }
+            }
+        }
+        //if next room is south
+        else if (nextRoomID == sM.GetRoom() + 100) {
+            for (int i = 0; i < interruptions.Count; i++) {
+                if (interruptions[i].actionID == 24) {
+                    return i;
+                }
+            }
+        }
+
+        return -1;
+    }
+
+    //update that the player has been interrupted and use the talkto function
+    public void InterruptAction(int index) {
+        GameObject.Find("GameManager").GetComponent<GameManager>().SetInterrupted();
+        TalkTo(interruptions[index].characterID, interruptions[index].characterText);
+    }
+
+    public void AddInterruption(int actionID, int characterID, string interruptText) {
+        Interruption interrupt = new Interruption();
+        interrupt.actionID = actionID;
+        interrupt.characterID = characterID;
+        interrupt.characterText = interruptText;
+        interruptions.Add(interrupt);
+    }
+    public void RemoveInterruption(int actionID) {
+        for(int i = 0; i < interruptions.Count; i++) {
+            if(interruptions[i].actionID == actionID) {
+                interruptions.RemoveAt(i);
+            }
+        }
+        Debug.Log("Attempted to remove an action interrupt that was not there");
+    }
+
     public void UpdateMainText(string text) {
 
         if(mainTextAreaPanel.transform.childCount > 0) {
@@ -1193,7 +1366,7 @@ public class DecisionManager : MonoBehaviour {
         yield return new WaitForSeconds(Random.Range(15, 30));
         Character guard1 = characterManager.GetComponent<CharacterManager>().GetCharacter(1005);
         Character guard2 = characterManager.GetComponent<CharacterManager>().GetCharacter(1006);
-        int location = GameObject.Find("SettingManager").GetComponent<SettingManager>().currentRoom;
+        int location = GameObject.Find("SettingManager").GetComponent<SettingManager>().GetRoom();
 
         guard1.SetLocation(location);
         guard2.SetLocation(location);

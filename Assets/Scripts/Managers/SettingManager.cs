@@ -35,7 +35,7 @@ public class SettingManager : MonoBehaviour{
 
     public int opponentID;
 
-    public int currentRoom;
+    int _currentRoom;
 
     private void Awake(){
         weather = 0;//5 different weathers: rain, snow, sunny, misty, windy
@@ -44,7 +44,7 @@ public class SettingManager : MonoBehaviour{
         numCharactersInSetting = 0;
         startTime = -10;
         timeUntilWeatherChange = 0;
-        currentRoom = 6000;
+        _currentRoom = 6000;
         minute = 45;
         hour = 6;
         totalMinutes = 0;
@@ -63,8 +63,12 @@ public class SettingManager : MonoBehaviour{
         SetTemp();
 	}
 
+    public void SetRoom(int roomID) {
+        _currentRoom = roomID;
+    }
+
     public int GetRoom(){
-        return currentRoom;
+        return _currentRoom;
     }
 
     public int[] GetCoordinates() {
@@ -226,7 +230,7 @@ public class SettingManager : MonoBehaviour{
     }
 
     public void DisplayRoom() {
-        Room room = GameObject.FindWithTag("RoomManager").GetComponent<RoomManager>().GetRoom(currentRoom);
+        Room room = GameObject.FindWithTag("RoomManager").GetComponent<RoomManager>().GetRoom(GetRoom());
         roomStatusText.text = "Room: " + room.GetName();
         position = room.GetRoomCoordinates();
     }

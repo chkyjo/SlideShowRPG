@@ -21,6 +21,6 @@ public class DialogueAction : MonoBehaviour {
             //display character response to choice and add new dialogue options
             GameObject.Find("ConversationManager").GetComponent<ConversationManager>().GetCharacterResponse(convoID, messageID, characterID);
         }
-        
+        Destroy(gameObject);
     }
 }

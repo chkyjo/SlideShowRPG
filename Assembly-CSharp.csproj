@@ -64,6 +64,7 @@
      <Compile Include="Assets\Scripts\Item.cs" />
      <Compile Include="Assets\Scripts\Managers\AudioManager.cs" />
      <Compile Include="Assets\Scripts\Managers\CategoryManager.cs" />
+     <Compile Include="Assets\Scripts\Managers\CharacterBehaviorManager.cs" />
      <Compile Include="Assets\Scripts\Managers\CharacterManager.cs" />
      <Compile Include="Assets\Scripts\Managers\ConversationManager.cs" />
      <Compile Include="Assets\Scripts\Managers\DecisionManager.cs" />
